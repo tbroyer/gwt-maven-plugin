@@ -9,7 +9,7 @@ try {
     return false;
   }
 
-  File war = new File(target, "compile-test-1.0.war");
+  File war = new File(target, "gwt-application-1.0.war");
   if (!war.exists() || war.isDirectory()) {
     System.err.println("war file is missing or a directory.");
     return false;

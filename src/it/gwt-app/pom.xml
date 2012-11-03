@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>net.ltgt.gwt.maven.its</groupId>
-  <artifactId>compile-test</artifactId>
+  <artifactId>gwt-application</artifactId>
   <version>1.0</version>
   <packaging>gwt-app</packaging>
 
