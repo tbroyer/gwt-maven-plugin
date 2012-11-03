@@ -86,7 +86,7 @@ public class PackageLibMojo extends AbstractMojo {
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
-    File warFile = new File(outputDirectory, finalName + ".war");
+    File warFile = new File(outputDirectory, finalName + ".jar");
 
     MavenArchiver archiver = new MavenArchiver();
     archiver.setArchiver(jarArchiver);
