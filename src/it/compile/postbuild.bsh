@@ -1,0 +1,38 @@
+import java.io.*;
+import java.util.*;
+import java.util.jar.*;
+
+try {
+  File target = new File(basedir, "target");
+  if (!target.exists() || !target.isDirectory()) {
+    System.err.println("target file is missing or not a directory.");
+    return false;
+  }
+
+  File war = new File(target, "compile-test-1.0.war");
+  if (!war.exists() || war.isDirectory()) {
+    System.err.println("war file is missing or a directory.");
+    return false;
+  }
+
+  JarFile jarFile = new JarFile(war);
+  Enumeration entries = jarFile.entries();
+
+  boolean seenNocacheJs = false;
+  while (entries.hasMoreElements()) {
+    JarEntry entry = entries.nextElement();
+    String name = entry.getName();
+    if (name.equals("test/test.nocache.js")) {
+      seenNocacheJs = true;
+    }
+  }
+  if (!seenNocacheJs) {
+    System.err.println("test/test.nocache.js missing from war");
+    return false;
+  }
+} catch (Throwable t) {
+  t.printStackTrace();
+  return false;
+}
+
+return true;
