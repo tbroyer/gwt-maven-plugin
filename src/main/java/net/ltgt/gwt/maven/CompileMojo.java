@@ -43,80 +43,156 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
     DETAILED_HTML
   }
 
-  @Parameter(property = "gwt.draft", defaultValue = "false")
-  private boolean draft;
+  /**
+   * Enable faster, but less-optimized, compilations.
+   */
+  @Parameter(property = "gwt.draftCompile", defaultValue = "false")
+  private boolean draftCompile;
 
+  /**
+   * Troubleshooting: Prevent the Production Mode compiler from performing aggressive optimizations.
+   */
   @Parameter(property = "gwt.disableAggressiveOptimization", defaultValue = "false")
   private boolean disableAggressiveOptimization;
 
-  @Parameter(property = "gwt.compilerMetricsEnabled", defaultValue = "false")
-  private boolean compilerMetricsEnabled;
+  /**
+   * Enable CompilerMetrics.
+   */
+  @Parameter(property = "gwt.compilerMetrics", defaultValue = "false")
+  private boolean compilerMetrics;
 
+  /**
+   * The directory into which deployable but not servable output files will be written.
+   */
   @Parameter(defaultValue = "${project.build.directory}/gwt/extra")
   private File deploy;
 
+  /**
+   * EXPERIMENTAL: Disables run-time checking of cast operations.
+   */
   @Parameter(property = "gwt.disableCastChecking", defaultValue = "false")
   private boolean disableCastChecking;
 
+  /**
+   * EXPERIMENTAL: Disables some {@code java.lang.Class} methods (e.g. {@code getName()}).
+   */
   @Parameter(property = "gwt.disableClassMetadata", defaultValue = "false")
   private boolean disableClassMetadata;
 
+  /**
+   * Disable the check to see if an update version of GWT is available.
+   */
   @Parameter(property = "gwt.disableUpdateCheck", defaultValue = "false")
   private boolean disableUpdateCheck;
 
+  /**
+   * Debugging: causes the compiled output to check assert statements.
+   */
   @Parameter(property = "gwt.enableAssertions", defaultValue = "false")
   private boolean enableAssertions;
 
+  /**
+   * EXPERIMENTAL: Enables Closure Compiler optimizations.
+   */
   @Parameter(property = "gwt.enableClosureCompiler", defaultValue = "false")
   private boolean enableClosureCompiler;
 
+  /**
+   * Disables running generators on CompilePerms shards, even when it would be a likely speedup.
+   */
   @Parameter(property = "gwt.disableGeneratingOnShards", defaultValue = "false")
   private boolean disableGeneratingOnShards;
 
+  /**
+   * The directory into which extra files, not intended for deployment, will be written.
+   */
   @Parameter(property = "gwt.extra", defaultValue = "${project.build.directory}/gwt/extra")
   private File extra;
 
+  /**
+   * EXPERIMENTAL: Limits of number of fragments using a code splitter that merges split points.
+   */
   @Parameter(property = "gwt.fragmentCount", defaultValue = "-1")
   private int fragmentCount;
 
+  /**
+   * Debugging: causes normally-transient generated types to be saved in the specified directory.
+   */
   @Parameter(property = "gwt.gen", defaultValue = "${project.build.directory}/gwt/gen")
   private File gen;
 
+  /**
+   * The number of local workers to use when compiling permutations.
+   */
   @Parameter(property = "gwt.localWorkers")
   private int localWorkers;
 
+  /**
+   * Sets the level of logging detail. Defaults to Maven's own log level.
+   * <p>
+   * If this is set lower than what's loggable at the Maven level, then lower
+   * levels will be log at Maven's lowest logging level. For instance, if this
+   * is set to {@link TreeLogger.Type.INFO INFO} and Maven has been run in
+   * quiet mode (showing only errors), then warnings and informational messages
+   * emitted by GWT will actually be logged as errors by the plugin.
+   */
   @Parameter(property = "gwt.logLevel")
   private TreeLogger.Type logLevel;
 
-  @Parameter(property = "gwt.maxPermsPerPrecompile", defaultValue = "-1")
-  private int maxPermsPerPrecompile;
-
+  /**
+   * Name of the module to compile.
+   */
   @Parameter(required = true)
   private String moduleName;
 
+  /**
+   * Sets the optimization level used by the compiler.  0=none 9=maximum.
+   */
   @Parameter(property = "gwt.optimize", defaultValue = "" + OPTIMIZE_LEVEL_MAX)
   private int optimize;
 
+  /** This is set and read by the compiler. */
   private boolean optimizePrecompile = true;
 
+  /**
+   * Disable runAsync code-splitting.
+   */
   @Parameter(property = "gwt.disableRunAsync", defaultValue = "false")
   private boolean disableRunAsync;
 
+  /**
+   * Script output style: OBFUSCATED, PRETTY, or DETAILED.
+   */
   @Parameter(property = "gwt.style", defaultValue = "OBFUSCATED")
   private JsOutputOption style;
 
+  /**
+   * Which kind of compile report to produce: OFF, ON, HTML, DETAILED or DETAILED_HTML.
+   */
   @Parameter(property = "gwt.compileReport", defaultValue = "OFF")
   private CompileReport compileReport;
 
+  /**
+   * Only succeed if no input files have errors.
+   */
   @Parameter(property = "gwt.strict", defaultValue = "false")
   private boolean strict;
 
+  /**
+   * Validate all source code, but do not compile.
+   */
   @Parameter(property = "gwt.validateOnly", defaultValue = "false")
   private boolean validateOnly;
 
+  /**
+   * Specifies the location of the target war directory.
+   */
   @Parameter(defaultValue = "${project.build.directory}/${project.build.finalName}", required = true)
   private File webappDirectory;
 
+  /**
+   * The compiler work directory (must be writeable).
+   */
   @Parameter(defaultValue = "${project.build.directory}/gwt/work")
   private File workDir;
 
@@ -135,7 +211,7 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
         getLog().debug("Using " + localWorkers + " local workers");
       }
     }
-    if (draft) {
+    if (draftCompile) {
       optimize = OPTIMIZE_LEVEL_DRAFT;
       disableAggressiveOptimization = true;
     } else {
@@ -242,12 +318,12 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
   @Override
   public boolean isCompilerMetricsEnabled() {
-    return compilerMetricsEnabled;
+    return compilerMetrics;
   }
 
   @Override
   public void setCompilerMetricsEnabled(boolean enabled) {
-    compilerMetricsEnabled = enabled;
+    compilerMetrics = enabled;
   }
 
   @Override
@@ -392,12 +468,12 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
   @Override
   public int getMaxPermsPerPrecompile() {
-    return maxPermsPerPrecompile;
+    return -1;
   }
 
   @Override
   public void setMaxPermsPerPrecompile(int maxPerms) {
-    maxPermsPerPrecompile = maxPerms;
+    throw new UnsupportedOperationException();
   }
 
   @Override
