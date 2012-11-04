@@ -85,7 +85,7 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   @Parameter(property = "gwt.localWorkers")
   private int localWorkers;
 
-  @Parameter(property = "gwt.logLevel", defaultValue = "INFO")
+  @Parameter(property = "gwt.logLevel")
   private TreeLogger.Type logLevel;
 
   @Parameter(property = "gwt.maxPermsPerPrecompile", defaultValue = "-1")
@@ -195,7 +195,7 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
     System.setProperty(ThreadedPermutationWorkerFactory.MAX_THREADS_PROPERTY, "" + Runtime.getRuntime().availableProcessors());
 
     boolean success;
-    MavenTreeLogger logger = new MavenTreeLogger(getLog());
+    MavenTreeLogger logger = MavenTreeLogger.newInstance(getLog(), logLevel);
     try {
       Class<?> compilerClass = Class.forName(Compiler.class.getName(), true, realm);
       Constructor<?> ctor = compilerClass.getConstructor(CompilerOptions.class);
@@ -382,7 +382,7 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
   @Override
   public TreeLogger.Type getLogLevel() {
-    return logLevel;
+    return (logLevel == null) ? MavenTreeLogger.getLogLevel(getLog()) : logLevel;
   }
 
   @Override
