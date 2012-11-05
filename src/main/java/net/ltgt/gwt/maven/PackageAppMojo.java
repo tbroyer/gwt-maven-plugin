@@ -37,13 +37,13 @@ public class PackageAppMojo extends AbstractMojo {
    * appear to have changed. By default, this plugin looks to see if the output
    * war exists and inputs have not changed. If these conditions are true, the
    * plugin skips creation of the war. This does not work when other plugins,
-   * like the maven-shade-plugin, are configured to post-process the jar. This
+   * like the maven-shade-plugin, are configured to post-process the war. This
    * plugin can not detect the post-processing, and so leaves the post-processed
-   * jar in place. This can lead to failures when those plugins do not expect to
+   * war in place. This can lead to failures when those plugins do not expect to
    * find their own output as an input. Set this parameter to <tt>true</tt> to
    * avoid these problems by forcing this plugin to recreate the war every time.
    */
-  @Parameter(property = "jar.forceCreation", defaultValue = "false")
+  @Parameter(property = "war.forceCreation", defaultValue = "false")
   private boolean forceCreation;
 
   /**
