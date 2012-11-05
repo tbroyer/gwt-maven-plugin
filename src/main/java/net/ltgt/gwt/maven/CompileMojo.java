@@ -11,8 +11,10 @@ import com.google.gwt.dev.jjs.JsOutputOption;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -21,6 +23,10 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.classworlds.realm.DuplicateRealmException;
+import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
+import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
+import org.codehaus.plexus.compiler.util.scan.mapping.SourceMapping;
+import org.codehaus.plexus.util.DirectoryScanner;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -28,8 +34,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Mojo(name = "compile", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresDependencyCollection = ResolutionScope.COMPILE)
 @SuppressWarnings("serial")
@@ -197,6 +205,22 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   private File workDir;
 
   /**
+   * Sets the granularity in milliseconds of the last modification
+   * date for testing whether the module needs recompilation.
+   */
+  @Parameter(property = "lastModGranularityMs", defaultValue = "0")
+  private int staleMillis;
+
+  /**
+   * Require the GWT plugin to compile the GWT module even if none of the
+   * sources appear to have changed. By default, this plugin looks to see if
+   * the output *.nocache.js exists and inputs (POM, sources and dependencies)
+   * have not changed.
+   */
+  @Parameter(property = "gwt.forceCompilation", defaultValue="false")
+  private boolean forceCompilation;
+
+  /**
    * Require the GWT plugin to skip compilation. This can be useful to quickly
    * package an incomplete or stale application that's used as a dependency (an
    * overlay generally) in a war, for example to launch that war in a container
@@ -232,7 +256,10 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
       optimize = Math.min(OPTIMIZE_LEVEL_DRAFT, Math.min(optimize, OPTIMIZE_LEVEL_MAX));
     }
 
-    // TODO: staleness check (unless force==true)
+    if (!forceCompilation && !isStale()) {
+      getLog().info("Compilation output seems uptodate. GWT compilation skipped.");
+      return;
+    }
 
     ClassWorld world = new ClassWorld();
     ClassRealm realm;
@@ -305,6 +332,88 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
     if (!success) {
       throw new MojoExecutionException("GWT compilation failed");
+    }
+  }
+
+  private boolean isStale() throws MojoExecutionException {
+    if (!webappDirectory.exists()) {
+      return true;
+    }
+
+    final File nocacheJs = findNocacheJs();
+    if (nocacheJs == null) {
+      return true;
+    }
+
+    StaleSourceScanner scanner = new StaleSourceScanner(staleMillis);
+    scanner.addSourceMapping(new SourceMapping() {
+      final Set<File> targetFiles = Collections.singleton(nocacheJs);
+
+      @Override
+      public Set<File> getTargetFiles(File targetDir, String source) throws InclusionScanException {
+        return targetFiles;
+      }
+    });
+
+    ArrayList<String> sourceRoots = new ArrayList<String>();
+    // sources (incl. generated sources)
+    sourceRoots.addAll(project.getCompileSourceRoots());
+    // compiled (processed) classes and resources (incl. processed and generated ones)
+    sourceRoots.add(project.getBuild().getOutputDirectory());
+    for (String sourceRoot : sourceRoots) {
+      File rootFile = new File( sourceRoot );
+
+      if (isStale(scanner, rootFile, nocacheJs)) {
+        return true;
+      }
+    }
+    // POM
+    if (isStale(scanner, project.getFile(), nocacheJs)) {
+      return true;
+    }
+    // dependencies
+    ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_COMPILE);
+    for (Artifact artifact : project.getArtifacts()) {
+      if (!artifactFilter.include(artifact)) {
+        continue;
+      }
+      if (isStale(scanner, artifact.getFile(), nocacheJs)) {
+        return true;
+      }
+    }
+    // TODO: only include gwt-dev
+    for (Artifact artifact : pluginArtifacts) {
+      if (isStale(scanner, artifact.getFile(), nocacheJs)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean isStale(StaleSourceScanner scanner, File sourceFile, File targetFile) throws MojoExecutionException {
+    if (!sourceFile.isDirectory()) {
+      return (targetFile.lastModified() + staleMillis < sourceFile.lastModified());
+    }
+
+    try {
+      return !scanner.getIncludedSources(sourceFile, webappDirectory).isEmpty();
+    } catch (InclusionScanException e) {
+      throw new MojoExecutionException("Error scanning source root: \'" + sourceFile.getPath() + "\' for stale files to recompile.", e);
+    }
+  }
+
+  private File findNocacheJs() {
+    // TODO: load ModuleDef to get target name
+    DirectoryScanner scanner = new DirectoryScanner();
+    scanner.setBasedir(webappDirectory);
+    scanner.setIncludes(new String[] { "**/*.nocache.js" });
+    scanner.scan();
+    String[] includedFiles = scanner.getIncludedFiles();
+    if (includedFiles.length != 1) {
+      return null;
+    } else {
+      return new File(webappDirectory, includedFiles[0]);
     }
   }
 
