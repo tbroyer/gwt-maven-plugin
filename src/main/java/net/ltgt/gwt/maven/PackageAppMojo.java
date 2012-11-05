@@ -76,7 +76,10 @@ public class PackageAppMojo extends AbstractMojo {
     archive.setForced(forceCreation);
 
     try {
-      warArchiver.addDirectory(new File(outputDirectory, warName));
+      File prepackagedApp = new File(outputDirectory, warName);
+      if (prepackagedApp.exists()) {
+        warArchiver.addDirectory(prepackagedApp);
+      }
 
       archiver.createArchive(session, project, archive);
     } catch (Exception e) {
