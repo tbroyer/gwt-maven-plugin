@@ -2,13 +2,45 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
   <groupId>net.ltgt.gwt.maven</groupId>
   <artifactId>gwt-maven-plugin</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>GWT Maven Plugin</name>
+  <description>Starting fresh on building GWT projects with Maven</description>
   <url>https://github.com/tbroyer/gwt-maven-plugin</url>
+
+  <inceptionYear>2012</inceptionYear>
+  <licenses>
+    <license>
+      <name>Apache 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Thomas Broyer</name>
+      <email>t.broyer@ltgt.net</email>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/tbroyer/gwt-maven-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:tbroyer/gwt-maven-plugin.git</developerConnection>
+    <url>https://github.com/tbroyer/gwt-maven-plugin</url>
+  </scm>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/tbroyer/gwt-maven-plugin/issues</url>
+  </issueManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
