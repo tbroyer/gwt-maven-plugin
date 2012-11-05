@@ -112,9 +112,15 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   private boolean disableGeneratingOnShards;
 
   /**
+   * Whether or not to output extra files.
+   */
+  @Parameter(property = "gwt.outputExtra", defaultValue = "false")
+  private boolean outputExtra;
+
+  /**
    * The directory into which extra files, not intended for deployment, will be written.
    */
-  @Parameter(property = "gwt.extra", defaultValue = "${project.build.directory}/gwt/extra")
+  @Parameter(defaultValue = "${project.build.directory}/gwt/extra")
   private File extra;
 
   /**
@@ -124,9 +130,15 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   private int fragmentCount;
 
   /**
+   * Whether or not to output transient generated files.
+   */
+  @Parameter(property = "gwt.outputGen", defaultValue = "false")
+  private boolean outputGen;
+
+  /**
    * Debugging: causes normally-transient generated types to be saved in the specified directory.
    */
-  @Parameter(property = "gwt.gen", defaultValue = "${project.build.directory}/gwt/gen")
+  @Parameter(defaultValue = "${project.build.directory}/gwt/gen")
   private File gen;
 
   /**
@@ -521,12 +533,12 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
   @Override
   public File getExtraDir() {
-    return extra;
+    return outputExtra ? extra : null;
   }
 
   @Override
   public void setExtraDir(File extraDir) {
-    extra = extraDir;
+    this.extra = extraDir;
   }
 
   @Override
@@ -551,7 +563,7 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
   @Override
   public File getGenDir() {
-    return gen;
+    return outputGen ? gen : null;
   }
 
   @Override
