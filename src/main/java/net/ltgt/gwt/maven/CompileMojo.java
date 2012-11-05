@@ -196,15 +196,29 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   @Parameter(defaultValue = "${project.build.directory}/gwt/work")
   private File workDir;
 
-  @Parameter(defaultValue = "${project}", required = true, readonly = true)
+  /**
+   * Require the GWT plugin to skip compilation. This can be useful to quickly
+   * package an incomplete or stale application that's used as a dependency (an
+   * overlay generally) in a war, for example to launch that war in a container
+   * and then launch DevMode for this GWT application.
+   */
+  @Parameter(property = "gwt.skipCompilation", defaultValue="false")
+  private boolean skipCompilation;
+
+  // TODO: speedtracer
+
+  @Component
   private MavenProject project;
 
   @Parameter(defaultValue = "${plugin.artifacts}", required = true, readonly = true)
   private List<Artifact> pluginArtifacts;
 
-  // TODO: force, skip, speedtracer
-
   public void execute() throws MojoExecutionException {
+    if (skipCompilation) {
+      getLog().info("GWT compilation is skipped");
+      return;
+    }
+
     if (localWorkers < 1) {
       localWorkers = Runtime.getRuntime().availableProcessors();
       if (getLog().isDebugEnabled()) {
