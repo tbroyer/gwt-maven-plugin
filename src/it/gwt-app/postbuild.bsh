@@ -19,15 +19,22 @@ try {
   Enumeration entries = jarFile.entries();
 
   boolean seenNocacheJs = false;
+  boolean seenWebInf = false;
   while (entries.hasMoreElements()) {
     JarEntry entry = entries.nextElement();
     String name = entry.getName();
     if (name.equals("test/test.nocache.js")) {
       seenNocacheJs = true;
+    } else if (name.startsWith("WEB-INF/")) {
+      seenWebInf = true;
     }
   }
   if (!seenNocacheJs) {
     System.err.println("test/test.nocache.js missing from war");
+    return false;
+  }
+  if (seenWebInf) {
+    System.err.println("war file erroneously contains a WEB-INF/");
     return false;
   }
 } catch (Throwable t) {
