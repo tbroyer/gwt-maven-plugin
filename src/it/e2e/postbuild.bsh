@@ -1,0 +1,45 @@
+import java.io.*;
+import java.util.*;
+import java.util.jar.*;
+
+try {
+  File target = new File(basedir, "e2e-server/target");
+  if (!target.exists() || !target.isDirectory()) {
+    System.err.println("target file is missing or not a directory.");
+    return false;
+  }
+
+  File war = new File(target, "e2e-server-1.0.war");
+  if (!war.exists() || war.isDirectory()) {
+    System.err.println("war file is missing or a directory.");
+    return false;
+  }
+
+  JarFile jarFile = new JarFile(war);
+  Enumeration entries = jarFile.entries();
+
+  boolean seenNocacheJs = false;
+  boolean seenGwtLib = false;
+  while (entries.hasMoreElements()) {
+    JarEntry entry = entries.nextElement();
+    String name = entry.getName();
+    if (name.equals("e2e/e2e.nocache.js")) {
+      seenNocacheJs = true;
+    } else if (name.startsWith("WEB-INF/lib/e2e-") && name.endsWith("-gwt.jar")) {
+      seenGwtLib = true;
+    }
+  }
+  if (!seenNocacheJs) {
+    System.err.println("e2e/e2e.nocache.js missing from final war");
+    return false;
+  }
+  if (seenGwtLib) {
+    System.err.println("gwt-lib erroneously packaged into final war");
+    return false;
+  }
+} catch (Throwable t) {
+  t.printStackTrace();
+  return false;
+}
+
+return true;
