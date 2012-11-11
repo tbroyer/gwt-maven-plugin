@@ -53,6 +53,9 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
         throw new MojoExecutionException(artifact.getId() + " has not been packaged yet. When used on reactor artifact, "
             + "import-sources should be executed after packaging.");
       }
+      if (getLog().isInfoEnabled()) {
+        getLog().info("Importing " + artifact.getId());
+      }
       unArchiver.setSourceFile(artifact.getFile());
       // Defer outputDirectory creation so that it's only tentatively created if there are source JARs to unpack
       ensureOutputDirectory();
