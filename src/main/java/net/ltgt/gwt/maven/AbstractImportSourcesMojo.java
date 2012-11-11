@@ -49,9 +49,9 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
       // Check copied from maven-dependency-plugin.
       // TODO: copy directory reursively, while dealing with http://jira.codehaus.org/browse/MNG-5214
       if (artifact.getFile().isDirectory()) {
-          // usual case is a future jar packaging, but there are special cases: classifier and other packaging
-          throw new MojoExecutionException(artifact.getId() + " has not been packaged yet. When used on reactor artifact, "
-              + "import-sources should be executed after packaging.");
+        // usual case is a future jar packaging, but there are special cases: classifier and other packaging
+        throw new MojoExecutionException(artifact.getId() + " has not been packaged yet. When used on reactor artifact, "
+            + "import-sources should be executed after packaging.");
       }
       unArchiver.setSourceFile(artifact.getFile());
       // Defer outputDirectory creation so that it's only tentatively created if there are source JARs to unpack

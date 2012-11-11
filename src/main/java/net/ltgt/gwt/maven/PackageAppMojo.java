@@ -17,19 +17,19 @@ import org.codehaus.plexus.archiver.war.WarArchiver;
 
 import java.io.File;
 
-@Mojo( name = "package-app", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true, requiresDependencyResolution = ResolutionScope.RUNTIME )
+@Mojo(name = "package-app", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true, requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class PackageAppMojo extends AbstractMojo {
 
   /**
    * The directory for the generated WAR.
    */
-  @Parameter( defaultValue = "${project.build.directory}", required = true )
+  @Parameter(defaultValue = "${project.build.directory}", required = true)
   private String outputDirectory;
 
   /**
    * The name of the generated WAR.
    */
-  @Parameter( defaultValue = "${project.build.finalName}", required = true )
+  @Parameter(defaultValue = "${project.build.finalName}", required = true)
   private String warName;
 
   /**
@@ -59,7 +59,7 @@ public class PackageAppMojo extends AbstractMojo {
   @Component
   private MavenSession session;
 
-  @Component( role = Archiver.class, hint = "war" )
+  @Component(role = Archiver.class, hint = "war")
   private WarArchiver warArchiver;
 
   @Override
