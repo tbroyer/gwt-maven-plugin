@@ -13,12 +13,18 @@
       </implementation>
       <configuration>
         <phases>
+          <generate-resources>
+            ${project.groupId}:${project.artifactId}:${project.version}:import-sources
+          </generate-resources>
           <process-resources>
             org.apache.maven.plugins:maven-resources-plugin:resources
           </process-resources>
           <compile>
             org.apache.maven.plugins:maven-compiler-plugin:compile
           </compile>
+          <generate-test-resources>
+            ${project.groupId}:${project.artifactId}:${project.version}:import-test-sources
+          </generate-test-resources>
           <process-test-resources>
             org.apache.maven.plugins:maven-resources-plugin:testResources
           </process-test-resources>
@@ -72,12 +78,18 @@
       </implementation>
       <configuration>
         <phases>
+          <generate-resources>
+            ${project.groupId}:${project.artifactId}:${project.version}:import-sources
+          </generate-resources>
           <process-resources>
             org.apache.maven.plugins:maven-resources-plugin:resources
           </process-resources>
           <compile>
             org.apache.maven.plugins:maven-compiler-plugin:compile
           </compile>
+          <generate-test-resources>
+            ${project.groupId}:${project.artifactId}:${project.version}:import-test-sources
+          </generate-test-resources>
           <process-test-resources>
             org.apache.maven.plugins:maven-resources-plugin:testResources
           </process-test-resources>
@@ -89,7 +101,7 @@
           </test>
           <!-- TODO: generate gwtar files in prepare-package phase -->
           <package>
-            ${project.groupId}:${project.artifactId}:${project.version}:package-lib
+            org.apache.maven.plugins:maven-jar-plugin:jar
           </package>
           <install>
             org.apache.maven.plugins:maven-install-plugin:install
