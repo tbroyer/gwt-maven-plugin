@@ -1,6 +1,7 @@
 package net.ltgt.gwt.maven;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -30,7 +31,7 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
   public void execute() throws MojoExecutionException, MojoFailureException {
     // Add the compile source roots as resources to the build
     for (String sourceRoot : getSourceRoots()) {
-      projectHelper.addResource(project, sourceRoot, null, null);
+      addResource(sourceRoot);
     }
   
     // Now unpack the type=java-source dependencies and add them as resources
@@ -63,11 +64,33 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
     }
   }
 
+  protected void addResource(String sourceRoot) {
+    // TODO: cache a processed list of Resources in a ThreadLocal as an optimization?
+    sourceRoot = ensureTrailingSlash(sourceRoot);
+    for (Resource resource : project.getResources()) {
+      String dir = ensureTrailingSlash(resource.getDirectory());
+      if (dir.startsWith(sourceRoot) || sourceRoot.startsWith(dir)) {
+        getLog().warn(String.format(
+            "Conflicting path between source folder (to be added as resource: %s) and resource (%s); skipping.",
+            sourceRoot, dir));
+        return;
+      }
+    }
+    projectHelper.addResource(project, sourceRoot, null, null);
+  }
+
   protected abstract Iterable<String> getSourceRoots();
 
   protected abstract File getOutputDirectory();
 
   protected abstract boolean includeArtifact(Artifact artifact);
+
+  private String ensureTrailingSlash(String directory) {
+    if (directory.endsWith("/")) {
+      return directory;
+    }
+    return directory + "/";
+  }
 
   private void ensureOutputDirectory() throws MojoExecutionException {
     if (!getOutputDirectory().exists() && !getOutputDirectory().mkdirs()) {
