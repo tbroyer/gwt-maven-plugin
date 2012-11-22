@@ -29,6 +29,10 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
+    // Add super-sources
+    // FIXME: should probably be done earlier (initialize, or a lifecycle participant)
+    addResource(getSuperSourceRoot());
+
     // Add the compile source roots as resources to the build
     for (String sourceRoot : getSourceRoots()) {
       addResource(sourceRoot);
@@ -78,6 +82,8 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
     }
     projectHelper.addResource(project, sourceRoot, null, null);
   }
+
+  protected abstract String getSuperSourceRoot();
 
   protected abstract Iterable<String> getSourceRoots();
 

@@ -21,9 +21,20 @@ public class ImportTestSourcesMojo extends AbstractImportSourcesMojo {
   @Parameter(defaultValue = "${project.build.directory}/generated-resources/gwt-test-sources", required = true)
   private File importedTestSourcesTargetDirectory;
 
+  /**
+   * Directory containing super-sources for tests.
+   */
+  @Parameter(defaultValue = "src/test/super")
+  private String testSuperSourceDirectory;
+
   @Override
   protected File getOutputDirectory() {
     return importedTestSourcesTargetDirectory;
+  }
+
+  @Override
+  protected String getSuperSourceRoot() {
+    return testSuperSourceDirectory;
   }
 
   @Override
