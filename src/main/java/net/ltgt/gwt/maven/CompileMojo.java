@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Mojo(name = "compile", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresDependencyCollection = ResolutionScope.COMPILE)
+@Mojo(name = "compile", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE)
 @SuppressWarnings("serial")
 public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
