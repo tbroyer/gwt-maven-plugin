@@ -11,6 +11,9 @@ import com.google.gwt.dev.jjs.JsOutputOption;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
+import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -20,6 +23,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.classworlds.realm.DuplicateRealmException;
@@ -37,6 +41,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Mojo(name = "compile", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresDependencyCollection = ResolutionScope.COMPILE)
@@ -246,8 +251,16 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   @Component
   private MavenProject project;
 
-  @Parameter(defaultValue = "${plugin.artifacts}", required = true, readonly = true)
-  private List<Artifact> pluginArtifacts;
+  @Parameter(defaultValue = "${plugin.artifactMap}", required = true, readonly = true)
+  private Map<String, Artifact> pluginArtifactMap;
+
+  @Component
+  private RepositorySystem repositorySystem;
+
+  @Parameter( defaultValue = "${localRepository}", required = true, readonly = true )
+  private ArtifactRepository localRepository;
+
+  private Set<Artifact> gwtSdkArtifacts;
 
   public void execute() throws MojoExecutionException {
     if (skipCompilation) {
@@ -291,14 +304,15 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
           getLog().debug("Compile classpath: " + url);
         }
       }
-      // TODO: only include gwt-dev
-      for (Artifact pluginArtifact : pluginArtifacts) {
-        URL url = pluginArtifact.getFile().toURI().toURL();
+      // gwt-dev and its transitive dependencies
+      for (Artifact elt : getGwtDevArtifacts()) {
+        URL url = elt.getFile().toURI().toURL();
         realm.addURL(url);
         if (getLog().isDebugEnabled()) {
-          getLog().debug("Plugin artifact: " + url);
+          getLog().debug("Compile classpath: " + url);
         }
       }
+      realm.addURL(pluginArtifactMap.get("com.google.gwt:gwt-dev").getFile().toURI().toURL());
     } catch (DuplicateRealmException e) {
       throw new MojoExecutionException(e.getMessage(), e);
     } catch (MalformedURLException e) {
@@ -347,6 +361,18 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
     }
   }
 
+  private Set<Artifact> getGwtDevArtifacts() {
+    if (gwtSdkArtifacts == null) {
+      ArtifactResolutionRequest request = new ArtifactResolutionRequest()
+          .setArtifact(pluginArtifactMap.get("com.google.gwt:gwt-dev"))
+          .setResolveTransitively(true)
+          .setLocalRepository(localRepository);
+      ArtifactResolutionResult result = repositorySystem.resolve(request);
+      gwtSdkArtifacts = result.getArtifacts();
+    }
+    return gwtSdkArtifacts;
+  }
+
   private boolean isStale() throws MojoExecutionException {
     if (!webappDirectory.exists()) {
       return true;
@@ -393,8 +419,8 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
         return true;
       }
     }
-    // TODO: only include gwt-dev
-    for (Artifact artifact : pluginArtifacts) {
+    // gwt-dev and its transitive dependencies
+    for (Artifact artifact : getGwtDevArtifacts()) {
       if (isStale(scanner, artifact.getFile(), nocacheJs)) {
         return true;
       }
