@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.util.jar.*;
+import org.codehaus.plexus.util.*;
 
 try {
   File target = new File(basedir, "target");
@@ -45,6 +46,19 @@ try {
     System.err.println("Compiled Java class missing from jar");
     result = false;
   }
+
+  File buildLogFile = new File(basedir, "build.log");
+  if (!buildLogFile.exists() || buildLogFile.isDirectory()) {
+    System.err.println("build.log file is missing or a directory.");
+    result = false;
+  } else {
+    String buildLog = FileUtils.fileRead(buildLogFile);
+    if (!buildLog.contains("Tests run: 1, Failures: 0, Errors: 0, Skipped: 0")) {
+      System.err.println("build.log does not talk about running tests");
+      result = false;
+    }
+  }
+
   return result;
 } catch (Throwable t) {
   t.printStackTrace();

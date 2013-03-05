@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.util.jar.*;
+import org.codehaus.plexus.util.*;
 
 try {
   File target = new File(basedir, "target");
@@ -35,6 +36,17 @@ try {
   }
   if (seenWebInf) {
     System.err.println("war file erroneously contains a WEB-INF/");
+    return false;
+  }
+
+  File buildLogFile = new File(basedir, "build.log");
+  if (!buildLogFile.exists() || buildLogFile.isDirectory()) {
+    System.err.println("build.log file is missing or a directory.");
+    return false;
+  }
+  String buildLog = FileUtils.fileRead(buildLogFile);
+  if (!buildLog.contains("Tests run: 1, Failures: 0, Errors: 0, Skipped: 0")) {
+    System.err.println("build.log does not talk about running tests");
     return false;
   }
 } catch (Throwable t) {
