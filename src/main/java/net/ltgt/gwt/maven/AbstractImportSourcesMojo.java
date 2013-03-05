@@ -11,8 +11,12 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.UnArchiver;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractImportSourcesMojo extends AbstractMojo {
+
+  private static final List<String> JAVA_SOURCES = Collections.singletonList("**/*.java");
 
   @Component
   protected MavenProject project;
@@ -51,21 +55,26 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
         }
         continue;
       }
-      // Check copied from maven-dependency-plugin.
-      // TODO: copy directory reursively, while dealing with http://jira.codehaus.org/browse/MNG-5214
-      if (artifact.getFile().isDirectory()) {
-        // usual case is a future jar packaging, but there are special cases: classifier and other packaging
-        throw new MojoExecutionException(artifact.getId() + " has not been packaged yet. When used on reactor artifact, "
-            + "import-sources should be executed after packaging.");
-      }
       if (getLog().isInfoEnabled()) {
         getLog().info("Importing " + artifact.getId());
       }
-      unArchiver.setSourceFile(artifact.getFile());
-      // Defer outputDirectory creation so that it's only tentatively created if there are source JARs to unpack
-      ensureOutputDirectory();
-      unArchiver.extract();
+      // TODO: copy directory recursively, while dealing with http://jira.codehaus.org/browse/MNG-5214
+      if (artifact.getFile().isDirectory()) {
+        // usual case is a future jar packaging, but there are special cases: classifier and other packaging
+        getLog().warn(artifact.getId() + " has not been packaged yet, trying to infer sources from reactor.");
+        importFromProjectReferences(artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getBaseVersion());
+      } else {
+        unArchiver.setSourceFile(artifact.getFile());
+        // Defer outputDirectory creation so that it's only tentatively created if there are source JARs to unpack
+        ensureOutputDirectory();
+        unArchiver.extract();
+      }
     }
+  }
+
+  private void importFromProjectReferences(String id) {
+    MavenProject reference = project.getProjectReferences().get(id);
+    reference.getCompileSourceRoots();
   }
 
   protected void addResource(String sourceRoot) {
@@ -75,13 +84,15 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
       String dir = ensureTrailingSlash(resource.getDirectory());
       if (dir.startsWith(sourceRoot) || sourceRoot.startsWith(dir)) {
         getLog().warn(String.format(
-            "Conflicting path between source folder (to be added as resource: %s) and resource (%s); skipping.",
+            "Conflicting path between source folder (%s, to be added as resource) and resource (%s); skipping.",
             sourceRoot, dir));
         return;
       }
     }
-    projectHelper.addResource(project, sourceRoot, null, null);
+    addResource(projectHelper, project, sourceRoot, JAVA_SOURCES, null);
   }
+
+  protected abstract void addResource(MavenProjectHelper projectHelper, MavenProject project, String sourceRoot, List<String> includes, List<String> excludes);
 
   protected abstract String getSuperSourceRoot();
 
@@ -102,6 +113,6 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
     if (!getOutputDirectory().exists() && !getOutputDirectory().mkdirs()) {
       throw new MojoExecutionException("Cannot create output directory: " + getOutputDirectory().getAbsolutePath());
     }
-    projectHelper.addResource(project, getOutputDirectory().getPath(), null, null);
+    addResource(getOutputDirectory().getPath());
   }
 }

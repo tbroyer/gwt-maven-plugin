@@ -5,6 +5,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 
 import java.io.File;
 import java.util.List;
@@ -44,5 +46,10 @@ public class ImportTestSourcesMojo extends AbstractImportSourcesMojo {
 
   protected boolean includeArtifact(Artifact artifact) {
     return Artifact.SCOPE_TEST.equals(artifact.getScope());
+  }
+
+  @Override
+  protected void addResource(MavenProjectHelper projectHelper, MavenProject project, String sourceRoot, List<String> includes, List<String> excludes) {
+    projectHelper.addTestResource(project, sourceRoot, includes, excludes);
   }
 }

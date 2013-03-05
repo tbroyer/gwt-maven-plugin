@@ -6,6 +6,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 
 import java.io.File;
 import java.util.List;
@@ -48,5 +50,10 @@ public class ImportSourcesMojo extends AbstractImportSourcesMojo {
   @Override
   protected boolean includeArtifact(Artifact artifact) {
     return artifactFilter.include(artifact);
+  }
+
+  @Override
+  protected void addResource(MavenProjectHelper projectHelper, MavenProject project, String sourceRoot, List<String> includes, List<String> excludes) {
+    projectHelper.addResource(project, sourceRoot, includes, excludes);
   }
 }
