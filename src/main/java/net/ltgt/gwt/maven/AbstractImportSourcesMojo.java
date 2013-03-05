@@ -4,13 +4,14 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
   }
 
   @Override
-  public void execute() throws MojoExecutionException, MojoFailureException {
+  public void execute() throws MojoExecutionException {
     // Add super-sources
     // FIXME: should probably be done earlier (initialize, or a lifecycle participant)
     addResource(getSuperSourceRoot());
@@ -72,9 +73,16 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
     }
   }
 
-  private void importFromProjectReferences(String id) {
-    MavenProject reference = project.getProjectReferences().get(id);
-    reference.getCompileSourceRoots();
+  private void importFromProjectReferences(String id) throws MojoExecutionException {
+    try {
+      MavenProject reference = project.getProjectReferences().get(id);
+      for (String sourceRoot : reference.getCompileSourceRoots()) {
+        File sourceDirectory = new File(reference.getBasedir(), sourceRoot);
+        FileUtils.copyDirectoryStructureIfModified(sourceDirectory, getOutputDirectory());
+      }
+    } catch (IOException e) {
+      throw new MojoExecutionException(e.getMessage(), e);
+    }
   }
 
   protected void addResource(String sourceRoot) {
