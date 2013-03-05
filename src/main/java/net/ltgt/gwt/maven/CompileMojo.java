@@ -380,7 +380,11 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
     final File nocacheJs = findNocacheJs();
     if (nocacheJs == null) {
+      getLog().debug("No *.nocache.js file found: recompiling");
       return true;
+    }
+    if (getLog().isDebugEnabled()) {
+      getLog().debug("Found *.nocache.js at " + nocacheJs.getAbsolutePath());
     }
 
     StaleSourceScanner scanner = new StaleSourceScanner(staleMillis);
@@ -431,11 +435,24 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
   private boolean isStale(StaleSourceScanner scanner, File sourceFile, File targetFile) throws MojoExecutionException {
     if (!sourceFile.isDirectory()) {
-      return (targetFile.lastModified() + staleMillis < sourceFile.lastModified());
+      boolean stale = (targetFile.lastModified() + staleMillis < sourceFile.lastModified());
+      if (stale && getLog().isDebugEnabled()) {
+        getLog().debug("Source file is newer than nocache.js, recompiling: " + sourceFile.getAbsolutePath());
+      }
+      return stale;
     }
 
     try {
-      return !scanner.getIncludedSources(sourceFile, webappDirectory).isEmpty();
+      Set<File> sourceFiles = scanner.getIncludedSources(sourceFile, webappDirectory);
+      boolean stale = !sourceFiles.isEmpty();
+      if (stale && getLog().isDebugEnabled()) {
+        StringBuilder sb = new StringBuilder();
+        for (File source : sourceFiles) {
+          sb.append("\n - ").append(source.getAbsolutePath());
+        }
+        getLog().debug("Source files are newer than nocache.js, recompiling: " + sb.toString());
+      }
+      return stale;
     } catch (InclusionScanException e) {
       throw new MojoExecutionException("Error scanning source root: \'" + sourceFile.getPath() + "\' for stale files to recompile.", e);
     }
