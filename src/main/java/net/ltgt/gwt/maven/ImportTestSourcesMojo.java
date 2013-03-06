@@ -1,6 +1,7 @@
 package net.ltgt.gwt.maven;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -51,5 +52,10 @@ public class ImportTestSourcesMojo extends AbstractImportSourcesMojo {
   @Override
   protected void addResource(MavenProjectHelper projectHelper, MavenProject project, String sourceRoot, List<String> includes, List<String> excludes) {
     projectHelper.addTestResource(project, sourceRoot, includes, excludes);
+  }
+
+  @Override
+  protected List<Resource> getProjectResources() {
+    return project.getTestResources();
   }
 }

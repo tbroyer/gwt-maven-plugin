@@ -88,7 +88,7 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
   protected void addResource(String sourceRoot) {
     // TODO: cache a processed list of Resources in a ThreadLocal as an optimization?
     sourceRoot = ensureTrailingSlash(sourceRoot);
-    for (Resource resource : project.getResources()) {
+    for (Resource resource : getProjectResources()) {
       String dir = ensureTrailingSlash(resource.getDirectory());
       if (dir.startsWith(sourceRoot) || sourceRoot.startsWith(dir)) {
         getLog().warn(String.format(
@@ -101,6 +101,8 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
   }
 
   protected abstract void addResource(MavenProjectHelper projectHelper, MavenProject project, String sourceRoot, List<String> includes, List<String> excludes);
+
+  protected abstract List<Resource> getProjectResources();
 
   protected abstract String getSuperSourceRoot();
 
