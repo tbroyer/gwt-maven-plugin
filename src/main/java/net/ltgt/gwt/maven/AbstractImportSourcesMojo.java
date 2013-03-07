@@ -5,10 +5,11 @@ import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,11 +20,16 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
 
   private static final List<String> JAVA_SOURCES = Collections.singletonList("**/*.java");
 
-  @Component
-  protected MavenProject project;
+  /**
+   * Name of the module into which to optionally relocate super-sources.
+   * <p>
+   * Super-sources will be relocated into a {@code super} subfolder.
+   */
+  @Parameter
+  protected String moduleName;
 
-  @Component
-  private MavenProjectHelper projectHelper;
+  @Parameter(defaultValue = "${project}", required = true, readonly = true)
+  protected MavenProject project;
 
   @Component(hint = "jar")
   private UnArchiver unArchiver;
@@ -36,7 +42,22 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
   public void execute() throws MojoExecutionException {
     // Add super-sources
     // FIXME: should probably be done earlier (initialize, or a lifecycle participant)
-    addResource(getSuperSourceRoot());
+    String superSourceRoot = getSuperSourceRoot();
+    if (checkResource(superSourceRoot)) {
+      Resource resource = createResource(superSourceRoot);
+      if (isSuperSourceRelocated()) {
+        if (StringUtils.isBlank(moduleName)) {
+          throw new MojoExecutionException("Cannot relocate super-sources if moduleName is not specified");
+        }
+        String targetPath = moduleName.replace('.', '/');
+        // Keep only package name
+        targetPath = targetPath.substring(0, targetPath.lastIndexOf('/'));
+        // Relocate into 'super' subfolder
+        targetPath = ensureTrailingSlash(targetPath) + "super/";
+        resource.setTargetPath(targetPath);
+      }
+      addResource(resource);
+    }
 
     // Add the compile source roots as resources to the build
     for (String sourceRoot : getSourceRoots()) {
@@ -85,7 +106,7 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
     }
   }
 
-  protected void addResource(String sourceRoot) {
+  private boolean checkResource(String sourceRoot) {
     // TODO: cache a processed list of Resources in a ThreadLocal as an optimization?
     sourceRoot = ensureTrailingSlash(sourceRoot);
     for (Resource resource : getProjectResources()) {
@@ -94,17 +115,33 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
         getLog().warn(String.format(
             "Conflicting path between source folder (%s, to be added as resource) and resource (%s); skipping.",
             sourceRoot, dir));
-        return;
+        return false;
       }
     }
-    addResource(projectHelper, project, sourceRoot, JAVA_SOURCES, null);
+    return true;
   }
 
-  protected abstract void addResource(MavenProjectHelper projectHelper, MavenProject project, String sourceRoot, List<String> includes, List<String> excludes);
+  private Resource createResource(String resourceDirectory) {
+    Resource resource = new Resource();
+    resource.setDirectory(resourceDirectory);
+    resource.setIncludes(JAVA_SOURCES);
+    return resource;
+  }
+
+  private void addResource(String resourceDirectory) {
+    if (checkResource(resourceDirectory)) {
+      Resource resource = createResource(resourceDirectory);
+      addResource(resource);
+    }
+  }
 
   protected abstract List<Resource> getProjectResources();
 
+  protected abstract void addResource(Resource resource);
+
   protected abstract String getSuperSourceRoot();
+
+  protected abstract boolean isSuperSourceRelocated();
 
   protected abstract Iterable<String> getSourceRoots();
 

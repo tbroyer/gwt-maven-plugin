@@ -7,8 +7,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
 
 import java.io.File;
 import java.util.List;
@@ -31,6 +29,15 @@ public class ImportSourcesMojo extends AbstractImportSourcesMojo {
   @Parameter(defaultValue = "src/main/super")
   private String superSourceDirectory;
 
+  /**
+   * Whether to relocate {@code superSourceDirectory} content within the
+   * module given in {@code moduleName}.
+   * <p>
+   * Super-sources will be relocated into a {@code super} subfolder.
+   */
+  @Parameter(defaultValue = "false")
+  private boolean relocateSuperSource;
+
   private final ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME_PLUS_SYSTEM);
 
   @Override
@@ -44,6 +51,11 @@ public class ImportSourcesMojo extends AbstractImportSourcesMojo {
   }
 
   @Override
+  protected boolean isSuperSourceRelocated() {
+    return relocateSuperSource;
+  }
+
+  @Override
   protected List<String> getSourceRoots() {
     return project.getCompileSourceRoots();
   }
@@ -54,8 +66,8 @@ public class ImportSourcesMojo extends AbstractImportSourcesMojo {
   }
 
   @Override
-  protected void addResource(MavenProjectHelper projectHelper, MavenProject project, String sourceRoot, List<String> includes, List<String> excludes) {
-    projectHelper.addResource(project, sourceRoot, includes, excludes);
+  protected void addResource(Resource resource) {
+    project.addResource(resource);
   }
 
   @Override
