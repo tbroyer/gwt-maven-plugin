@@ -32,6 +32,10 @@
         <artifactId>@project.artifactId@</artifactId>
         <version>@project.version@</version>
         <extensions>true</extensions>
+        <configuration>
+          <skipModule>true</skipModule>
+          <moduleName>it.test.model.TestModel</moduleName>
+        </configuration>
       </plugin>
     </plugins>
   </build>

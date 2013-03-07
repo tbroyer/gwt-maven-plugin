@@ -19,13 +19,16 @@ try {
   JarFile jarFile = new JarFile(jar);
   Enumeration entries = jarFile.entries();
 
+  boolean seenMainModule = false;
   boolean seenGwtXml = false;
   boolean seenJava = false;
   boolean seenClass = false;
   while (entries.hasMoreElements()) {
     JarEntry entry = entries.nextElement();
     String name = entry.getName();
-    if (name.equals("it/testlib/TestLib.gwt.xml")) {
+    if (name.equals("META-INF/gwt/mainModule")) {
+      seenMainModule = true;
+    } else if (name.equals("it/testlib/TestLib.gwt.xml")) {
       seenGwtXml = true;
     } else if (name.equals("it/testlib/client/TestLib.java")) {
       seenJava = true;
@@ -34,6 +37,10 @@ try {
     }
   }
   boolean result = true;
+  if (!seenMainModule) {
+    System.err.println("META-INF/gwt/mainModule missing from jar");
+    result = false;
+  }
   if (!seenGwtXml) {
     System.err.println("gwt.xml missing from jar");
     result = false;

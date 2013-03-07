@@ -14,7 +14,8 @@
       <configuration>
         <phases>
           <generate-resources>
-            ${project.groupId}:${project.artifactId}:${project.version}:import-sources
+            ${project.groupId}:${project.artifactId}:${project.version}:import-sources,
+            ${project.groupId}:${project.artifactId}:${project.version}:generate-module
           </generate-resources>
           <process-resources>
             org.apache.maven.plugins:maven-resources-plugin:resources
@@ -79,7 +80,9 @@
       <configuration>
         <phases>
           <generate-resources>
-            ${project.groupId}:${project.artifactId}:${project.version}:import-sources
+            ${project.groupId}:${project.artifactId}:${project.version}:import-sources,
+            ${project.groupId}:${project.artifactId}:${project.version}:generate-module,
+            ${project.groupId}:${project.artifactId}:${project.version}:generate-module-metadata
           </generate-resources>
           <process-resources>
             org.apache.maven.plugins:maven-resources-plugin:resources

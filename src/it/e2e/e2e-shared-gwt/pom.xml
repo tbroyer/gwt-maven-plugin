@@ -44,6 +44,10 @@
         <artifactId>@project.artifactId@</artifactId>
         <version>@project.version@</version>
         <extensions>true</extensions>
+        <configuration>
+          <skipModule>true</skipModule>
+          <skipModuleMetadata>true</skipModuleMetadata>
+        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -36,12 +36,8 @@
         <version>@project.version@</version>
         <extensions>true</extensions>
         <configuration>
-          <!-- TODO: gwtar -->
-          <!--
-          <moduleNames>
-            <moduleName>it.testlib.TestLib</moduleName>
-          </moduleNames>
-          -->
+          <moduleName>it.testlib.TestLib</moduleName>
+          <skipModule>true</skipModule>
         </configuration>
       </plugin>
     </plugins>
