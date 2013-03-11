@@ -1,6 +1,7 @@
 package net.ltgt.gwt.maven;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -84,7 +85,7 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
       if (artifact.getFile().isDirectory()) {
         // usual case is a future jar packaging, but there are special cases: classifier and other packaging
         getLog().warn(artifact.getId() + " has not been packaged yet, trying to infer sources from reactor.");
-        importFromProjectReferences(artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getBaseVersion());
+        importFromProjectReferences(ArtifactUtils.key(artifact));
       } else {
         unArchiver.setSourceFile(artifact.getFile());
         // Defer outputDirectory creation so that it's only tentatively created if there are source JARs to unpack
