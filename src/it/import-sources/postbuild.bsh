@@ -3,53 +3,39 @@ import java.util.*;
 import java.util.jar.*;
 
 try {
-  File target = new File(basedir, "adapter-lib/target");
+  File target = new File(basedir, "adapter-lib/target/classes");
   if (!target.exists() || !target.isDirectory()) {
     System.err.println("target file is missing or not a directory.");
     return false;
   }
 
-  File jar = new File(target, "adapter-lib-1.0.jar");
-  if (!jar.exists() || jar.isDirectory()) {
-    System.err.println("jar file is missing or a directory.");
-    return false;
-  }
-
-  JarFile jarFile = new JarFile(jar);
-  Enumeration entries = jarFile.entries();
-
-  boolean seenGwtXml = false;
-  boolean seenLocalJava = false;
-  boolean seenLocalClass = false;
-  boolean seenImportedJava = false;
-  while (entries.hasMoreElements()) {
-    JarEntry entry = entries.nextElement();
-    String name = entry.getName();
-    if (name.equals("it/testlib/TestLib.gwt.xml")) {
-      seenGwtXml = true;
-    } else if (name.equals("it/testlib/Other.class")) {
-      seenLocalClass = true;
-    } else if (name.equals("it/testlib/Other.java")) {
-      seenLocalJava = true;
-    } else if (name.equals("it/testlib/TestLib.java")) {
-      seenImportedJava = true;
-    }
-  }
   boolean result = true;
-  if (!seenGwtXml) {
-    System.err.println("gwt.xml missing from jar");
+  if (!new File(target, "it/testlib/TestLib.gwt.xml").exists()) {
+    System.err.println("gwt.xml missing");
     result = false;
   }
-  if (!seenLocalJava) {
-    System.err.println("Java source missing from jar");
+  if (!new File(target, "it/testlib/Other.java").exists()) {
+    System.err.println("Java source missing");
     result = false;
   }
-  if (!seenLocalClass) {
-    System.err.println("Compiled Java class missing from jar");
+  if (!new File(target, "it/testlib/Other.class").exists()) {
+    System.err.println("Compiled Java class missing");
     result = false;
   }
-  if (!seenImportedJava) {
-    System.err.println("Imported Java source missing from jar");
+  if (!new File(target, "it/testlib/TestLib.java").exists()) {
+    System.err.println("Imported Java source (from JAR) missing");
+    result = false;
+  }
+  if (!new File(target, "it/testlib/TestLib2.java").exists()) {
+    System.err.println("Imported Java source (from reactor) missing");
+    result = false;
+  }
+  if (new File(target, "it/testlib/TestLib.class").exists()) {
+    System.err.println("Imported compiled Java class (from JAR) exists");
+    result = false;
+  }
+  if (new File(target, "it/testlib/TestLib2.class").exists()) {
+    System.err.println("Imported compiled Java class (from reactor) exists");
     result = false;
   }
   return result;

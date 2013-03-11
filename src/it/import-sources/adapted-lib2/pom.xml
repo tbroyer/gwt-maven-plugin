@@ -4,10 +4,10 @@
   <parent>
     <groupId>net.ltgt.gwt.maven.its</groupId>
     <artifactId>gwt-library</artifactId>
-    <version>1.0</version>
+    <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>adapted-lib</artifactId>
+  <artifactId>adapted-lib2</artifactId>
 
   <build>
     <plugins>

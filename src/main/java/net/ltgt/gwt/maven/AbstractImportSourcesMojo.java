@@ -64,10 +64,14 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
     for (String sourceRoot : getSourceRoots()) {
       addResource(sourceRoot);
     }
-  
+
     // Now unpack the type=java-source dependencies and add them as resources
+    if (!getOutputDirectory().exists() && !getOutputDirectory().mkdirs()) {
+      throw new MojoExecutionException("Cannot create output directory: " + getOutputDirectory().getAbsolutePath());
+    }
     unArchiver.setDestDirectory(getOutputDirectory());
-  
+    addResource(getOutputDirectory().getPath());
+
     for (Artifact artifact : project.getDependencyArtifacts()) {
       if (!includeArtifact(artifact)) {
         continue;
@@ -81,15 +85,13 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
       if (getLog().isInfoEnabled()) {
         getLog().info("Importing " + artifact.getId());
       }
-      // TODO: copy directory recursively, while dealing with http://jira.codehaus.org/browse/MNG-5214
+      // copy directory recursively, while dealing with http://jira.codehaus.org/browse/MNG-5214
       if (artifact.getFile().isDirectory()) {
         // usual case is a future jar packaging, but there are special cases: classifier and other packaging
         getLog().warn(artifact.getId() + " has not been packaged yet, trying to infer sources from reactor.");
         importFromProjectReferences(ArtifactUtils.key(artifact));
       } else {
         unArchiver.setSourceFile(artifact.getFile());
-        // Defer outputDirectory creation so that it's only tentatively created if there are source JARs to unpack
-        ensureOutputDirectory();
         unArchiver.extract();
       }
     }
@@ -99,8 +101,16 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
     try {
       MavenProject reference = project.getProjectReferences().get(id);
       for (String sourceRoot : reference.getCompileSourceRoots()) {
-        File sourceDirectory = new File(reference.getBasedir(), sourceRoot);
-        FileUtils.copyDirectoryStructureIfModified(sourceDirectory, getOutputDirectory());
+        File sourceDirectory = new File(sourceRoot);
+        if (!sourceDirectory.isAbsolute()) {
+          sourceDirectory = new File(reference.getBasedir(), sourceRoot);
+        }
+        if (sourceDirectory.exists()) {
+          getLog().info("copying " + sourceDirectory);
+          FileUtils.copyDirectoryStructureIfModified(sourceDirectory, getOutputDirectory());
+        } else {
+          getLog().info("skip non existing imported source directory " + sourceDirectory);
+        }
       }
     } catch (IOException e) {
       throw new MojoExecutionException(e.getMessage(), e);
@@ -155,12 +165,5 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
       return directory;
     }
     return directory + "/";
-  }
-
-  private void ensureOutputDirectory() throws MojoExecutionException {
-    if (!getOutputDirectory().exists() && !getOutputDirectory().mkdirs()) {
-      throw new MojoExecutionException("Cannot create output directory: " + getOutputDirectory().getAbsolutePath());
-    }
-    addResource(getOutputDirectory().getPath());
   }
 }
