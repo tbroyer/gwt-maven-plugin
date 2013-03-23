@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 @Mojo(name = "generate-module", threadSafe = true, defaultPhase = LifecyclePhase.GENERATE_RESOURCES, requiresDependencyResolution = ResolutionScope.RUNTIME)
-public class GenerateModule extends AbstractMojo {
+public class GenerateModuleMojo extends AbstractMojo {
 
   /**
    * The directory where the GWT module descriptor will be generated.

@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Mojo(name = "generate-module-metadata", threadSafe = true, defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
-public class GenerateModuleMetadata extends AbstractMojo {
+public class GenerateModuleMetadataMojo extends AbstractMojo {
 
   /**
    * The main GWT module of the project.
