@@ -30,7 +30,7 @@ import org.codehaus.plexus.classworlds.realm.DuplicateRealmException;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SourceMapping;
-import org.codehaus.plexus.util.DirectoryScanner;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -169,6 +169,12 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
    */
   @Parameter(required = true)
   private String moduleName;
+
+  /**
+   * The short name of the module, used to name the output {@code .nocache.js} file.
+   */
+  @Parameter
+  private String moduleShortName;
 
   /**
    * Sets the optimization level used by the compiler.  0=none 9=maximum.
@@ -378,9 +384,10 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
       return true;
     }
 
-    final File nocacheJs = findNocacheJs();
-    if (nocacheJs == null) {
-      getLog().debug("No *.nocache.js file found: recompiling");
+    final String shortName = getModuleShortName();
+    final File nocacheJs = new File(webappDirectory, shortName + File.separator + shortName + ".nocache.js");
+    if (!nocacheJs.isFile()) {
+      getLog().debug(nocacheJs.getPath() + " file found or is not a file: recompiling");
       return true;
     }
     if (getLog().isDebugEnabled()) {
@@ -458,18 +465,12 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
     }
   }
 
-  private File findNocacheJs() {
-    // TODO: load ModuleDef to get target name
-    DirectoryScanner scanner = new DirectoryScanner();
-    scanner.setBasedir(webappDirectory);
-    scanner.setIncludes(new String[] { "**/*.nocache.js" });
-    scanner.scan();
-    String[] includedFiles = scanner.getIncludedFiles();
-    if (includedFiles.length != 1) {
-      return null;
-    } else {
-      return new File(webappDirectory, includedFiles[0]);
+  private String getModuleShortName() {
+    if (StringUtils.isBlank(moduleShortName)) {
+      // TODO: load ModuleDef to get target name
+      return moduleName;
     }
+    return moduleShortName;
   }
 
   private void importFromCurrentClassLoader(ClassRealm realm, Class<?> cls) {
