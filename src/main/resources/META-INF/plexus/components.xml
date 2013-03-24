@@ -13,6 +13,9 @@
       </implementation>
       <configuration>
         <phases>
+          <initialize>
+            ${project.groupId}:${project.artifactId}:${project.version}:enforce-encoding
+          </initialize>
           <generate-resources>
             ${project.groupId}:${project.artifactId}:${project.version}:import-sources,
             ${project.groupId}:${project.artifactId}:${project.version}:generate-module
@@ -79,6 +82,9 @@
       </implementation>
       <configuration>
         <phases>
+          <initialize>
+            ${project.groupId}:${project.artifactId}:${project.version}:enforce-encoding
+          </initialize>
           <generate-resources>
             ${project.groupId}:${project.artifactId}:${project.version}:import-sources,
             ${project.groupId}:${project.artifactId}:${project.version}:generate-module,

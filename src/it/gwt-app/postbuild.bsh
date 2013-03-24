@@ -45,6 +45,10 @@ try {
     return false;
   }
   String buildLog = FileUtils.fileRead(buildLogFile);
+  if (buildLog.contains("build is platform dependent")) {
+    System.err.println("Encoding is not set.");
+    result = false;
+  }
   if (!buildLog.contains("Tests run: 1, Failures: 0, Errors: 0, Skipped: 0")) {
     System.err.println("build.log does not talk about running tests");
     return false;
