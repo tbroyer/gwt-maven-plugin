@@ -24,10 +24,6 @@
         <configuration>
           <moduleName>it.test.Test</moduleName>
           <moduleShortName>test</moduleShortName>
-          <inheritedModules>
-            <inheritedModule>com.google.gwt.user.User</inheritedModule>
-          </inheritedModules>
-          <entryPointClass>it.test.client.Test</entryPointClass>
         </configuration>
       </plugin>
     </plugins>

@@ -34,7 +34,7 @@
         <extensions>true</extensions>
         <configuration>
           <moduleName>it.test.E2E</moduleName>
-          <skipModule>true</skipModule>
+          <moduleShortName>e2e</moduleShortName>
         </configuration>
       </plugin>
     </plugins>

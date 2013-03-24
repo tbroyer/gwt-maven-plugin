@@ -29,9 +29,6 @@
         <extensions>true</extensions>
         <configuration>
           <moduleName>it.testlib.TestLib</moduleName>
-          <inheritedModules>
-            <inheritedModule>com.google.gwt.user.User</inheritedModule>
-          </inheritedModules>
         </configuration>
       </plugin>
     </plugins>

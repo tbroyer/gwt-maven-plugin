@@ -1,0 +1,8 @@
+<module>
+  <inherits name="com.google.gwt.user.User"/>
+
+  <!-- tests that gwt:generate-module doesn't add other sources -->
+  <source path="client"/>
+
+  <entry-point class="it.test.client.Test"/>
+</module>

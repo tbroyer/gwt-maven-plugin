@@ -5,14 +5,25 @@ import org.codehaus.plexus.util.*;
 
 try {
   File target = new File(basedir, "target");
-  if (!target.exists() || !target.isDirectory()) {
+  if (!target.isDirectory()) {
     System.err.println("target file is missing or not a directory.");
     return false;
   }
 
+  File moduleFile = new File(target, "classes/it/test/Test.gwt.xml");
+  if (!moduleFile.isFile()) {
+    System.err.println("it/test/Test.gwt.xml module is missing or is not a file.");
+    return false;
+  }
+  String module = FileUtils.fileRead(moduleFile);
+  if (module.contains("<super-source")) {
+    System.err.println("GWT module has generated sources whereas it contained sources.");
+    return false;
+  }
+
   File war = new File(target, "gwt-application-1.0.war");
-  if (!war.exists() || war.isDirectory()) {
-    System.err.println("war file is missing or a directory.");
+  if (!war.isFile()) {
+    System.err.println("war file is missing or a not a file.");
     return false;
   }
 
@@ -47,7 +58,7 @@ try {
   String buildLog = FileUtils.fileRead(buildLogFile);
   if (buildLog.contains("build is platform dependent")) {
     System.err.println("Encoding is not set.");
-    result = false;
+    return false;
   }
   if (!buildLog.contains("Tests run: 1, Failures: 0, Errors: 0, Skipped: 0")) {
     System.err.println("build.log does not talk about running tests");

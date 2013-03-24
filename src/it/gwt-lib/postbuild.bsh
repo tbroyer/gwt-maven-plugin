@@ -10,6 +10,17 @@ try {
     return false;
   }
 
+  File moduleFile = new File(target, "classes/it/testlib/TestLib.gwt.xml");
+  if (!moduleFile.isFile()) {
+    System.err.println("it/testlib/TestLib.gwt.xml module is missing or is not a file.");
+    return false;
+  }
+  String module = FileUtils.fileRead(moduleFile);
+  if (!module.contains("<super-source")) {
+    System.err.println("GWT module does not have generated sources.");
+    return false;
+  }
+
   File jar = new File(target, "gwt-library-1.0.jar");
   if (!jar.exists() || jar.isDirectory()) {
     System.err.println("jar file is missing or a directory.");

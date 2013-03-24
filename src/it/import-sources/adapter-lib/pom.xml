@@ -48,7 +48,6 @@
         <extensions>true</extensions>
         <configuration>
           <moduleName>it.testlib.TestLib</moduleName>
-          <skipModule>true</skipModule>
         </configuration>
       </plugin>
     </plugins>

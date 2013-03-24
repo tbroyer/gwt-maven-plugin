@@ -1,0 +1,5 @@
+<module>
+  <inherits name="com.google.gwt.user.User"/>
+
+  <entry-point class="it.test.client.Test"/>
+</module>

@@ -45,8 +45,7 @@
         <version>@project.version@</version>
         <extensions>true</extensions>
         <configuration>
-          <skipModule>true</skipModule>
-          <skipModuleMetadata>true</skipModuleMetadata>
+          <moduleName>it.test.E2EShared</moduleName>
         </configuration>
       </plugin>
     </plugins>
