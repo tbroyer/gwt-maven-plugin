@@ -20,6 +20,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.surefire.suite.RunResult;
+import org.apache.maven.surefire.util.DefaultScanResult;
 import org.apache.maven.surefire.util.NestedCheckedException;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -49,7 +50,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    * <p>
    * If this is set lower than what's loggable at the Maven level, then lower
    * levels will be log at Maven's lowest logging level. For instance, if this
-   * is set to {@link TreeLogger.Type.INFO INFO} and Maven has been run in
+   * is set to {@link TreeLogger#INFO INFO} and Maven has been run in
    * quiet mode (showing only errors), then warnings and informational messages
    * emitted by GWT will actually be logged as errors by the plugin.
    */
@@ -178,7 +179,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
 
   /**
    * Selects the runstyle to use for this test.  The name is a suffix of
-   * {@code com.google.gwt.junit.RunStyle} or is a fully qualified class name, and may be 
+   * {@code com.google.gwt.junit.RunStyle} or is a fully qualified class name, and may be
    * followed with a colon and an argument for this runstyle.  The specified class must
    * extend RunStyle.
    */
@@ -459,7 +460,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * Set this to "true" to cause a failure if the none of the tests specified in
    * -Dtest=... are run. Defaults to "true".
-   * 
+   *
    * @since 2.12
    */
   @Parameter(property = "surefire.failIfNoSpecifiedTests")
@@ -471,7 +472,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    * other string, that string will be appended to the argLine, allowing you to
    * configure arbitrary debuggability options (without overwriting the other
    * options specified through the <code>argLine</code> parameter).
-   * 
+   *
    * @since 2.4
    */
   @Parameter(property = "maven.surefire.debug")
@@ -480,11 +481,28 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * Kill the forked test process after a certain number of seconds. If set to
    * 0, wait forever for the process, never timing out.
-   * 
+   *
    * @since 2.4
    */
   @Parameter(property = "surefire.timeout")
   private int forkedProcessTimeoutInSeconds;
+
+  /**
+   * A list of &lt;include> elements specifying the tests (by pattern) that should be included in testing. When not
+   * specified and when the <code>test</code> parameter is not specified, the default includes will be <code><br/>
+   * &lt;includes><br/>
+   * &nbsp;&lt;include>**&#47;*Suite.java&lt;/include><br/>
+   * &nbsp;&lt;include>**&#47;*SuiteNoBrowser.java&lt;/include><br/>
+   * &lt;/includes><br/>
+   * </code>
+   * <p/>
+   * Each include item may also contain a comma-separated sublist of items, which will be treated as multiple
+   * &nbsp;&lt;include> entries.<br/>
+   * <p/>
+   * This parameter is ignored if the TestNG <code>suiteXmlFiles</code> parameter is specified.
+   */
+  @Parameter
+  private List<String> includes;
 
   @Override
   protected void handleSummary(RunResult summary, NestedCheckedException firstForkException)
@@ -499,6 +517,14 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
     if (firstForkException != null) {
       throw new MojoFailureException(firstForkException.getMessage(), firstForkException);
     }
+  }
+
+  @Override
+  protected void executeAfterPreconditionsChecked(DefaultScanResult scanResult) throws MojoExecutionException, MojoFailureException {
+    if (getEffectiveForkCount() <= 0) {
+      getLog().warn("ForkCount=0 is know not to work for GWT tests");
+    }
+    super.executeAfterPreconditionsChecked(scanResult);
   }
 
   @Override
@@ -517,11 +543,13 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   }
 
   @Override
-  public void setForkMode(String forkMode) {
-    if (ForkConfiguration.FORK_NEVER.equals(forkMode)) {
-      getLog().warn("ForkMode=never is know not to work for GWT tests");
-    }
-    super.setForkMode(forkMode);
+  public List<String> getIncludes() {
+    return includes;
+  }
+
+  @Override
+  public void setIncludes(List<String> includes) {
+    this.includes = includes;
   }
 
   //
