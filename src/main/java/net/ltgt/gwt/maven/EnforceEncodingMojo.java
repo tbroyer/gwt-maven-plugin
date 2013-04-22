@@ -8,7 +8,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-@Mojo(name = "enforce-encoding", defaultPhase = LifecyclePhase.INITIALIZE)
+@Mojo(name = "enforce-encoding", defaultPhase = LifecyclePhase.INITIALIZE, threadSafe = true)
 public class EnforceEncodingMojo extends AbstractMojo {
 
   @Parameter(defaultValue = "${project}", required = true, readonly = true)
