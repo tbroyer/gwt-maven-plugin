@@ -12,10 +12,12 @@ import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.classworlds.realm.DuplicateRealmException;
@@ -26,9 +28,9 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.Xpp3DomWriter;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -94,6 +96,12 @@ public class GenerateModuleMojo extends AbstractMojo {
   @Parameter(defaultValue = "${project.dependencyArtifacts}", required = true, readonly = true)
   private Set<Artifact> dependencyArtifacts;
 
+  @Component
+  private BuildContext buildContext;
+
+  @Parameter(defaultValue = "${project}", required = true, readonly = true)
+  private MavenProject project;
+
   private final ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_COMPILE_PLUS_RUNTIME);
 
   @Override
@@ -110,8 +118,12 @@ public class GenerateModuleMojo extends AbstractMojo {
       throw new MojoExecutionException("Invalid module name: " + moduleName);
     }
 
+    File outputFile = new File(outputDirectory, moduleName.replace('.', '/') + ".gwt.xml");
+
+    boolean uptodate;
     Xpp3Dom template;
     if (moduleTemplate.isFile()) {
+      uptodate = buildContext.isUptodate(outputFile, moduleTemplate);
       try {
         template = Xpp3DomBuilder.build(Files.newReader(moduleTemplate, Charsets.UTF_8));
       } catch (XmlPullParserException e) {
@@ -120,14 +132,24 @@ public class GenerateModuleMojo extends AbstractMojo {
         throw new MojoExecutionException(e.getMessage(), e);
       }
     } else {
+      uptodate = true;
       template = new Xpp3Dom("module");
     }
 
-    File outputFile = new File(outputDirectory, moduleName.replace('.', '/') + ".gwt.xml");
+    if (uptodate) {
+      uptodate = buildContext.isUptodate(outputFile, project.getFile());
+    }
+
+    if (uptodate) {
+      // TODO: check dependencies (META-INF/gwt/mainModule might have changed)
+      // For now, we'll rely on newFileOutputStream's internal staleness-check behavior
+      getLog().info("Module is up to date; skipping.");
+    }
+
     outputFile.getParentFile().mkdirs();
     Writer writer = null;
     try {
-      writer = new OutputStreamWriter(new FileOutputStream(outputFile), Charsets.UTF_8);
+      writer = new OutputStreamWriter(buildContext.newFileOutputStream(outputFile), Charsets.UTF_8);
       XMLWriter xmlWriter = new PrettyPrintXMLWriter(writer);
 
       xmlWriter.startElement("module");

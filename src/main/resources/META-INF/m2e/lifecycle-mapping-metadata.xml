@@ -1,0 +1,44 @@
+<lifecycleMappingMetadata>
+  <pluginExecutions>
+    <pluginExecution>
+      <pluginExecutionFilter>
+        <goals>
+          <goal>enforce-encoding</goal>
+          <goal>add-super-sources</goal>
+          <goal>add-test-super-sources</goal>
+          <goal>generate-module-metadata</goal>
+        </goals>
+      </pluginExecutionFilter>
+      <action>
+        <execute>
+          <runOnConfiguration>true</runOnConfiguration>
+          <runOnIncremental>false</runOnIncremental>
+        </execute>
+      </action>
+    </pluginExecution>
+    <pluginExecution>
+      <pluginExecutionFilter>
+        <goals>
+          <goal>generate-module</goal>
+        </goals>
+      </pluginExecutionFilter>
+      <action>
+        <execute>
+          <runOnConfiguration>true</runOnConfiguration>
+          <runOnIncremental>true</runOnIncremental>
+        </execute>
+      </action>
+    </pluginExecution>
+    <pluginExecution>
+      <pluginExecutionFilter>
+        <goals>
+          <goal>import-sources</goal>
+          <goal>import-test-sources</goal>
+        </goals>
+      </pluginExecutionFilter>
+      <action>
+        <ignore />
+      </action>
+    </pluginExecution>
+  </pluginExecutions>
+</lifecycleMappingMetadata>
