@@ -14,7 +14,9 @@
       <configuration>
         <phases>
           <initialize>
-            ${project.groupId}:${project.artifactId}:${project.version}:enforce-encoding
+            ${project.groupId}:${project.artifactId}:${project.version}:enforce-encoding,
+            ${project.groupId}:${project.artifactId}:${project.version}:add-super-sources,
+            ${project.groupId}:${project.artifactId}:${project.version}:add-test-super-sources
           </initialize>
           <generate-resources>
             ${project.groupId}:${project.artifactId}:${project.version}:import-sources,
@@ -83,7 +85,9 @@
       <configuration>
         <phases>
           <initialize>
-            ${project.groupId}:${project.artifactId}:${project.version}:enforce-encoding
+            ${project.groupId}:${project.artifactId}:${project.version}:enforce-encoding,
+            ${project.groupId}:${project.artifactId}:${project.version}:add-super-sources,
+            ${project.groupId}:${project.artifactId}:${project.version}:add-test-super-sources
           </initialize>
           <generate-resources>
             ${project.groupId}:${project.artifactId}:${project.version}:import-sources,

@@ -1,65 +1,24 @@
 package net.ltgt.gwt.maven;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.model.Resource;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-public abstract class AbstractImportSourcesMojo extends AbstractMojo {
-
-  private static final List<String> JAVA_SOURCES = Collections.singletonList("**/*.java");
-
-  /**
-   * Name of the module into which to optionally relocate super-sources.
-   * <p>
-   * Super-sources will be relocated into a {@code super} subfolder.
-   */
-  @Parameter
-  protected String moduleName;
-
-  @Parameter(defaultValue = "${project}", required = true, readonly = true)
-  protected MavenProject project;
+public abstract class AbstractImportSourcesMojo extends AbstractSourcesAsResourcesMojo {
 
   @Component(hint = "jar")
   private UnArchiver unArchiver;
 
-  public AbstractImportSourcesMojo() {
-    super();
-  }
-
   @Override
   public void execute() throws MojoExecutionException {
-    // Add super-sources
-    // FIXME: should probably be done earlier (initialize, or a lifecycle participant)
-    String superSourceRoot = getSuperSourceRoot();
-    if (checkResource(superSourceRoot)) {
-      Resource resource = createResource(superSourceRoot);
-      if (isSuperSourceRelocated()) {
-        if (StringUtils.isBlank(moduleName)) {
-          throw new MojoExecutionException("Cannot relocate super-sources if moduleName is not specified");
-        }
-        String targetPath = moduleName.replace('.', '/');
-        // Keep only package name
-        targetPath = targetPath.substring(0, targetPath.lastIndexOf('/'));
-        // Relocate into 'super' subfolder
-        targetPath = ensureTrailingSlash(targetPath) + "super/";
-        resource.setTargetPath(targetPath);
-      }
-      addResource(resource);
-    }
-
     // Add the compile source roots as resources to the build
     for (String sourceRoot : getSourceRoots()) {
       addResource(sourceRoot);
@@ -117,28 +76,6 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
     }
   }
 
-  private boolean checkResource(String sourceRoot) {
-    // TODO: cache a processed list of Resources in a ThreadLocal as an optimization?
-    sourceRoot = ensureTrailingSlash(sourceRoot);
-    for (Resource resource : getProjectResources()) {
-      String dir = ensureTrailingSlash(resource.getDirectory());
-      if (dir.startsWith(sourceRoot) || sourceRoot.startsWith(dir)) {
-        getLog().warn(String.format(
-            "Conflicting path between source folder (%s, to be added as resource) and resource (%s); skipping.",
-            sourceRoot, dir));
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private Resource createResource(String resourceDirectory) {
-    Resource resource = new Resource();
-    resource.setDirectory(resourceDirectory);
-    resource.setIncludes(JAVA_SOURCES);
-    return resource;
-  }
-
   private void addResource(String resourceDirectory) {
     if (checkResource(resourceDirectory)) {
       Resource resource = createResource(resourceDirectory);
@@ -150,20 +87,9 @@ public abstract class AbstractImportSourcesMojo extends AbstractMojo {
 
   protected abstract void addResource(Resource resource);
 
-  protected abstract String getSuperSourceRoot();
-
-  protected abstract boolean isSuperSourceRelocated();
-
   protected abstract Iterable<String> getSourceRoots();
 
   protected abstract File getOutputDirectory();
 
   protected abstract boolean includeArtifact(Artifact artifact);
-
-  private String ensureTrailingSlash(String directory) {
-    if (directory.endsWith("/")) {
-      return directory;
-    }
-    return directory + "/";
-  }
 }

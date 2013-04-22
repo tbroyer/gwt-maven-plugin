@@ -23,36 +23,11 @@ public class ImportSourcesMojo extends AbstractImportSourcesMojo {
   @Parameter(defaultValue = "${project.build.directory}/generated-resources/gwt-sources", required = true)
   private File importedSourcesTargetDirectory;
 
-  /**
-   * Directory containing super-sources.
-   */
-  @Parameter(defaultValue = "src/main/super")
-  private String superSourceDirectory;
-
-  /**
-   * Whether to relocate {@code superSourceDirectory} content within the
-   * module given in {@code moduleName}.
-   * <p>
-   * Super-sources will be relocated into a {@code super} subfolder.
-   */
-  @Parameter(defaultValue = "false")
-  private boolean relocateSuperSource;
-
   private final ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME_PLUS_SYSTEM);
 
   @Override
   protected File getOutputDirectory() {
     return importedSourcesTargetDirectory;
-  }
-
-  @Override
-  protected String getSuperSourceRoot() {
-    return superSourceDirectory;
-  }
-
-  @Override
-  protected boolean isSuperSourceRelocated() {
-    return relocateSuperSource;
   }
 
   @Override
