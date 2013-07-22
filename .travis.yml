@@ -1,6 +1,6 @@
 language: java
 install: mvn install clean --fail-never --quiet -DskipTests=true -Dinvoker.skip=true
-script: mvn verify
+script: mvn verify -Dinvoker.streamLogs=true
 notifications:
   email: false
 
