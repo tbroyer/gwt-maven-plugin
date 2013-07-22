@@ -21,6 +21,7 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.classworlds.realm.DuplicateRealmException;
+import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.PrettyPrintXMLWriter;
 import org.codehaus.plexus.util.xml.XMLWriter;
@@ -32,7 +33,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -142,14 +143,15 @@ public class GenerateModuleMojo extends AbstractMojo {
 
     if (uptodate) {
       // TODO: check dependencies (META-INF/gwt/mainModule might have changed)
-      // For now, we'll rely on newFileOutputStream's internal staleness-check behavior
-      getLog().info("Module is up to date; skipping.");
+      // For now, we'll compare the content of the file before writing it
+//      getLog().info("Module is up to date; skipping.");
+//      return;
     }
 
     outputFile.getParentFile().mkdirs();
     Writer writer = null;
     try {
-      writer = new OutputStreamWriter(buildContext.newFileOutputStream(outputFile), Charsets.UTF_8);
+      writer = new StringWriter();
       XMLWriter xmlWriter = new PrettyPrintXMLWriter(writer);
 
       xmlWriter.startElement("module");
@@ -212,9 +214,21 @@ public class GenerateModuleMojo extends AbstractMojo {
     } finally {
       IOUtil.close(writer);
     }
+
+    try {
+      if (outputFile.isFile() && writer.toString().equals(FileUtils.fileRead(outputFile, "UTF-8"))) {
+        getLog().info(outputFile.getAbsolutePath() + " up to date - skipping");
+        return;
+      }
+
+      FileUtils.fileWrite(outputFile, "UTF-8", writer.toString());
+      buildContext.refresh(outputFile);
+    } catch (IOException e) {
+      throw new MojoExecutionException(e.getMessage(), e);
+    }
   }
 
-  private boolean generateInheritsFromDependencies(XMLWriter xmlWriter) throws MojoExecutionException {
+  private boolean generateInheritsFromDependencies(XMLWriter xmlWriter) throws IOException, MojoExecutionException {
     ClassWorld world = new ClassWorld();
     ClassRealm  realm;
     try {
@@ -235,45 +249,43 @@ public class GenerateModuleMojo extends AbstractMojo {
     }
 
     boolean hasInherits = false;
-    try {
-      Enumeration<URL> resources = realm.getResources("META-INF/gwt/mainModule");
-      while (resources.hasMoreElements()) {
-        final URL resource = resources.nextElement();
-        String moduleName = Resources.readLines(resource, Charsets.UTF_8, new LineProcessor<String>() {
-          private String module;
 
-          @Override
-          public boolean processLine(String line) throws IOException {
-            line = StringUtils.substringBefore(line, "#").trim();
-            if (line.isEmpty()) {
-              return true;
-            }
-            if (module != null) {
-              getLog().warn("Configuration file contains more than one module name, picking first: " + resource);
-              return false;
-            }
-            if (!ModuleDef.isValidModuleName(line)) {
-              getLog().warn("Illegal configuration-file syntax, skipping " + resource);
-              return false;
-            }
-            module = line;
-            // Continue processing lines to warn of illegal syntax
+    Enumeration<URL> resources = realm.getResources("META-INF/gwt/mainModule");
+    while (resources.hasMoreElements()) {
+      final URL resource = resources.nextElement();
+      String moduleName = Resources.readLines(resource, Charsets.UTF_8, new LineProcessor<String>() {
+        private String module;
+
+        @Override
+        public boolean processLine(String line) throws IOException {
+          line = StringUtils.substringBefore(line, "#").trim();
+          if (line.isEmpty()) {
             return true;
           }
-
-          @Override
-          public String getResult() {
-            return module;
+          if (module != null) {
+            getLog().warn("Configuration file contains more than one module name, picking first: " + resource);
+            return false;
           }
-        });
+          if (!ModuleDef.isValidModuleName(line)) {
+            getLog().warn("Illegal configuration-file syntax, skipping " + resource);
+            return false;
+          }
+          module = line;
+          // Continue processing lines to warn of illegal syntax
+          return true;
+        }
 
-        xmlWriter.startElement("inherits");
-        xmlWriter.addAttribute("name", moduleName);
-        xmlWriter.endElement();
-      }
-    } catch (IOException e) {
-      throw new MojoExecutionException(e.getMessage(), e);
+        @Override
+        public String getResult() {
+          return module;
+        }
+      });
+
+      xmlWriter.startElement("inherits");
+      xmlWriter.addAttribute("name", moduleName);
+      xmlWriter.endElement();
     }
+
     return hasInherits;
   }
 }
