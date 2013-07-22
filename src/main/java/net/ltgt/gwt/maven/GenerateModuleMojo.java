@@ -281,9 +281,13 @@ public class GenerateModuleMojo extends AbstractMojo {
         }
       });
 
-      xmlWriter.startElement("inherits");
-      xmlWriter.addAttribute("name", moduleName);
-      xmlWriter.endElement();
+      if (moduleName != null) {
+        hasInherits = true;
+
+        xmlWriter.startElement("inherits");
+        xmlWriter.addAttribute("name", moduleName);
+        xmlWriter.endElement();
+      }
     }
 
     return hasInherits;
