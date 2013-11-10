@@ -8,6 +8,7 @@ import com.google.gwt.dev.PermutationWorkerFactory;
 import com.google.gwt.dev.ThreadedPermutationWorkerFactory;
 import com.google.gwt.dev.javac.CompilationProblemReporter;
 import com.google.gwt.dev.jjs.JsOutputOption;
+import com.google.gwt.dev.util.arg.SourceLevel;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -69,6 +70,13 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   private boolean disableAggressiveOptimization;
 
   /**
+   * Sets whether or not the compiler should cluster similar functions together in the output file
+   * whose source code is very similar, to increase the efficiency of compression.
+   */
+  @Parameter(property = "gwt.clusterSimilarFunctions", defaultValue = "true")
+  private boolean clusterSimilarFunctions;
+
+  /**
    * Enable CompilerMetrics.
    */
   @Parameter(property = "gwt.compilerMetrics", defaultValue = "false")
@@ -111,6 +119,13 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   private boolean enableClosureCompiler;
 
   /**
+   * Sets whether the compiler should not implicitly add "client" and "public" resource dependencies
+   * when none are mentioned.
+   */
+  @Parameter(property = "gwt.enforceStrictResources", defaultValue = "false")
+  private boolean enforceStrictResources;
+
+  /**
    * Disables running generators on CompilePerms shards, even when it would be a likely speedup.
    */
   @Parameter(property = "gwt.disableGeneratingOnShards", defaultValue = "false")
@@ -147,6 +162,11 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   private File gen;
 
   /**
+   * Sets whether or not the compiler should inline literal parameters.
+   */
+  @Parameter(property = "gwt.inlineLiteralParameters", defaultValue = "true")
+  private boolean inlineLiteralParameters;
+  /**
    * The number of local workers to use when compiling permutations.
    */
   @Parameter(property = "gwt.localWorkers")
@@ -182,14 +202,32 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   @Parameter(property = "gwt.optimize", defaultValue = "" + OPTIMIZE_LEVEL_MAX)
   private int optimize;
 
+  /**
+   * Sets whether or not the compiler should optimize dataflow.
+   */
+  @Parameter(property = "gwt.optimize.dataflow", defaultValue = "true")
+  private boolean optimizeDataflow;
+
   /** This is set and read by the compiler. */
   private boolean optimizePrecompile = true;
+
+  /**
+   * Sets whether or not the compiler should ordinalize enums.
+   */
+  @Parameter(property = "gwt.ordinalizeEnums", defaultValue = "true")
+  private boolean ordinalizeEnums;
 
   /**
    * Disable runAsync code-splitting.
    */
   @Parameter(property = "gwt.disableRunAsync", defaultValue = "false")
   private boolean disableRunAsync;
+
+  /**
+   * Sets whether or not the compiler should remove duplicate functions.
+   */
+  @Parameter(property = "gwt.removeDuplicateFunctions", defaultValue = "true")
+  private boolean removeDuplicateFunctions;
 
   /**
    * Script output style: OBFUSCATED, PRETTY, or DETAILED.
@@ -227,6 +265,32 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   @Parameter(defaultValue = "${project.build.directory}/gwt/work")
   private File workDir;
 
+  /**
+   * If set to true and sourcemaps are on, source code will be saved.
+   *
+   * <p>By default, source code will be written to "extras". The {@code saveSourceOutput}
+   * option can be used to redirect it to a different directory or jar.</p>
+   */
+  @Parameter(property = "gwt.saveSource", defaultValue = "false")
+  private boolean saveSource;
+
+  /**
+   * Sets the directory or jar where the GWT compiler should write the source code,
+   * or null to skip writing it. If a jar exists then it will be overwritten. By
+   * default, source code will be written to "extras".
+   *
+   * <p>The debugger will find the source code using a sourcemap. To convert a filename
+   * in a sourcemap to a filename in the debug source directory, add "${module_name}/src/"
+   * to the front. (The module name is after any renaming.)</p>
+   */
+  @Parameter(property = "gwt.saveSourceOutput")
+  private File saveSourceOutput;
+
+  /**
+   * Indicates the Java source level compatibility. Valid values include 1.6 and 1.7
+   */
+  @Parameter(property = "gwt.sourceLevel", defaultValue = "1.6")
+  private String sourceLevel;
   /**
    * Sets the granularity in milliseconds of the last modification
    * date for testing whether the module needs recompilation.
@@ -335,6 +399,8 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
     importFromCurrentClassLoader(realm, JsOutputOption.class);
     // Makes error check easier
     importFromCurrentClassLoader(realm, UnableToCompleteException.class);
+
+    importFromCurrentClassLoader(realm, SourceLevel.class);
 
     Thread.currentThread().setContextClassLoader(realm);
 
@@ -566,6 +632,16 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   }
 
   @Override
+  public boolean shouldClusterSimilarFunctions() {
+    return clusterSimilarFunctions;
+  }
+
+  @Override
+  public void setClusterSimilarFunctions(boolean enabled) {
+    clusterSimilarFunctions = enabled;
+  }
+
+  @Override
   public boolean isEnabledGeneratingOnShards() {
     return !disableGeneratingOnShards;
   }
@@ -573,6 +649,16 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   @Override
   public void setEnabledGeneratingOnShards(boolean allowed) {
     disableGeneratingOnShards = !allowed;
+  }
+
+  @Override
+  public boolean enforceStrictResources() {
+    return enforceStrictResources;
+  }
+
+  @Override
+  public void setEnforceStrictResources(boolean strictResources) {
+    enforceStrictResources = strictResources;
   }
 
   @Override
@@ -616,13 +702,13 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   }
 
   @Override
-  public boolean isUseGuiLogger() {
-    return false;
+  public boolean shouldInlineLiteralParameters() {
+    return inlineLiteralParameters;
   }
 
   @Override
-  public void setUseGuiLogger(boolean useGuiLogger) {
-    throw new UnsupportedOperationException();
+  public void setInlineLiteralParameters(boolean enabled) {
+    inlineLiteralParameters = enabled;
   }
 
   @Override
@@ -684,6 +770,17 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
     optimize = level;
   }
 
+
+  @Override
+  public boolean shouldOptimizeDataflow() {
+    return optimizeDataflow;
+  }
+
+  @Override
+  public void setOptimizeDataflow(boolean enabled) {
+    optimizeDataflow = enabled;
+  }
+
   @Override
   public boolean isOptimizePrecompile() {
     return optimizePrecompile;
@@ -695,14 +792,23 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   }
 
   @Override
-  public File getOutDir() {
-    return null;
+  public boolean shouldOrdinalizeEnums() {
+    return ordinalizeEnums;
   }
 
   @Override
-  public void setOutDir(File outDir) {
-    // no-op
-    // TODO?
+  public void setOrdinalizeEnums(boolean enabled) {
+    ordinalizeEnums = enabled;
+  }
+
+  @Override
+  public boolean shouldRemoveDuplicateFunctions() {
+    return removeDuplicateFunctions;
+  }
+
+  @Override
+  public void setRemoveDuplicateFunctions(boolean enabled) {
+    removeDuplicateFunctions = enabled;
   }
 
   @Override
@@ -723,6 +829,36 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   @Override
   public void setOutput(JsOutputOption obfuscated) {
     style = obfuscated;
+  }
+
+  @Override
+  public boolean shouldSaveSource() {
+    return saveSource;
+  }
+
+  @Override
+  public void setSaveSource(boolean enabled) {
+    saveSource = enabled;
+  }
+
+  @Override
+  public File getSaveSourceOutput() {
+    return saveSourceOutput;
+  }
+
+  @Override
+  public void setSaveSourceOutput(File dest) {
+    saveSourceOutput = dest;
+  }
+
+  @Override
+  public SourceLevel getSourceLevel() {
+    return SourceLevel.fromString(sourceLevel);
+  }
+
+  @Override
+  public void setSourceLevel(SourceLevel level) {
+    sourceLevel = level.getStringValue();
   }
 
   @Override
