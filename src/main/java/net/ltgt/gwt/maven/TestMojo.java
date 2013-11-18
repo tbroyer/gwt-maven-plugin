@@ -2,6 +2,7 @@ package net.ltgt.gwt.maven;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.dev.jjs.JsOutputOption;
+import com.google.gwt.dev.util.arg.SourceLevel;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
@@ -12,7 +13,6 @@ import org.apache.maven.plugin.surefire.AbstractSurefireMojo;
 import org.apache.maven.plugin.surefire.SurefireHelper;
 import org.apache.maven.plugin.surefire.SurefireReportParameters;
 import org.apache.maven.plugin.surefire.booterclient.ChecksumCalculator;
-import org.apache.maven.plugin.surefire.booterclient.ForkConfiguration;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -42,7 +42,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Parameter(property = "gwt.port")
   private int port;
 
-  // whitelist/blacklist?
   // TODO(t.broyer): log to file?
 
   /**
@@ -118,52 +117,65 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private JsOutputOption style;
 
   /**
-   * Troubleshooting: Prevent the Production Mode compiler from performing aggressive optimizations.
+   * EXPERIMENTAL: Tells the Production Mode compiler to perform aggressive optimizations.
    */
-  @Parameter(property = "gwt.disableAggressiveOptimization", defaultValue = "false")
-  private boolean disableAggressiveOptimization;
+  @Deprecated
+  @Parameter(property = "gwt.aggressiveOptimizations", defaultValue = "true")
+  private boolean aggressiveOptimizations;
 
   /**
-   * EXPERIMENTAL: Disables some {@code java.lang.Class} methods (e.g. {@code getName()}).
+   * EXPERIMENTAL: Insert run-time checking of cast operations.
    */
-  @Parameter(property = "gwt.disableClassMetadata", defaultValue = "false")
-  private boolean disableClassMetadata;
+  @Parameter(property = "gwt.checkCasts", defaultValue = "true")
+  private boolean checkCasts;
 
   /**
-   * EXPERIMENTAL: Disables run-time checking of cast operations.
+   * EXPERIMENTAL: Check to see if an updated version of GWT is available.
    */
-  @Parameter(property = "gwt.disableCastChecking", defaultValue = "false")
-  private boolean disableCastChecking;
+  @Parameter(property = "gwt.checkForUpdates", defaultValue = "false")
+  private boolean checkForUpdates;
 
   /**
-   * Disable runAsync code-splitting.
+   * EXPERIMENTAL: Include metadata for some {@code java.lang.Class} methods (e.g. {@code getName()}).
    */
-  @Parameter(property = "gwt.disableRunAsync", defaultValue = "false")
-  private boolean disableRunAsync;
+  @Parameter(property = "gwt.classMetadata", defaultValue = "true")
+  private boolean classMetadata;
 
   /**
-   * Disable the check to see if an update version of GWT is available.
+   * EXPERIMENTAL: Cluster similar functions in the output to improve compression.
    */
-  @Parameter(property = "gwt.disableUpdateCheck", defaultValue = "false")
-  private boolean disableUpdateCheck;
+  @Parameter(property = "gwt.clusterFunctions", defaultValue = "true")
+  private boolean clusterFunctions;
 
   /**
-   * Enable faster, but less-optimized, compilations.
+   * EXPERIMENTAL: Split code on runAsync boundaries.
+   */
+  @Parameter(property = "gwt.codeSplitting", defaultValue = "true")
+  private boolean codeSplitting;
+
+  /**
+   * Runs tests in Development Mode, using the Java virtual machine.
+   */
+  @Parameter(property = "gwt.test.devMode", defaultValue = "true")
+  private boolean devMode;
+
+  /**
+   * Compile quickly with minimal optimizations.
    */
   @Parameter(property = "gwt.draftCompile", defaultValue = "false")
   private boolean draftCompile;
+
+  /**
+   * EXPERIMENTAL: Inline literal parameters to shrink function declarations and provide more deadcode elimination possibilities.
+   */
+  @Parameter(property = "gwt.inlineLiteralParameters", defaultValue = "true")
+  private boolean inlineLiteralParameters;
 
   /**
    * The number of local workers to use when compiling permutations.
    */
   @Parameter(property = "gwt.localWorkers")
   private int localWorkers;
-
-  /**
-   * Causes your test to run in production (compiled) mode (defaults to development mode)
-   */
-  @Parameter(property = "gwt.test.prod")
-  private boolean prod;
 
   /**
    * Set the test method timeout, in minutes.
@@ -187,6 +199,53 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private String runStyle;
 
   /**
+   * EXPERIMENTAL: Analyze and optimize dataflow.
+   */
+  @Parameter(property = "gwt.optimizeDataflow", defaultValue = "true")
+  private boolean optimizeDataflow;
+
+  /**
+   * EXPERIMENTAL: Ordinalize enums to reduce some large strings.
+   */
+  @Parameter(property = "gwt.ordinalizeEnums", defaultValue = "true")
+  private boolean ordinalizeEnums;
+
+  /**
+   * EXPERIMENTAL: Removing duplicate functions.
+   * <p>
+   * Will interfere with stacktrace deobfuscation and so is only honored when {@code compiler.stackMode} is set to strip.
+   */
+  @Parameter(property = "gwt.removeDuplicateFunctions", defaultValue = "true")
+  private boolean removeDuplicateFunctions;
+
+  /**
+   * Specifies Java source level.
+   */
+  @Parameter(property = "maven.compiler.source")
+  private String sourceLevel;
+
+  // Used internally, mirrors sourceLevel.
+  private SourceLevel source;
+
+  public SourceLevel getSourceLevel() {
+    assert (sourceLevel == null && source == null) || source.equals(SourceLevel.fromString(sourceLevel));
+    if (source == null) {
+      setSourceLevel(System.getProperty("java.specification.version"));
+      assert source != null;
+    }
+    return source;
+  }
+
+  public void setSourceLevel(String sourceLevel) {
+    SourceLevel source = SourceLevel.fromString(sourceLevel);
+    if (source == null) {
+      throw new IllegalArgumentException("Unknown sourceLevel value: " + sourceLevel);
+    }
+    this.sourceLevel = sourceLevel;
+    this.source = source;
+  }
+
+  /**
    * Configure batch execution of tests. Value can be one of none, class or module.
    */
   @Parameter(property = "gwt.test.batch", defaultValue = "none")
@@ -202,8 +261,8 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * Causes the log window and browser windows to be displayed; useful for debugging.
    */
-  @Parameter(property = "gwt.test.notHeadless")
-  private boolean notHeadless;
+  @Parameter(property = "gwt.test.showUi")
+  private boolean showUi;
 
   /**
    * Precompile modules as tests are running (speeds up remote tests but requires more memory).
@@ -222,8 +281,8 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * Run each test using an HTML document in quirks mode (rather than standards mode).
    */
-  @Parameter(property = "gwt.test.quirksMode")
-  private boolean quirksMode;
+  @Parameter(property = "gwt.test.runStandardsMode")
+  private boolean runStandardsMode;
 
   /**
    * EXPERIMENTAL: Sets the maximum number of attempts for running each test method.
@@ -274,27 +333,18 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
       }
       sb.append(" -workDir ").append(quote(workDir.getAbsolutePath()));
       sb.append(" -style ").append(style);
-      if (effectiveIsEnableAssertions()) {
-        sb.append(" -ea ");
-      }
-      if (disableAggressiveOptimization) {
-        sb.append(" -XdisableAggressiveOptimization ");
-      }
-      if (disableClassMetadata) {
-        sb.append(" -XdisableClassMetadata ");
-      }
-      if (disableCastChecking) {
-        sb.append(" -XdisableCastChecking ");
-      }
-      if (disableRunAsync) {
-        sb.append(" -XdisableRunAsync ");
-      }
-      if (disableUpdateCheck) {
-        sb.append(" -XdisableUpdateCheck ");
-      }
-      if (draftCompile) {
-        sb.append(" -draftCompile ");
-      }
+      sb.append(effectiveIsEnableAssertions() ? " -checkAssertions " : " -nocheckAssertions ");
+      sb.append(aggressiveOptimizations ? " -XaggressiveOptimizations " : " -XnoaggressiveOptimizations ");
+      sb.append(clusterFunctions ? " -XclusterFunctions " : " -XnoclusterFunctions ");
+      sb.append(inlineLiteralParameters ? " -XinlineLiteralParameters " : " -XnoinlineLiteralParameters ");
+      sb.append(optimizeDataflow ? " -XoptimizeDataflow " : " -XnooptimizeDataflow ");
+      sb.append(ordinalizeEnums ? " -XordinalizeEnums " : " -XnoordinalizeEnums ");
+      sb.append(removeDuplicateFunctions ? " -XremoveDuplicateFunctions " : " -XnoremoveDuplicateFunctions ");
+      sb.append(classMetadata ? " -XclassMetadata " : " -XnoclassMetadata ");
+      sb.append(checkCasts ? " -XcheckCasts " : " -XnocheckCasts ");
+      sb.append(codeSplitting ? " -XcodeSplitting " : " -XnocodeSplitting ");
+      sb.append(checkForUpdates ? " -XcheckforUpdates " : " -XnocheckForUpdates ");
+      sb.append(draftCompile ? " -draftCompile " : " -nodraftCompiler ");
       int workers = localWorkers;
       if (workers < 1) {
         workers = Runtime.getRuntime().availableProcessors();
@@ -303,20 +353,15 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
         }
       }
       sb.append(" -localWorkers ").append(workers);
-      if (prod) {
-        sb.append(" -prod ");
-      }
+      sb.append(devMode ? " -devMode " : " -nodevMode ");
       sb.append(" -testMethodTimeout ").append(testMethodTimeout);
       sb.append(" -testBeginTimeout ").append(testBeginTimeout);
       sb.append(" -runStyle ").append(quote(runStyle));
       sb.append(" -batch ").append(batch);
-      if (notHeadless) {
-        sb.append(" -notHeadless ");
-      }
+      sb.append(showUi ? " -showUi " : " -noshowUi ");
       sb.append(" -precompile ").append(precompile);
-      if (quirksMode) {
-        sb.append(" -quirksMode ");
-      }
+      sb.append(runStandardsMode ? " -runStandardsMode " : " -norunStandardsMode ");
+      sb.append(" -source ").append(getSourceLevel().getStringValue());
       sb.append(" -Xtries ").append(tries);
       if (StringUtils.isNotBlank(userAgents)) {
         sb.append(" -userAgents ").append(quote(userAgents));
@@ -358,23 +403,29 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
     checksum.add(extra);
     checksum.add(workDir);
     checksum.add(String.valueOf(style));
-    checksum.add(disableAggressiveOptimization);
-    checksum.add(disableClassMetadata);
-    checksum.add(disableCastChecking);
-    checksum.add(disableRunAsync);
-    checksum.add(disableUpdateCheck);
+    checksum.add(aggressiveOptimizations);
+    checksum.add(clusterFunctions);
+    checksum.add(inlineLiteralParameters);
+    checksum.add(optimizeDataflow);
+    checksum.add(ordinalizeEnums);
+    checksum.add(removeDuplicateFunctions);
+    checksum.add(classMetadata);
+    checksum.add(checkCasts);
+    checksum.add(codeSplitting);
+    checksum.add(checkForUpdates);
     checksum.add(draftCompile);
     checksum.add(localWorkers);
-    checksum.add(prod);
+    checksum.add(devMode);
     checksum.add(testBeginTimeout);
     checksum.add(testMethodTimeout);
     checksum.add(runStyle);
     checksum.add(batch);
-    checksum.add(notHeadless);
+    checksum.add(showUi);
     checksum.add(precompile);
-    checksum.add(quirksMode);
+    checksum.add(runStandardsMode);
     checksum.add(tries);
     checksum.add(userAgents);
+    checksum.add(getSourceLevel().getStringValue());
   }
 
   @Component

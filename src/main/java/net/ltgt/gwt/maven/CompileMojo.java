@@ -8,6 +8,7 @@ import com.google.gwt.dev.PermutationWorkerFactory;
 import com.google.gwt.dev.ThreadedPermutationWorkerFactory;
 import com.google.gwt.dev.javac.CompilationProblemReporter;
 import com.google.gwt.dev.jjs.JsOutputOption;
+import com.google.gwt.dev.util.arg.SourceLevel;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -63,13 +64,44 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   private boolean draftCompile;
 
   /**
-   * Troubleshooting: Prevent the Production Mode compiler from performing aggressive optimizations.
+   * EXPERIMENTAL: Tells the Production Mode compiler to perform aggressive optimizations.
    */
-  @Parameter(property = "gwt.disableAggressiveOptimization", defaultValue = "false")
-  private boolean disableAggressiveOptimization;
+  @Deprecated
+  @Parameter(property = "gwt.aggressiveOptimizations", defaultValue = "true")
+  private boolean aggressiveOptimizations;
 
   /**
-   * Enable CompilerMetrics.
+   * EXPERIMENTAL: Insert run-time checking of cast operations.
+   */
+  @Parameter(property = "gwt.checkCasts", defaultValue = "true")
+  private boolean checkCasts;
+
+  /**
+   * EXPERIMENTAL: Check to see if an updated version of GWT is available.
+   */
+  @Parameter(property = "gwt.checkForUpdates", defaultValue = "true")
+  private boolean checkForUpdates;
+
+  /**
+   * EXPERIMENTAL: Include metadata for some {@code java.lang.Class} methods (e.g. {@code getName()}).
+   */
+  @Parameter(property = "gwt.classMetadata", defaultValue = "true")
+  private boolean classMetadata;
+
+  /**
+   * EXPERIMENTAL: Cluster similar functions in the output to improve compression.
+   */
+  @Parameter(property = "gwt.clusterFunctions", defaultValue = "true")
+  private boolean clusterFunctions;
+
+  /**
+   * EXPERIMENTAL: Split code on runAsync boundaries.
+   */
+  @Parameter(property = "gwt.codeSplitting", defaultValue = "true")
+  private boolean codeSplitting;
+
+  /**
+   * EXPERIMENTAL: Gather compiler metrics.
    */
   @Parameter(property = "gwt.compilerMetrics", defaultValue = "false")
   private boolean compilerMetrics;
@@ -81,40 +113,28 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   private File deploy;
 
   /**
-   * EXPERIMENTAL: Disables run-time checking of cast operations.
+   * Include assert statements in compiled output.
    */
-  @Parameter(property = "gwt.disableCastChecking", defaultValue = "false")
-  private boolean disableCastChecking;
+  @Parameter(property = "gwt.checkAssertions", defaultValue = "false")
+  private boolean checkAssertions;
 
   /**
-   * EXPERIMENTAL: Disables some {@code java.lang.Class} methods (e.g. {@code getName()}).
+   * EXPERIMENTAL: Compile output Javascript with the Closure compiler for even further optimizations.
    */
-  @Parameter(property = "gwt.disableClassMetadata", defaultValue = "false")
-  private boolean disableClassMetadata;
+  @Parameter(property = "gwt.closureCompiler", defaultValue = "false")
+  private boolean closureCompiler;
 
   /**
-   * Disable the check to see if an update version of GWT is available.
+   * EXPERIMENTAL: Avoid adding implicit dependencies on "client" and "public" for modules that don't define any dependencies.
    */
-  @Parameter(property = "gwt.disableUpdateCheck", defaultValue = "false")
-  private boolean disableUpdateCheck;
+  @Parameter(property = "gwt.enforceStrictResources", defaultValue = "false")
+  private boolean enforceStrictResources;
 
   /**
-   * Debugging: causes the compiled output to check assert statements.
+   * EXPERIMENTAL: Run generators on CompilePerms shards for a likely speedup.
    */
-  @Parameter(property = "gwt.enableAssertions", defaultValue = "false")
-  private boolean enableAssertions;
-
-  /**
-   * EXPERIMENTAL: Enables Closure Compiler optimizations.
-   */
-  @Parameter(property = "gwt.enableClosureCompiler", defaultValue = "false")
-  private boolean enableClosureCompiler;
-
-  /**
-   * Disables running generators on CompilePerms shards, even when it would be a likely speedup.
-   */
-  @Parameter(property = "gwt.disableGeneratingOnShards", defaultValue = "false")
-  private boolean disableGeneratingOnShards;
+  @Parameter(property = "gwt.disableGeneratingOnShards", defaultValue = "true")
+  private boolean generateOnShards;
 
   /**
    * Whether or not to output extra files.
@@ -145,6 +165,12 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
    */
   @Parameter(defaultValue = "${project.build.directory}/gwt/gen")
   private File gen;
+
+  /**
+   * EXPERIMENTAL: Inline literal parameters to shrink function declarations and provide more deadcode elimination possibilities.
+   */
+  @Parameter(property = "gwt.inlineLiteralParameters", defaultValue = "true")
+  private boolean inlineLiteralParameters;
 
   /**
    * The number of local workers to use when compiling permutations.
@@ -186,10 +212,45 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   private boolean optimizePrecompile = true;
 
   /**
-   * Disable runAsync code-splitting.
+   * EXPERIMENTAL: Analyze and optimize dataflow.
    */
-  @Parameter(property = "gwt.disableRunAsync", defaultValue = "false")
-  private boolean disableRunAsync;
+  @Parameter(property = "gwt.optimizeDataflow", defaultValue = "true")
+  private boolean optimizeDataflow;
+
+  /**
+   * EXPERIMENTAL: Ordinalize enums to reduce some large strings.
+   */
+  @Parameter(property = "gwt.ordinalizeEnums", defaultValue = "true")
+  private boolean ordinalizeEnums;
+
+  /**
+   * EXPERIMENTAL: Removing duplicate functions.
+   * <p>
+   * Will interfere with stacktrace deobfuscation and so is only honored when {@code compiler.stackMode} is set to strip.
+   */
+  @Parameter(property = "gwt.removeDuplicateFunctions", defaultValue = "true")
+  private boolean removeDuplicateFunctions;
+
+  /**
+   * Enables saving source code needed by debuggers.
+   */
+  @Parameter(property = "gwt.saveSource", defaultValue = "false")
+  private boolean saveSource;
+
+  /**
+   * Overrides where source files useful to debuggers will be written.
+   */
+  @Parameter(defaultValue = "${project.build.directory}/gwt/extra")
+  private File saveSourceOutput;
+
+  /**
+   * Specifies Java source level.
+   */
+  @Parameter(property = "maven.compiler.source")
+  private String sourceLevel;
+
+  // Used internally, mirrors sourceLevel.
+  private SourceLevel source;
 
   /**
    * Script output style: OBFUSCATED, PRETTY, or DETAILED.
@@ -282,7 +343,7 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
     }
     if (draftCompile) {
       optimize = OPTIMIZE_LEVEL_DRAFT;
-      disableAggressiveOptimization = true;
+      aggressiveOptimizations = false;
     } else {
       optimize = Math.min(OPTIMIZE_LEVEL_DRAFT, Math.min(optimize, OPTIMIZE_LEVEL_MAX));
     }
@@ -333,6 +394,7 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
     importFromCurrentClassLoader(realm, TreeLogger.class);
     // Referenced by CompilerOptions; TreeLogger.Type is already imported via TreeLogger above
     importFromCurrentClassLoader(realm, JsOutputOption.class);
+    importFromCurrentClassLoader(realm, SourceLevel.class);
     // Makes error check easier
     importFromCurrentClassLoader(realm, UnableToCompleteException.class);
 
@@ -384,6 +446,7 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
       return true;
     }
 
+    // TODO: take various flags into account
     final String shortName = getModuleShortName();
     final File nocacheJs = new File(webappDirectory, shortName + File.separator + shortName + ".nocache.js");
     if (!nocacheJs.isFile()) {
@@ -487,12 +550,12 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
   @Override
   public boolean isAggressivelyOptimize() {
-    return !disableAggressiveOptimization;
+    return aggressiveOptimizations;
   }
 
   @Override
   public void setAggressivelyOptimize(boolean aggressivelyOptimize) {
-    disableAggressiveOptimization = !aggressivelyOptimize;
+    aggressiveOptimizations = aggressivelyOptimize;
   }
 
   @Override
@@ -517,62 +580,82 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
   @Override
   public boolean isCastCheckingDisabled() {
-    return disableCastChecking;
+    return !checkCasts;
   }
 
   @Override
   public void setCastCheckingDisabled(boolean disabled) {
-    disableCastChecking = disabled;
+    checkCasts = !disabled;
   }
 
   @Override
   public boolean isClassMetadataDisabled() {
-    return disableClassMetadata;
+    return !classMetadata;
   }
 
   @Override
   public void setClassMetadataDisabled(boolean disabled) {
-    disableClassMetadata = disabled;
+    classMetadata = !disabled;
+  }
+
+  @Override
+  public boolean shouldClusterSimilarFunctions() {
+    return clusterFunctions;
+  }
+
+  @Override
+  public void setClusterSimilarFunctions(boolean clusterFunctions) {
+    this.clusterFunctions = clusterFunctions;
   }
 
   @Override
   public boolean isUpdateCheckDisabled() {
-    return disableUpdateCheck;
+    return !checkForUpdates;
   }
 
   @Override
   public void setDisableUpdateCheck(boolean disabled) {
-    disableUpdateCheck = disabled;
+    checkForUpdates = !disabled;
   }
 
   @Override
   public boolean isEnableAssertions() {
-    return enableAssertions;
+    return checkAssertions;
   }
 
   @Override
   public void setEnableAssertions(boolean enableAssertions) {
-    this.enableAssertions = enableAssertions;
+    this.checkAssertions = enableAssertions;
   }
 
   @Override
   public boolean isClosureCompilerEnabled() {
-    return enableClosureCompiler;
+    return closureCompiler;
   }
 
   @Override
   public void setClosureCompilerEnabled(boolean enabled) {
-    enableClosureCompiler = enabled;
+    closureCompiler = enabled;
   }
 
   @Override
   public boolean isEnabledGeneratingOnShards() {
-    return !disableGeneratingOnShards;
+    return generateOnShards;
   }
 
   @Override
   public void setEnabledGeneratingOnShards(boolean allowed) {
-    disableGeneratingOnShards = !allowed;
+    generateOnShards = allowed;
+  }
+
+  @Override
+  public boolean enforceStrictResources() {
+    return enforceStrictResources;
+  }
+
+  @Override
+  public void setEnforceStrictResources(boolean enforceStrictResources) {
+    this.enforceStrictResources = enforceStrictResources;
   }
 
   @Override
@@ -616,13 +699,13 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   }
 
   @Override
-  public boolean isUseGuiLogger() {
-    return false;
+  public boolean shouldInlineLiteralParameters() {
+    return inlineLiteralParameters;
   }
 
   @Override
-  public void setUseGuiLogger(boolean useGuiLogger) {
-    throw new UnsupportedOperationException();
+  public void setInlineLiteralParameters(boolean inlineLiteralParameters) {
+    this.inlineLiteralParameters = inlineLiteralParameters;
   }
 
   @Override
@@ -685,6 +768,16 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   }
 
   @Override
+  public boolean shouldOptimizeDataflow() {
+    return optimizeDataflow;
+  }
+
+  @Override
+  public void setOptimizeDataflow(boolean optimizeDataflow) {
+    this.optimizeDataflow = optimizeDataflow;
+  }
+
+  @Override
   public boolean isOptimizePrecompile() {
     return optimizePrecompile;
   }
@@ -695,24 +788,23 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   }
 
   @Override
-  public File getOutDir() {
-    return null;
+  public boolean shouldOrdinalizeEnums() {
+    return ordinalizeEnums;
   }
 
   @Override
-  public void setOutDir(File outDir) {
-    // no-op
-    // TODO?
+  public void setOrdinalizeEnums(boolean ordinalizeEnums) {
+    this.ordinalizeEnums = ordinalizeEnums;
   }
 
   @Override
   public boolean isRunAsyncEnabled() {
-    return !disableRunAsync;
+    return codeSplitting;
   }
 
   @Override
   public void setRunAsyncEnabled(boolean enabled) {
-    disableRunAsync = !enabled;
+    codeSplitting = enabled;
   }
 
   @Override
@@ -723,6 +815,61 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   @Override
   public void setOutput(JsOutputOption obfuscated) {
     style = obfuscated;
+  }
+
+  @Override
+  public boolean shouldRemoveDuplicateFunctions() {
+    return removeDuplicateFunctions;
+  }
+
+  @Override
+  public void setRemoveDuplicateFunctions(boolean removeDuplicateFunctions) {
+    this.removeDuplicateFunctions = removeDuplicateFunctions;
+  }
+
+  @Override
+  public boolean shouldSaveSource() {
+    return saveSource;
+  }
+
+  @Override
+  public void setSaveSource(boolean saveSource) {
+    this.saveSource = saveSource;
+  }
+
+  @Override
+  public File getSaveSourceOutput() {
+    return saveSourceOutput;
+  }
+
+  @Override
+  public void setSaveSourceOutput(File saveSourceOutput) {
+    this.saveSourceOutput = saveSourceOutput;
+  }
+
+  @Override
+  public SourceLevel getSourceLevel() {
+    assert (sourceLevel == null && source == null) || source.equals(SourceLevel.fromString(sourceLevel));
+    if (source == null) {
+      setSourceLevel(System.getProperty("java.specification.version"));
+      assert source != null;
+    }
+    return source;
+  }
+
+  @Override
+  public void setSourceLevel(SourceLevel sourceLevel) {
+    this.source = sourceLevel;
+    this.sourceLevel = sourceLevel.getStringValue();
+  }
+
+  public void setSourceLevel(String sourceLevel) {
+    SourceLevel source = SourceLevel.fromString(sourceLevel);
+    if (source == null) {
+      throw new IllegalArgumentException("Unknown sourceLevel value: " + sourceLevel);
+    }
+    this.sourceLevel = sourceLevel;
+    this.source = source;
   }
 
   @Override
