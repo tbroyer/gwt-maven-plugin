@@ -344,7 +344,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
       sb.append(checkCasts ? " -XcheckCasts " : " -XnocheckCasts ");
       sb.append(codeSplitting ? " -XcodeSplitting " : " -XnocodeSplitting ");
       sb.append(checkForUpdates ? " -XcheckforUpdates " : " -XnocheckForUpdates ");
-      sb.append(draftCompile ? " -draftCompile " : " -nodraftCompiler ");
+      sb.append(draftCompile ? " -draftCompile " : " -nodraftCompile ");
       int workers = localWorkers;
       if (workers < 1) {
         workers = Runtime.getRuntime().availableProcessors();
