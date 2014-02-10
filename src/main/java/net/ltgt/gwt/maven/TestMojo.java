@@ -361,7 +361,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
       sb.append(showUi ? " -showUi " : " -noshowUi ");
       sb.append(" -precompile ").append(precompile);
       sb.append(runStandardsMode ? " -runStandardsMode " : " -norunStandardsMode ");
-      sb.append(" -source ").append(getSourceLevel().getStringValue());
+      sb.append(" -sourceLevel ").append(getSourceLevel().getStringValue());
       sb.append(" -Xtries ").append(tries);
       if (StringUtils.isNotBlank(userAgents)) {
         sb.append(" -userAgents ").append(quote(userAgents));
