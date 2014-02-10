@@ -26,6 +26,7 @@ import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -41,8 +42,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    */
   @Parameter(property = "gwt.port")
   private int port;
-
-  // TODO(t.broyer): log to file?
 
   /**
    * Sets the level of logging detail. Defaults to Maven's own log level.
@@ -434,10 +433,11 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private Set<String> gwtDevArtifacts;
 
   @Override
-  public List<String> getAdditionalClasspathElements() {
+  public String[] getAdditionalClasspathElements() {
     LinkedHashSet<String> elts = new LinkedHashSet<String>();
+    String[] additionalClasspathElements = super.getAdditionalClasspathElements();
     if (additionalClasspathElements != null) {
-      elts.addAll(additionalClasspathElements);
+      elts.addAll(Arrays.asList(additionalClasspathElements));
     }
     if (gwtDevArtifacts == null) {
       ArtifactResolutionRequest request = new ArtifactResolutionRequest()
@@ -452,7 +452,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
       }
     }
     elts.addAll(gwtDevArtifacts);
-    return new ArrayList<String>(elts);
+    return elts.toArray(new String[elts.size()]);
   }
 
   // Properties copied from Surefire
@@ -479,7 +479,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    * This parameter overrides the <code>includes/excludes</code> parameters, and
    * the TestNG <code>suiteXmlFiles</code> parameter.
    * <p/>
-   * Since 2.7.3, you can execute a limited number of methods in the test by
+   * You can execute a limited number of methods in the test by
    * adding #myMethod or #my*ethod. For example, "-Dtest=MyTest#myMethod". This
    * is supported for junit 4.x and testNg.
    */
@@ -511,8 +511,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * Set this to "true" to cause a failure if the none of the tests specified in
    * -Dtest=... are run. Defaults to "true".
-   *
-   * @since 2.12
    */
   @Parameter(property = "surefire.failIfNoSpecifiedTests")
   private Boolean failIfNoSpecifiedTests;
@@ -523,8 +521,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    * other string, that string will be appended to the argLine, allowing you to
    * configure arbitrary debuggability options (without overwriting the other
    * options specified through the <code>argLine</code> parameter).
-   *
-   * @since 2.4
    */
   @Parameter(property = "maven.surefire.debug")
   private String debugForkedProcess;
@@ -532,8 +528,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * Kill the forked test process after a certain number of seconds. If set to
    * 0, wait forever for the process, never timing out.
-   *
-   * @since 2.4
    */
   @Parameter(property = "surefire.timeout")
   private int forkedProcessTimeoutInSeconds;
@@ -555,6 +549,23 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Parameter
   private List<String> includes;
 
+  /**
+   * Stop executing queued parallel JUnit tests after a certain number of seconds.
+   * If set to 0, wait forever, never timing out.
+   * Makes sense with specified <code>parallel</code> different from "none".
+   */
+  @Parameter( property = "failsafe.parallel.timeout" )
+  private int parallelTestsTimeoutInSeconds;
+
+  /**
+   * Stop executing queued parallel JUnit tests
+   * and <em>interrupt</em> currently running tests after a certain number of seconds.
+   * If set to 0, wait forever, never timing out.
+   * Makes sense with specified <code>parallel</code> different from "none".
+   */
+  @Parameter( property = "failsafe.parallel.forcedTimeout" )
+  private int parallelTestsTimeoutForcedInSeconds;
+
   @Override
   protected void handleSummary(RunResult summary, NestedCheckedException firstForkException)
       throws MojoExecutionException, MojoFailureException {
@@ -573,7 +584,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   protected void executeAfterPreconditionsChecked(DefaultScanResult scanResult) throws MojoExecutionException, MojoFailureException {
     if (getEffectiveForkCount() <= 0) {
-      getLog().warn("ForkCount=0 is know not to work for GWT tests");
+      getLog().warn("ForkCount=0 is known not to work for GWT tests");
     }
     super.executeAfterPreconditionsChecked(scanResult);
   }
@@ -665,33 +676,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   public void setClassesDirectory(File classesDirectory) {
     this.classesDirectory = classesDirectory;
-  }
-
-  @Override
-  public List<String> getClasspathDependencyExcludes() {
-    return classpathDependencyExcludes;
-  }
-
-  @Override
-  public void setClasspathDependencyExcludes(List<String> classpathDependencyExcludes) {
-    this.classpathDependencyExcludes = classpathDependencyExcludes;
-  }
-
-  @Override
-  public String getClasspathDependencyScopeExclude() {
-    return classpathDependencyScopeExclude;
-  }
-
-  @Override
-  public void setClasspathDependencyScopeExclude(String classpathDependencyScopeExclude) {
-    this.classpathDependencyScopeExclude = classpathDependencyScopeExclude;
-  }
-
-  // getAdditionalClasspathElements is defined above
-
-  @Override
-  public void setAdditionalClasspathElements(List<String> additionalClasspathElements) {
-    this.additionalClasspathElements = additionalClasspathElements;
   }
 
   @Override
@@ -842,4 +826,23 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   public void setTestFailureIgnore(boolean testFailureIgnore) {
     this.testFailureIgnore = testFailureIgnore;
   }
-}
+
+  @Override
+  public int getParallelTestsTimeoutInSeconds() {
+    return parallelTestsTimeoutInSeconds;
+  }
+
+  @Override
+  public void setParallelTestsTimeoutInSeconds(int parallelTestsTimeoutInSeconds) {
+    this.parallelTestsTimeoutInSeconds = parallelTestsTimeoutInSeconds;
+  }
+
+  @Override
+  public int getParallelTestsTimeoutForcedInSeconds() {
+    return parallelTestsTimeoutForcedInSeconds;
+  }
+
+  @Override
+  public void setParallelTestsTimeoutForcedInSeconds(int parallelTestsTimeoutForcedInSeconds) {
+    this.parallelTestsTimeoutForcedInSeconds = parallelTestsTimeoutForcedInSeconds;
+  }}
