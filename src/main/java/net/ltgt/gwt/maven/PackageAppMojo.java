@@ -52,10 +52,10 @@ public class PackageAppMojo extends AbstractMojo {
   @Parameter
   private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
 
-  @Component
+  @Parameter(defaultValue = "${project}", required = true, readonly = true)
   private MavenProject project;
 
-  @Component
+  @Parameter(defaultValue = "${session}", required = true, readonly = true)
   private MavenSession session;
 
   @Component(role = Archiver.class, hint = "war")

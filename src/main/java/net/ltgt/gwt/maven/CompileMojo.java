@@ -315,7 +315,7 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
 
   // TODO: speedtracer
 
-  @Component
+  @Parameter(defaultValue = "${project}", required = true, readonly = true)
   private MavenProject project;
 
   @Parameter(defaultValue = "${plugin.artifactMap}", required = true, readonly = true)
