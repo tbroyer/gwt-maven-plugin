@@ -1,6 +1,22 @@
 language: java
+
+jdk:
+  - oraclejdk7
+  - openjdk7
+#  - oraclejdk8
+
 install: mvn install clean --fail-never --quiet -DskipTests=true -Dinvoker.skip=true
 script: mvn verify -Dinvoker.streamLogs=true -Dinvoker.mavenOpts="-Djava.net.preferIPv4Stack=true"
+
+after_success:
+  - ci/deploy-snapshot.sh
+
 notifications:
   email: false
+
+sudo: false
+cache:
+  directories:
+    - $HOME/.m2
+    - target/it-repo
 
