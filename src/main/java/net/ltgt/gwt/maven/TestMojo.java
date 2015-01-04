@@ -229,13 +229,18 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   public SourceLevel getSourceLevel() {
     assert (sourceLevel == null && source == null) || source.equals(SourceLevel.fromString(sourceLevel));
     if (source == null) {
-      setSourceLevel(System.getProperty("java.specification.version"));
+      setSourceLevel("auto");
       assert source != null;
     }
     return source;
   }
 
   public void setSourceLevel(String sourceLevel) {
+    if ("auto".equals(sourceLevel)) {
+      this.source = SourceLevel.DEFAULT_SOURCE_LEVEL;
+      this.sourceLevel = this.source.getStringValue();
+      return;
+    }
     SourceLevel source = SourceLevel.fromString(sourceLevel);
     if (source == null) {
       throw new IllegalArgumentException("Unknown sourceLevel value: " + sourceLevel);

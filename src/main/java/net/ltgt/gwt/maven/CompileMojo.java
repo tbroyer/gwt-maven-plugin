@@ -851,7 +851,7 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   public SourceLevel getSourceLevel() {
     assert (sourceLevel == null && source == null) || source.equals(SourceLevel.fromString(sourceLevel));
     if (source == null) {
-      setSourceLevel(System.getProperty("java.specification.version"));
+      setSourceLevel(SourceLevel.DEFAULT_SOURCE_LEVEL);
       assert source != null;
     }
     return source;
@@ -864,6 +864,10 @@ public class CompileMojo extends AbstractMojo implements CompilerOptions {
   }
 
   public void setSourceLevel(String sourceLevel) {
+    if ("auto".equals(sourceLevel)) {
+      setSourceLevel(SourceLevel.DEFAULT_SOURCE_LEVEL);
+      return;
+    }
     SourceLevel source = SourceLevel.fromString(sourceLevel);
     if (source == null) {
       throw new IllegalArgumentException("Unknown sourceLevel value: " + sourceLevel);
