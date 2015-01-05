@@ -123,6 +123,18 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
   private List<String> compilerArgs;
 
   /**
+   * Arguments to be passed to the forked JVM (e.g. {@code -Xmx})
+   */
+  @Parameter
+  private List<String> jvmArgs;
+
+  /**
+   * List of system properties to pass to the GWT compiler.
+   */
+  @Parameter
+  private Map<String, String> systemProperties;
+
+  /**
    * Sets the granularity in milliseconds of the last modification
    * date for testing whether the module needs recompilation.
    */
@@ -146,8 +158,6 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
    */
   @Parameter(property = "gwt.skipCompilation", defaultValue="false")
   private boolean skipCompilation;
-
-  // TODO: speedtracer
 
   @Parameter(defaultValue = "${project}", required = true, readonly = true)
   private MavenProject project;
@@ -178,7 +188,14 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     final Path workingDir = baseDir.resolve(project.getBuild().getDirectory());
 
     List<String> args = new ArrayList<String>();
-    // TODO: JVM args
+    if (jvmArgs != null) {
+      args.addAll(jvmArgs);
+    }
+    if (systemProperties != null) {
+      for (Map.Entry<String, String> entry : systemProperties.entrySet()) {
+        args.add("-D" + entry.getKey() + "=" + entry.getValue());
+      }
+    }
     args.add("com.google.gwt.dev.Compiler");
     args.addAll(CommandlineBuilder.buildArgs(getLog(), workingDir, this));
     if (strict) {
