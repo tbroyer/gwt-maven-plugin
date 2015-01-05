@@ -3,5 +3,5 @@ if [ "$TRAVIS_REPO_SLUG" == "tbroyer/gwt-maven-plugin" ] && \
    [ "$TRAVIS_PULL_REQUEST" == "false" ] && \
    [ "$TRAVIS_BRANCH" == "master" ]; then
 
-  mvn -s ci/settings.xml clean source:jar deploy -DskipTests
+  mvn -s ci/settings.xml clean source:jar deploy -Dmaven.test.skip=true -Dinvoker.skip=true
 fi
