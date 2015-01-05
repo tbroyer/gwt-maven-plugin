@@ -1,10 +1,13 @@
 package net.ltgt.gwt.maven;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-import com.google.common.io.LineProcessor;
-import com.google.common.io.Resources;
-import com.google.gwt.dev.cfg.ModuleDef;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -31,14 +34,10 @@ import org.codehaus.plexus.util.xml.Xpp3DomWriter;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.Set;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import com.google.common.io.LineProcessor;
+import com.google.common.io.Resources;
 
 /**
  * Generates a GWT module definition from Maven dependencies, or merge {@code <inherits/>} with a module template.
@@ -115,9 +114,9 @@ public class GenerateModuleMojo extends AbstractMojo {
       throw new MojoExecutionException("Missing moduleName");
     }
 
-    if (!ModuleDef.isValidModuleName(moduleName)) {
-      throw new MojoExecutionException("Invalid module name: " + moduleName);
-    }
+//    if (!ModuleDef.isValidModuleName(moduleName)) {
+//      throw new MojoExecutionException("Invalid module name: " + moduleName);
+//    }
 
     File outputFile = new File(outputDirectory, moduleName.replace('.', '/') + ".gwt.xml");
 
@@ -266,10 +265,10 @@ public class GenerateModuleMojo extends AbstractMojo {
             getLog().warn("Configuration file contains more than one module name, picking first: " + resource);
             return false;
           }
-          if (!ModuleDef.isValidModuleName(line)) {
-            getLog().warn("Illegal configuration-file syntax, skipping " + resource);
-            return false;
-          }
+//          if (!ModuleDef.isValidModuleName(line)) {
+//            getLog().warn("Illegal configuration-file syntax, skipping " + resource);
+//            return false;
+//          }
           module = line;
           // Continue processing lines to warn of illegal syntax
           return true;

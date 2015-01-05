@@ -1,40 +1,29 @@
 package net.ltgt.gwt.maven;
 
-import com.google.gwt.core.ext.TreeLogger;
-import com.google.gwt.dev.jjs.JsOutputOption;
-import com.google.gwt.dev.util.arg.SourceLevel;
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
-import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
+import javax.annotation.Nullable;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.surefire.AbstractSurefireMojo;
 import org.apache.maven.plugin.surefire.SurefireHelper;
 import org.apache.maven.plugin.surefire.SurefireReportParameters;
 import org.apache.maven.plugin.surefire.booterclient.ChecksumCalculator;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.surefire.suite.RunResult;
 import org.apache.maven.surefire.util.DefaultScanResult;
 import org.apache.maven.surefire.util.NestedCheckedException;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 @Mojo(name = "test", defaultPhase = LifecyclePhase.TEST, threadSafe = true, requiresDependencyResolution = ResolutionScope.TEST)
-public class TestMojo extends AbstractSurefireMojo implements SurefireReportParameters {
+public class TestMojo extends AbstractSurefireMojo implements SurefireReportParameters, GwtOptions {
 
   // GWT-specific properties
   /**
@@ -42,38 +31,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    */
   @Parameter(property = "gwt.port")
   private int port;
-
-  /**
-   * Sets the level of logging detail. Defaults to Maven's own log level.
-   * <p>
-   * If this is set lower than what's loggable at the Maven level, then lower
-   * levels will be log at Maven's lowest logging level. For instance, if this
-   * is set to {@link TreeLogger#INFO INFO} and Maven has been run in
-   * quiet mode (showing only errors), then warnings and informational messages
-   * emitted by GWT will actually be logged as errors by the plugin.
-   */
-  @Parameter(property = "gwt.logLevel")
-  private TreeLogger.Type logLevel;
-
-  private TreeLogger.Type getLogLevel() {
-    return (logLevel == null) ? MavenTreeLogger.getLogLevel(getLog()) : logLevel;
-  }
-
-  /**
-   * Whether or not to output transient generated files.
-   */
-  @Parameter(property = "gwt.outputGen", defaultValue = "false")
-  private boolean outputGen;
-
-  /**
-   * Debugging: causes normally-transient generated types to be saved in the specified directory.
-   */
-  @Parameter(defaultValue = "${project.build.directory}/gwt/gen")
-  private File gen;
-
-  private File getGenDir() {
-    return outputGen ? gen : null;
-  }
 
   /**
    * Specifies the TCP port for the code server (defaults to automatically picking an available port)
@@ -84,24 +41,14 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * The directory into which deployable but not servable output files will be written.
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt/extra")
+  @Parameter(defaultValue = "${project.build.directory}/gwt-tests/deploy")
   private File deploy;
-
-  /**
-   * Whether or not to output extra files.
-   */
-  @Parameter(property = "gwt.outputExtra", defaultValue = "false")
-  private boolean outputExtra;
 
   /**
    * The directory into which extra files, not intended for deployment, will be written.
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt/extra")
+  @Parameter
   private File extra;
-
-  private File getExtraDir() {
-    return outputExtra ? extra : null;
-  }
 
   /**
    * The compiler work directory (must be writeable).
@@ -113,44 +60,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    * Script output style: OBFUSCATED, PRETTY, or DETAILED.
    */
   @Parameter(property = "gwt.style", defaultValue = "OBFUSCATED")
-  private JsOutputOption style;
-
-  /**
-   * EXPERIMENTAL: Tells the Production Mode compiler to perform aggressive optimizations.
-   */
-  @Deprecated
-  @Parameter(property = "gwt.aggressiveOptimizations", defaultValue = "true")
-  private boolean aggressiveOptimizations;
-
-  /**
-   * EXPERIMENTAL: Insert run-time checking of cast operations.
-   */
-  @Parameter(property = "gwt.checkCasts", defaultValue = "true")
-  private boolean checkCasts;
-
-  /**
-   * EXPERIMENTAL: Check to see if an updated version of GWT is available.
-   */
-  @Parameter(property = "gwt.checkForUpdates", defaultValue = "false")
-  private boolean checkForUpdates;
-
-  /**
-   * EXPERIMENTAL: Include metadata for some {@code java.lang.Class} methods (e.g. {@code getName()}).
-   */
-  @Parameter(property = "gwt.classMetadata", defaultValue = "true")
-  private boolean classMetadata;
-
-  /**
-   * EXPERIMENTAL: Cluster similar functions in the output to improve compression.
-   */
-  @Parameter(property = "gwt.clusterFunctions", defaultValue = "true")
-  private boolean clusterFunctions;
-
-  /**
-   * EXPERIMENTAL: Split code on runAsync boundaries.
-   */
-  @Parameter(property = "gwt.codeSplitting", defaultValue = "true")
-  private boolean codeSplitting;
+  private Style style;
 
   /**
    * Runs tests in Development Mode, using the Java virtual machine.
@@ -165,57 +75,22 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private boolean draftCompile;
 
   /**
-   * EXPERIMENTAL: Inline literal parameters to shrink function declarations and provide more deadcode elimination possibilities.
-   */
-  @Parameter(property = "gwt.inlineLiteralParameters", defaultValue = "true")
-  private boolean inlineLiteralParameters;
-
-  /**
    * The number of local workers to use when compiling permutations.
    */
   @Parameter(property = "gwt.localWorkers")
   private int localWorkers;
 
   /**
-   * Set the test method timeout, in minutes.
+   * Sets the level of logging detail. Defaults to Maven's own log level.
    */
-  @Parameter(property = "gwt.test.methodTimeout", defaultValue = "5")
-  private int testMethodTimeout;
+  @Parameter(property = "gwt.logLevel")
+  private LogLevel logLevel;
 
   /**
-   * Set the test begin timeout (time for clients to contact server), in minutes.
+   * Sets the optimization level used by the compiler.  0=none 9=maximum.
    */
-  @Parameter(property = "gwt.test.beginTimeout", defaultValue = "1")
-  private int testBeginTimeout;
-
-  /**
-   * Selects the runstyle to use for this test.  The name is a suffix of
-   * {@code com.google.gwt.junit.RunStyle} or is a fully qualified class name, and may be
-   * followed with a colon and an argument for this runstyle.  The specified class must
-   * extend RunStyle.
-   */
-  @Parameter(property = "gwt.test.runStyle", defaultValue = "HtmlUnit")
-  private String runStyle;
-
-  /**
-   * EXPERIMENTAL: Analyze and optimize dataflow.
-   */
-  @Parameter(property = "gwt.optimizeDataflow", defaultValue = "true")
-  private boolean optimizeDataflow;
-
-  /**
-   * EXPERIMENTAL: Ordinalize enums to reduce some large strings.
-   */
-  @Parameter(property = "gwt.ordinalizeEnums", defaultValue = "true")
-  private boolean ordinalizeEnums;
-
-  /**
-   * EXPERIMENTAL: Removing duplicate functions.
-   * <p>
-   * Will interfere with stacktrace deobfuscation and so is only honored when {@code compiler.stackMode} is set to strip.
-   */
-  @Parameter(property = "gwt.removeDuplicateFunctions", defaultValue = "true")
-  private boolean removeDuplicateFunctions;
+  @Parameter(property = "gwt.optimize", defaultValue = "9")
+  private int optimize;
 
   /**
    * Specifies Java source level.
@@ -223,89 +98,31 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Parameter(property = "maven.compiler.source")
   private String sourceLevel;
 
-  // Used internally, mirrors sourceLevel.
-  private SourceLevel source;
-
-  public SourceLevel getSourceLevel() {
-    assert (sourceLevel == null && source == null) || source.equals(SourceLevel.fromString(sourceLevel));
-    if (source == null) {
-      setSourceLevel("auto");
-      assert source != null;
-    }
-    return source;
-  }
-
-  public void setSourceLevel(String sourceLevel) {
-    if ("auto".equals(sourceLevel)) {
-      this.source = SourceLevel.DEFAULT_SOURCE_LEVEL;
-      this.sourceLevel = this.source.getStringValue();
-      return;
-    }
-    SourceLevel source = SourceLevel.fromString(sourceLevel);
-    if (source == null) {
-      throw new IllegalArgumentException("Unknown sourceLevel value: " + sourceLevel);
-    }
-    this.sourceLevel = sourceLevel;
-    this.source = source;
-  }
-
-  /**
-   * Configure batch execution of tests. Value can be one of none, class or module.
-   */
-  @Parameter(property = "gwt.test.batch", defaultValue = "none")
-  private String batch;
-
-  public void setBatch(String batch) {
-    if (!batch.equals("none") && !batch.equals("class") && !batch.equals("module")) {
-      throw new IllegalArgumentException("batch");
-    }
-    this.batch = batch;
-  }
-
-  /**
-   * Causes the log window and browser windows to be displayed; useful for debugging.
-   */
-  @Parameter(property = "gwt.test.showUi")
-  private boolean showUi;
-
-  /**
-   * Precompile modules as tests are running (speeds up remote tests but requires more memory).
-   * Value can be one of simple, all or parallel.
-   */
-  @Parameter(property = "gwt.test.precompile", defaultValue = "simple")
-  private String precompile;
-
-  public void setPrecompile(String precompile) {
-    if (!precompile.equals("simple") && !precompile.equals("all") && !precompile.equals("parallel")) {
-      throw new IllegalArgumentException("precompile");
-    }
-    this.precompile = precompile;
-  }
-
-  /**
-   * Run each test using an HTML document in quirks mode (rather than standards mode).
-   */
-  @Parameter(property = "gwt.test.runStandardsMode")
-  private boolean runStandardsMode;
-
-  /**
-   * EXPERIMENTAL: Sets the maximum number of attempts for running each test method.
-   */
-  @Parameter(property = "gwt.test.tries", defaultValue = "1")
-  private int tries;
-
-  /**
-   * Specify the user agents to reduce the number of permutations for remote browser tests;
-   * e.g. ie6,ie8,safari,gecko1_8,opera.
-   */
-  @Parameter(property = "gwt.test.userAgents")
-  private String userAgents;
-
   /**
    * The directory to write output files into.
    */
   @Parameter(defaultValue = "${project.build.directory}/gwt-tests/www")
   private File outDir;
+
+  /**
+   * Additional arguments to be passed to the GWT compiler.
+   */
+  @Parameter
+  private List<String> compilerArgs;
+
+  /**
+   * Additional arguments to be passed to the JUnitShell.
+   */
+  @Parameter
+  private List<String> testArgs;
+
+  /**
+   * Whether to prepend {@code #compilerArgs} to {@link #testArgs}.
+   * <p>
+   * This allows reuse when the {@code #compilerArgs} aren't incompatible with JUnitShell.
+   */
+  @Parameter(defaultValue = "false")
+  private boolean useCompilerArgsForTests;
 
   @Override
   public Map<String, String> getSystemPropertyVariables() {
@@ -317,60 +134,27 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
       StringBuilder sb = new StringBuilder();
       if (port > 0) {
         sb.append(" -port ").append(port);
-      } else {
-        sb.append(" -port auto ");
-      }
-      sb.append(" -logLevel ").append(getLogLevel());
-      File gen = getGenDir();
-      if (gen != null) {
-        sb.append(" -gen ").append(quote(gen.getAbsolutePath()));
       }
       if (codeServerPort > 0) {
         sb.append(" -codeServerPort ").append(codeServerPort);
-      } else {
-        sb.append(" -codeServerPort auto ");
       }
-      sb.append(" -deploy ").append(quote(deploy.getAbsolutePath()));
-      File extra = getExtraDir();
-      if (extra != null) {
-        sb.append(" -extra ").append(quote(extra.getAbsolutePath()));
+      final File workingDir = getWorkingDirectory() != null ? getWorkingDirectory() : getBasedir();
+      for (String arg : CommandlineBuilder.buildArgs(getLog(), workingDir.toPath(), this)) {
+        sb.append(" ").append(quote(arg));
       }
-      sb.append(" -workDir ").append(quote(workDir.getAbsolutePath()));
-      sb.append(" -style ").append(style);
-      sb.append(effectiveIsEnableAssertions() ? " -checkAssertions " : " -nocheckAssertions ");
-      sb.append(aggressiveOptimizations ? " -XaggressiveOptimizations " : " -XnoaggressiveOptimizations ");
-      sb.append(clusterFunctions ? " -XclusterFunctions " : " -XnoclusterFunctions ");
-      sb.append(inlineLiteralParameters ? " -XinlineLiteralParameters " : " -XnoinlineLiteralParameters ");
-      sb.append(optimizeDataflow ? " -XoptimizeDataflow " : " -XnooptimizeDataflow ");
-      sb.append(ordinalizeEnums ? " -XordinalizeEnums " : " -XnoordinalizeEnums ");
-      sb.append(removeDuplicateFunctions ? " -XremoveDuplicateFunctions " : " -XnoremoveDuplicateFunctions ");
-      sb.append(classMetadata ? " -XclassMetadata " : " -XnoclassMetadata ");
-      sb.append(checkCasts ? " -XcheckCasts " : " -XnocheckCasts ");
-      sb.append(codeSplitting ? " -XcodeSplitting " : " -XnocodeSplitting ");
-      sb.append(checkForUpdates ? " -XcheckforUpdates " : " -XnocheckForUpdates ");
-      sb.append(draftCompile ? " -draftCompile " : " -nodraftCompile ");
-      int workers = localWorkers;
-      if (workers < 1) {
-        workers = Runtime.getRuntime().availableProcessors();
-        if (getLog().isDebugEnabled()) {
-          getLog().debug("Using " + workers + " local workers");
+      sb.append(devMode ? " -devMode" : " -nodevMode");
+      sb.append(effectiveIsEnableAssertions() ? " -checkAssertions" : " -nocheckAssertions");
+
+      if (useCompilerArgsForTests && compilerArgs != null) {
+        for (String arg : compilerArgs) {
+          sb.append(" ").append(quote(arg));
         }
       }
-      sb.append(" -localWorkers ").append(workers);
-      sb.append(devMode ? " -devMode " : " -nodevMode ");
-      sb.append(" -testMethodTimeout ").append(testMethodTimeout);
-      sb.append(" -testBeginTimeout ").append(testBeginTimeout);
-      sb.append(" -runStyle ").append(quote(runStyle));
-      sb.append(" -batch ").append(batch);
-      sb.append(showUi ? " -showUi " : " -noshowUi ");
-      sb.append(" -precompile ").append(precompile);
-      sb.append(runStandardsMode ? " -runStandardsMode " : " -norunStandardsMode ");
-      sb.append(" -sourceLevel ").append(getSourceLevel().getStringValue());
-      sb.append(" -Xtries ").append(tries);
-      if (StringUtils.isNotBlank(userAgents)) {
-        sb.append(" -userAgents ").append(quote(userAgents));
+      if (testArgs != null) {
+        for (String arg : testArgs) {
+          sb.append(" ").append(quote(arg));
+        }
       }
-      sb.append(" -war ").append(quote(outDir.getAbsolutePath()));
 
       props.put("gwt.args", sb.toString());
     }
@@ -398,66 +182,18 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   protected void addPluginSpecificChecksumItems(ChecksumCalculator checksum) {
     checksum.add(port);
-    checksum.add(String.valueOf(logLevel));
-    checksum.add(outputGen);
-    checksum.add(gen);
     checksum.add(codeServerPort);
     checksum.add(deploy);
-    checksum.add(outputExtra);
     checksum.add(extra);
     checksum.add(workDir);
-    checksum.add(String.valueOf(style));
-    checksum.add(aggressiveOptimizations);
-    checksum.add(clusterFunctions);
-    checksum.add(inlineLiteralParameters);
-    checksum.add(optimizeDataflow);
-    checksum.add(ordinalizeEnums);
-    checksum.add(removeDuplicateFunctions);
-    checksum.add(classMetadata);
-    checksum.add(checkCasts);
-    checksum.add(codeSplitting);
-    checksum.add(checkForUpdates);
+    checksum.add(style.name());
     checksum.add(draftCompile);
     checksum.add(localWorkers);
     checksum.add(devMode);
-    checksum.add(testBeginTimeout);
-    checksum.add(testMethodTimeout);
-    checksum.add(runStyle);
-    checksum.add(batch);
-    checksum.add(showUi);
-    checksum.add(precompile);
-    checksum.add(runStandardsMode);
-    checksum.add(tries);
-    checksum.add(userAgents);
-    checksum.add(getSourceLevel().getStringValue());
-  }
-
-  @Component
-  private RepositorySystem repositorySystem;
-
-  private Set<String> gwtDevArtifacts;
-
-  @Override
-  public String[] getAdditionalClasspathElements() {
-    LinkedHashSet<String> elts = new LinkedHashSet<String>();
-    String[] additionalClasspathElements = super.getAdditionalClasspathElements();
-    if (additionalClasspathElements != null) {
-      elts.addAll(Arrays.asList(additionalClasspathElements));
-    }
-    if (gwtDevArtifacts == null) {
-      ArtifactResolutionRequest request = new ArtifactResolutionRequest()
-          .setArtifact(pluginArtifactMap.get("com.google.gwt:gwt-dev"))
-          .setResolveTransitively(true)
-          .setLocalRepository(localRepository)
-          .setRemoteRepositories(remoteRepositories);
-      ArtifactResolutionResult result = repositorySystem.resolve(request);
-      gwtDevArtifacts = new LinkedHashSet<String>();
-      for (Artifact artifact : result.getArtifacts()) {
-        gwtDevArtifacts.add(artifact.getFile().getAbsolutePath());
-      }
-    }
-    elts.addAll(gwtDevArtifacts);
-    return elts.toArray(new String[elts.size()]);
+    checksum.add(sourceLevel);
+    checksum.add(compilerArgs);
+    checksum.add(testArgs);
+    checksum.add(useCompilerArgsForTests);
   }
 
   // Properties copied from Surefire
@@ -850,4 +586,58 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   public void setParallelTestsTimeoutForcedInSeconds(int parallelTestsTimeoutForcedInSeconds) {
     this.parallelTestsTimeoutForcedInSeconds = parallelTestsTimeoutForcedInSeconds;
-  }}
+  }
+
+  // GwtOptions
+
+  @Override
+  public LogLevel getLogLevel() {
+    return logLevel;
+  }
+
+  @Override
+  public Style getStyle() {
+    return style;
+  }
+
+  @Override
+  public int getOptimize() {
+    return optimize;
+  }
+
+  @Override
+  public File getWarDir() {
+    return outDir;
+  }
+
+  @Override
+  public File getWorkDir() {
+    return workDir;
+  }
+
+  @Override
+  public File getDeployDir() {
+    return deploy;
+  }
+
+  @Nullable
+  @Override
+  public File getExtraDir() {
+    return extra;
+  }
+
+  @Override
+  public boolean isDraftCompile() {
+    return draftCompile;
+  }
+
+  @Override
+  public int getLocalWorkers() {
+    return localWorkers;
+  }
+
+  @Override
+  public String getSourceLevel() {
+    return sourceLevel;
+  }
+}

@@ -1,6 +1,7 @@
 package net.ltgt.gwt.maven;
 
-import com.google.gwt.dev.cfg.ModuleDef;
+import java.io.File;
+import java.io.IOException;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -12,9 +13,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.plexus.build.incremental.BuildContext;
-
-import java.io.File;
-import java.io.IOException;
 
 @Mojo(name = "generate-module-metadata", threadSafe = true, defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public class GenerateModuleMetadataMojo extends AbstractMojo {
@@ -50,9 +48,9 @@ public class GenerateModuleMetadataMojo extends AbstractMojo {
       throw new MojoExecutionException("Missing moduleName");
     }
 
-    if (!ModuleDef.isValidModuleName(moduleName)) {
-      throw new MojoExecutionException("Invalid module name: " + moduleName);
-    }
+//    if (!ModuleDef.isValidModuleName(moduleName)) {
+//      throw new MojoExecutionException("Invalid module name: " + moduleName);
+//    }
 
     File outputFile = new File(outputDirectory, "mainModule");
     if (outputFile.isFile()) {
