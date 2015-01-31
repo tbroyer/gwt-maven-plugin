@@ -63,8 +63,7 @@ public class PackageAppMojo extends AbstractMojo {
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
-    // ignoreWebxml works backwards! See http://jira.codehaus.org/browse/PLXCOMP-45
-    warArchiver.setIgnoreWebxml(false);
+    warArchiver.setExpectWebXml(false);
 
     File warFile = new File(outputDirectory, warName + ".war");
 
