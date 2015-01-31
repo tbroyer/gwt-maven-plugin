@@ -162,17 +162,6 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
   @Parameter(defaultValue = "${project}", required = true, readonly = true)
   private MavenProject project;
 
-  @Parameter(defaultValue = "${plugin.artifactMap}", required = true, readonly = true)
-  private Map<String, Artifact> pluginArtifactMap;
-
-  @Component
-  private RepositorySystem repositorySystem;
-
-  @Parameter( defaultValue = "${localRepository}", required = true, readonly = true )
-  private ArtifactRepository localRepository;
-
-  private Set<Artifact> gwtSdkArtifacts;
-
   public void execute() throws MojoExecutionException {
     if (skipCompilation) {
       getLog().info("GWT compilation is skipped");
