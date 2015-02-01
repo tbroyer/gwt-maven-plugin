@@ -11,8 +11,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -151,6 +153,11 @@ public class CodeServerMojo extends AbstractMojo {
     final Path baseDir = project.getBasedir().toPath();
     final Path workingDir = baseDir.resolve(project.getBuild().getDirectory());
 
+    LinkedHashSet<String> sources = new LinkedHashSet<>();
+    for (MavenProject p : projectList) {
+      addSources(p, sources, workingDir);
+    }
+
     List<String> args = new ArrayList<>();
     if (jvmArgs != null) {
       args.addAll(jvmArgs);
@@ -179,12 +186,16 @@ public class CodeServerMojo extends AbstractMojo {
     if (codeserverArgs != null) {
       args.addAll(codeserverArgs);
     }
+    args.add("-allowMissingSrc");
+    for (String src : sources) {
+      args.add("-src");
+      args.add(src);
+    }
     args.addAll(moduleList);
 
     LinkedHashSet<String> cp = new LinkedHashSet<>();
     try {
       for (MavenProject p : projectList) {
-        // TODO: add sources (incl. source dependencies from referenced projects, as in import-sources mojo)
         for (String elt : p.getCompileClasspathElements()) {
           cp.add(workingDir.relativize(baseDir.resolve(elt)).toString());
         }
@@ -226,6 +237,31 @@ public class CodeServerMojo extends AbstractMojo {
     }
     if (result != 0) {
       throw new MojoExecutionException("GWT Compiler exited with status " + result);
+    }
+  }
+
+  private final ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME_PLUS_SYSTEM);
+
+  private void addSources(MavenProject p, LinkedHashSet<String> sources, Path workingDir) {
+    final Path baseDir = p.getBasedir().toPath();
+    for (String sourceRoot : p.getCompileSourceRoots()) {
+      sources.add(workingDir.relativize(baseDir.resolve(sourceRoot)).toString());
+    }
+    for (Artifact artifact : p.getDependencyArtifacts()) {
+      if (!artifactFilter.include(artifact)) {
+        continue;
+      }
+      if (!"java-source".equals(artifact.getArtifactHandler().getPackaging()) &&
+          !"gwt-lib".equals(artifact.getArtifactHandler().getPackaging()) &&
+          !"sources".equals(artifact.getArtifactHandler().getClassifier())) {
+        continue;
+      }
+      String key = ArtifactUtils.key(artifact);
+      MavenProject reference = p.getProjectReferences().get(key);
+      if (reference == null) {
+        continue;
+      }
+      addSources(reference, sources, workingDir);
     }
   }
 }
