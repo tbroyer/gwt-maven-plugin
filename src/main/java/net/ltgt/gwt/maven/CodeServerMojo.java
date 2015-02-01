@@ -72,7 +72,7 @@ public class CodeServerMojo extends AbstractMojo {
   /**
    * The compiler work directory (must be writeable).
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt/codeserver/work")
+  @Parameter(defaultValue = "${project.build.directory}/gwt/codeserver")
   private File codeserverWorkDir;
 
   @Parameter(property = "launcherDir")
