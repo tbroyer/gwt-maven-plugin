@@ -1,6 +1,7 @@
 package net.ltgt.gwt.maven;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.utils.StringUtils;
+import org.apache.maven.shared.utils.io.FileUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -191,8 +193,12 @@ public class CodeServerMojo extends AbstractMojo {
       throw new MojoExecutionException(e.getMessage(), e);
     }
 
-    workingDir.toFile().mkdirs();
-    codeserverWorkDir.mkdirs();
+    try {
+      FileUtils.forceMkdir(workingDir.toFile());
+      FileUtils.forceMkdir(codeserverWorkDir);
+    } catch (IOException ioe) {
+      throw new MojoFailureException(ioe.getMessage(), ioe);
+    }
 
     Commandline commandline = new Commandline();
     commandline.setWorkingDirectory(workingDir.toFile());
