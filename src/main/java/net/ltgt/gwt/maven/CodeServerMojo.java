@@ -66,8 +66,8 @@ public class CodeServerMojo extends AbstractMojo {
   /**
    * Only succeed if no input files have errors.
    */
-  @Parameter(property = "gwt.strict", defaultValue = "false")
-  private boolean strict;
+  @Parameter(property = "gwt.failOnError", defaultValue = "false")
+  private boolean failOnError;
 
   /**
    * The compiler work directory (must be writeable).
@@ -176,8 +176,8 @@ public class CodeServerMojo extends AbstractMojo {
       args.add("-sourceLevel");
       args.add(sourceLevel);
     }
-    if (strict) {
-      args.add("-strict");
+    if (failOnError) {
+      args.add("-failOnError");
     }
     if (launcherDir != null) {
       args.add("-launcherDir");

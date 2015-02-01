@@ -14,17 +14,14 @@ import javax.annotation.Nullable;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.repository.RepositorySystem;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SourceMapping;
@@ -101,8 +98,8 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
   /**
    * Only succeed if no input files have errors.
    */
-  @Parameter(property = "gwt.strict", defaultValue = "false")
-  private boolean strict;
+  @Parameter(property = "gwt.failOnError", defaultValue = "false")
+  private boolean failOnError;
 
   /**
    * Specifies the location of the target war directory.
@@ -187,8 +184,8 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     }
     args.add("com.google.gwt.dev.Compiler");
     args.addAll(CommandlineBuilder.buildArgs(getLog(), workingDir, this));
-    if (strict) {
-      args.add("-strict");
+    if (failOnError) {
+      args.add("-failOnError");
     }
     if (compilerArgs != null) {
       args.addAll(compilerArgs);
