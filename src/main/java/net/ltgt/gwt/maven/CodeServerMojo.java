@@ -213,6 +213,9 @@ public class CodeServerMojo extends AbstractMojo {
     try {
       FileUtils.forceMkdir(workingDir.toFile());
       FileUtils.forceMkdir(codeserverWorkDir);
+      if (launcherDir != null) {
+        FileUtils.forceMkdir(launcherDir);
+      }
     } catch (IOException ioe) {
       throw new MojoFailureException(ioe.getMessage(), ioe);
     }
