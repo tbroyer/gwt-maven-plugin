@@ -32,6 +32,9 @@ import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 
+/**
+ * Runs GWT's CodeServer (SuperDevMode).
+ */
 @Mojo(name = "codeserver", requiresDependencyResolution = ResolutionScope.COMPILE, requiresDirectInvocation = true, threadSafe = true, aggregator = true)
 @Execute(phase = LifecyclePhase.PROCESS_CLASSES)
 public class CodeServerMojo extends AbstractMojo {
@@ -75,6 +78,9 @@ public class CodeServerMojo extends AbstractMojo {
   @Parameter(defaultValue = "${project.build.directory}/gwt/codeserver")
   private File codeserverWorkDir;
 
+  /**
+   * Directory where files for launching SuperDevMode (e.g. {@code *.nocache.js}) will be written. (Optional.)
+   */
   @Parameter(property = "launcherDir")
   private File launcherDir;
 
