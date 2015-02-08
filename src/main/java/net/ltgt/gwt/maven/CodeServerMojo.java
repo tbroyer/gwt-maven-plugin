@@ -214,8 +214,13 @@ public class CodeServerMojo extends AbstractMojo {
     Commandline commandline = new Commandline();
     commandline.setWorkingDirectory(workingDir.toFile());
     commandline.setExecutable(Paths.get(System.getProperty("java.home"), "bin", "java").toString());
-    commandline.addEnvironment("CLASSPATH", org.codehaus.plexus.util.StringUtils.join(cp.iterator(), File.pathSeparator));
+    commandline.addEnvironment("CLASSPATH", StringUtils.join(cp.iterator(), File.pathSeparator));
     commandline.addArguments(args.toArray(new String[args.size()]));
+
+    if (getLog().isDebugEnabled()) {
+      getLog().debug("Arguments: " + StringUtils.join(commandline.getArguments(), " "));
+      getLog().debug("Classpath: " + StringUtils.join(cp.iterator(), File.pathSeparator));
+    }
 
     int result;
     try {
@@ -243,6 +248,7 @@ public class CodeServerMojo extends AbstractMojo {
   private final ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME_PLUS_SYSTEM);
 
   private void addSources(MavenProject p, LinkedHashSet<String> sources, Path workingDir) {
+    getLog().debug("Adding sources for " + p.getId());
     final Path baseDir = p.getBasedir().toPath();
     for (String sourceRoot : p.getCompileSourceRoots()) {
       sources.add(workingDir.relativize(baseDir.resolve(sourceRoot)).toString());
@@ -254,11 +260,13 @@ public class CodeServerMojo extends AbstractMojo {
       if (!"java-source".equals(artifact.getArtifactHandler().getPackaging()) &&
           !"gwt-lib".equals(artifact.getArtifactHandler().getPackaging()) &&
           !"sources".equals(artifact.getArtifactHandler().getClassifier())) {
+        getLog().debug("Ignoring " + artifact.getId() + "; neither a java-source, gwt-lib or jar:sources.");
         continue;
       }
       String key = ArtifactUtils.key(artifact);
       MavenProject reference = p.getProjectReferences().get(key);
       if (reference == null) {
+        getLog().debug("Ignoring " + artifact.getId() + "; no corresponding project reference.");
         continue;
       }
       addSources(reference, sources, workingDir);
