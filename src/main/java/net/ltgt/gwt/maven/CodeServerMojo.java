@@ -259,7 +259,7 @@ public class CodeServerMojo extends AbstractMojo {
       }
       if (!"java-source".equals(artifact.getArtifactHandler().getPackaging()) &&
           !"gwt-lib".equals(artifact.getArtifactHandler().getPackaging()) &&
-          !"sources".equals(artifact.getArtifactHandler().getClassifier())) {
+          !"sources".equals(artifact.getClassifier())) {
         getLog().debug("Ignoring " + artifact.getId() + "; neither a java-source, gwt-lib or jar:sources.");
         continue;
       }
