@@ -138,8 +138,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
       if (codeServerPort > 0) {
         sb.append(" -codeServerPort ").append(codeServerPort);
       }
-      final File workingDir = getWorkingDirectory() != null ? getWorkingDirectory() : getBasedir();
-      for (String arg : CommandlineBuilder.buildArgs(getLog(), workingDir.toPath(), this)) {
+      for (String arg : CommandlineBuilder.buildArgs(getLog(), this)) {
         sb.append(" ").append(quote(arg));
       }
       sb.append(devMode ? " -devMode" : " -nodevMode");

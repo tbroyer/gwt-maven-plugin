@@ -1,7 +1,6 @@
 package net.ltgt.gwt.maven;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -170,9 +169,6 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
       return;
     }
 
-    final Path baseDir = project.getBasedir().toPath();
-    final Path workingDir = baseDir.resolve(project.getBuild().getDirectory());
-
     List<String> args = new ArrayList<String>();
     if (jvmArgs != null) {
       args.addAll(jvmArgs);
@@ -183,7 +179,7 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
       }
     }
     args.add("com.google.gwt.dev.Compiler");
-    args.addAll(CommandlineBuilder.buildArgs(getLog(), workingDir, this));
+    args.addAll(CommandlineBuilder.buildArgs(getLog(), this));
     if (failOnError) {
       args.add("-failOnError");
     }
@@ -193,19 +189,15 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     args.add(moduleName);
 
     Set<String> cp = new LinkedHashSet<String>();
-    for (String elt : project.getCompileSourceRoots()) {
-      cp.add(workingDir.relativize(baseDir.resolve(elt)).toString());
-    }
+    cp.addAll(project.getCompileSourceRoots());
     try {
-      for (String elt : project.getCompileClasspathElements()) {
-        cp.add(workingDir.relativize(baseDir.resolve(elt)).toString());
-      }
+      cp.addAll(project.getCompileClasspathElements());
     } catch (DependencyResolutionRequiredException e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
 
     Commandline commandline = new Commandline();
-    commandline.setWorkingDirectory(workingDir.toFile());
+    commandline.setWorkingDirectory(project.getBuild().getDirectory());
     commandline.setExecutable(Paths.get(System.getProperty("java.home"), "bin", "java").toString());
     commandline.addEnvironment("CLASSPATH", StringUtils.join(cp.iterator(), File.pathSeparator));
     commandline.addArguments(args.toArray(new String[args.size()]));

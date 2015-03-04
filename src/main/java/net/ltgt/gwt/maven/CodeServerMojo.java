@@ -2,7 +2,6 @@ package net.ltgt.gwt.maven;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -156,12 +155,9 @@ public class CodeServerMojo extends AbstractMojo {
       moduleList.addAll(Arrays.asList(StringUtils.split(modules, ",")));
     }
 
-    final Path baseDir = project.getBasedir().toPath();
-    final Path workingDir = baseDir.resolve(project.getBuild().getDirectory());
-
     LinkedHashSet<String> sources = new LinkedHashSet<>();
     for (MavenProject p : projectList) {
-      addSources(p, sources, workingDir);
+      addSources(p, sources);
     }
 
     List<String> args = new ArrayList<>();
@@ -177,7 +173,7 @@ public class CodeServerMojo extends AbstractMojo {
     args.add("-logLevel");
     args.add((logLevel == null ? GwtOptions.LogLevel.getLogLevel(getLog()) : logLevel).name());
     args.add("-workDir");
-    args.add(workingDir.relativize(codeserverWorkDir.toPath()).toString());
+    args.add(codeserverWorkDir.getAbsolutePath());
     if (sourceLevel != null) {
       args.add("-sourceLevel");
       args.add(sourceLevel);
@@ -187,7 +183,7 @@ public class CodeServerMojo extends AbstractMojo {
     }
     if (launcherDir != null) {
       args.add("-launcherDir");
-      args.add(workingDir.relativize(launcherDir.toPath()).toString());
+      args.add(launcherDir.getAbsolutePath());
     }
     if (codeserverArgs != null) {
       args.addAll(codeserverArgs);
@@ -202,16 +198,14 @@ public class CodeServerMojo extends AbstractMojo {
     LinkedHashSet<String> cp = new LinkedHashSet<>();
     try {
       for (MavenProject p : projectList) {
-        for (String elt : p.getCompileClasspathElements()) {
-          cp.add(workingDir.relativize(baseDir.resolve(elt)).toString());
-        }
+        cp.addAll(p.getCompileClasspathElements());
       }
     } catch (DependencyResolutionRequiredException e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
 
     try {
-      FileUtils.forceMkdir(workingDir.toFile());
+      FileUtils.forceMkdir(new File(project.getBuild().getDirectory()));
       FileUtils.forceMkdir(codeserverWorkDir);
       if (launcherDir != null) {
         FileUtils.forceMkdir(launcherDir);
@@ -221,7 +215,7 @@ public class CodeServerMojo extends AbstractMojo {
     }
 
     Commandline commandline = new Commandline();
-    commandline.setWorkingDirectory(workingDir.toFile());
+    commandline.setWorkingDirectory(project.getBuild().getDirectory());
     commandline.setExecutable(Paths.get(System.getProperty("java.home"), "bin", "java").toString());
     commandline.addEnvironment("CLASSPATH", StringUtils.join(cp.iterator(), File.pathSeparator));
     commandline.addArguments(args.toArray(new String[args.size()]));
@@ -256,12 +250,9 @@ public class CodeServerMojo extends AbstractMojo {
 
   private final ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME_PLUS_SYSTEM);
 
-  private void addSources(MavenProject p, LinkedHashSet<String> sources, Path workingDir) {
+  private void addSources(MavenProject p, LinkedHashSet<String> sources) {
     getLog().debug("Adding sources for " + p.getId());
-    final Path baseDir = p.getBasedir().toPath();
-    for (String sourceRoot : p.getCompileSourceRoots()) {
-      sources.add(workingDir.relativize(baseDir.resolve(sourceRoot)).toString());
-    }
+    sources.addAll(p.getCompileSourceRoots());
     for (Artifact artifact : p.getDependencyArtifacts()) {
       if (!artifactFilter.include(artifact)) {
         continue;
@@ -278,7 +269,7 @@ public class CodeServerMojo extends AbstractMojo {
         getLog().debug("Ignoring " + artifact.getId() + "; no corresponding project reference.");
         continue;
       }
-      addSources(reference, sources, workingDir);
+      addSources(reference, sources);
     }
   }
 }

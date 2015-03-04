@@ -1,7 +1,6 @@
 package net.ltgt.gwt.maven;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,19 +41,19 @@ public interface GwtOptions {
   }
 
   class CommandlineBuilder {
-    public static List<String> buildArgs(Log log, Path workingDir, GwtOptions options) {
+    public static List<String> buildArgs(Log log, GwtOptions options) {
       List<String> args = new ArrayList<>();
       args.add("-logLevel");
       args.add(getLogLevel(log, options.getLogLevel()));
       args.add("-war");
-      args.add(workingDir.relativize(options.getWarDir().toPath()).toString());
+      args.add(options.getWarDir().getAbsolutePath());
       args.add("-workDir");
-      args.add(workingDir.relativize(options.getWorkDir().toPath()).toString());
+      args.add(options.getWorkDir().getAbsolutePath());
       args.add("-deploy");
-      args.add(workingDir.relativize(options.getDeployDir().toPath()).toString());
+      args.add(options.getDeployDir().getAbsolutePath());
       if (options.getExtraDir() != null) {
         args.add("-extra");
-        args.add(workingDir.relativize(options.getExtraDir().toPath()).toString());
+        args.add(options.getExtraDir().getAbsolutePath());
       }
       args.add("-style");
       args.add(options.getStyle().name());
