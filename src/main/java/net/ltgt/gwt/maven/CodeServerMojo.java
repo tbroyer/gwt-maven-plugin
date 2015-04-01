@@ -253,6 +253,10 @@ public class CodeServerMojo extends AbstractMojo {
   private void addSources(MavenProject p, LinkedHashSet<String> sources) {
     getLog().debug("Adding sources for " + p.getId());
     sources.addAll(p.getCompileSourceRoots());
+    if (p.getDependencyArtifacts() == null) {
+      getLog().debug("Ignoring dependencies for " + p.getId() + "; no dependency artifacts");
+      return;
+    }
     for (Artifact artifact : p.getDependencyArtifacts()) {
       if (!artifactFilter.include(artifact)) {
         continue;
