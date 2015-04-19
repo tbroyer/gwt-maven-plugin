@@ -101,6 +101,9 @@ public class CodeServerMojo extends AbstractMojo {
   @Parameter
   private Map<String, String> systemProperties;
 
+  @Parameter(defaultValue = "${reactorProjects}", required = true, readonly = true)
+  private List<MavenProject> reactorProjects;
+
   @Parameter(defaultValue = "${project}", required = true, readonly = true)
   private MavenProject project;
 
@@ -111,14 +114,14 @@ public class CodeServerMojo extends AbstractMojo {
   public void execute() throws MojoExecutionException, MojoFailureException {
     List<MavenProject> projectList = new ArrayList<>();
     if (StringUtils.isBlank(projects)) {
-      for (MavenProject p : project.getCollectedProjects()) {
+      for (MavenProject p : reactorProjects) {
         if (p.getPackaging().equals("gwt-app")) {
           projectList.add(p);
         }
       }
     } else {
       Map<String, MavenProject> projectMap = new HashMap<>();
-      for (MavenProject p : project.getCollectedProjects()) {
+      for (MavenProject p : reactorProjects) {
         // XXX: how about duplicates?
         String key = p.getArtifactId();
         projectMap.put(key, p);
