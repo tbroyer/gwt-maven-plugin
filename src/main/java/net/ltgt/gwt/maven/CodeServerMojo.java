@@ -140,6 +140,10 @@ public class CodeServerMojo extends AbstractMojo {
       }
     }
 
+    if (projectList.isEmpty()) {
+      throw new MojoExecutionException("No project found");
+    }
+
     List<String> moduleList = new ArrayList<>();
     if (StringUtils.isBlank(modules)) {
       List<String> nonGwtAppProjects = new ArrayList<>();
@@ -156,6 +160,10 @@ public class CodeServerMojo extends AbstractMojo {
       }
     } else {
       moduleList.addAll(Arrays.asList(StringUtils.split(modules, ",")));
+    }
+
+    if (moduleList.isEmpty()) {
+      throw new MojoExecutionException("No module found");
     }
 
     LinkedHashSet<String> sources = new LinkedHashSet<>();
