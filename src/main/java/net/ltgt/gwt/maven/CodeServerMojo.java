@@ -268,16 +268,17 @@ public class CodeServerMojo extends AbstractMojo {
       if (!artifactFilter.include(artifact)) {
         continue;
       }
-      if (!"java-source".equals(artifact.getArtifactHandler().getPackaging()) &&
-          !"gwt-lib".equals(artifact.getArtifactHandler().getPackaging()) &&
-          !"sources".equals(artifact.getClassifier())) {
-        getLog().debug("Ignoring " + artifact.getId() + "; neither a java-source, gwt-lib or jar:sources.");
-        continue;
-      }
       String key = ArtifactUtils.key(artifact);
       MavenProject reference = p.getProjectReferences().get(key);
       if (reference == null) {
         getLog().debug("Ignoring " + artifact.getId() + "; no corresponding project reference.");
+        continue;
+      }
+      if (!"java-source".equals(artifact.getArtifactHandler().getPackaging()) &&
+          !"gwt-lib".equals(artifact.getArtifactHandler().getPackaging()) &&
+          !"sources".equals(artifact.getClassifier()) &&
+          !"gwt-lib".equals(reference.getPackaging())) {
+        getLog().debug("Ignoring " + artifact.getId() + "; neither a java-source, gwt-lib or jar:sources.");
         continue;
       }
       addSources(reference, sources);
