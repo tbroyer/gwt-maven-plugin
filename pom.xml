@@ -47,6 +47,10 @@
     </site>
   </distributionManagement>
 
+  <prerequisites>
+    <maven>3</maven>
+  </prerequisites>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
@@ -208,4 +212,37 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <profiles>
+    <profile>
+      <id>release-profile</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[1.7,1.8)</version>
+                </requireJavaVersion>
+                <requireReleaseDeps />
+                <requireNoRepositories>
+                  <allowSnapshotRepositories>true</allowSnapshotRepositories>
+                </requireNoRepositories>
+              </rules>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
