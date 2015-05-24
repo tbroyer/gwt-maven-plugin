@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20150524" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>Maven Plugin for GWT &#x2013; gwt:generate-module-metadata</title>
+    <title>Maven Plugin for GWT &#x2013; Artifact Handlers</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.4.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -55,7 +55,7 @@
         Maven Plugin for GWT</a>
                     <span class="divider">/</span>
       </li>
-        <li class="active ">gwt:generate-module-metadata</li>
+        <li class="active ">Artifact Handlers</li>
         
                 
                     
@@ -110,12 +110,10 @@
         Lifecycles</a>
             </li>
                 
-      <li>
+      <li class="active">
   
-                          <a href="artifact-handlers.html" title="Artifact Handlers">
-          <span class="none"></span>
-        Artifact Handlers</a>
-            </li>
+            <a href="#"><span class="none"></span>Artifact Handlers</a>
+          </li>
             </ul>
                 
                     
@@ -137,124 +135,15 @@
                 
         <div id="bodyColumn"  class="span10" >
                                   
-            
-  
-    <div class="section">
-<h2><a name="gwt:generate-module-metadata"></a>gwt:generate-module-metadata</h2>
-      
-<p><b>Full name</b>:</p>
-      
-<p>net.ltgt.gwt.maven:gwt-maven-plugin:1.0-SNAPSHOT:generate-module-metadata</p>
-      
-<p><b>Description</b>:</p>
-      
-<div>(no description)</div>
-      
-<p><b>Attributes</b>:</p>
-      
-<ul>
-        
-<li>Requires a Maven project to be executed.</li>
-        
-<li>The goal is thread-safe and supports parallel builds.</li>
-        
-<li>Binds by default to the <a class="externalLink" href="http://maven.apache.org/ref/current/maven-core/lifecycles.html">lifecycle phase</a>: <tt>generate-resources</tt>.</li>
-      </ul>
-      
+            <div class="section">
+<h2><a name="Artifact_Handlers"></a>Artifact Handlers</h2>
+<p>The Maven Plugin for GWT provides two artifact handlers, or in other words two dependency types: <tt>gwt-lib</tt> and <tt>gwt-app</tt>.</p>
 <div class="section">
-<h3><a name="Optional_Parameters"></a>Optional Parameters</h3>
-        
-<table class="table table-striped" border="0">
-          
-<tr class="a">
-            
-<th>Name</th>
-            
-<th>Type</th>
-            
-<th>Since</th>
-            
-<th>Description</th>
-          </tr>
-          
-<tr class="b">
-            
-<td><b><a href="#moduleName">moduleName</a></b></td>
-            
-<td><tt>String</tt></td>
-            
-<td><tt>-</tt></td>
-            
-<td>The main GWT module of the project.<br /></td>
-          </tr>
-          
-<tr class="a">
-            
-<td><b><a href="#outputDirectory">outputDirectory</a></b></td>
-            
-<td><tt>File</tt></td>
-            
-<td><tt>-</tt></td>
-            
-<td>The directory where the generated <tt>mainModule</tt> file will
-be put.<br /><b>Default value is</b>: <tt>${project.build.outputDirectory}/META-INF/gwt</tt>.<br /></td>
-          </tr>
-          
-<tr class="b">
-            
-<td><b><a href="#skipModuleMetadata">skipModuleMetadata</a></b></td>
-            
-<td><tt>boolean</tt></td>
-            
-<td><tt>-</tt></td>
-            
-<td>A flag to disable generation of the <tt>mainModule</tt>.<br /><b>Default value is</b>: <tt>false</tt>.<br /></td>
-          </tr>
-        </table>
-      </div>
-      
+<h3><a name="GWT_Library:_gwt-lib"></a>GWT Library: <tt>gwt-lib</tt></h3>
+<p>A <tt>gwt-lib</tt> is a JAR that contains both compiles classes and their sources. You can depend on a <tt>gwt-lib</tt> using either <tt>&lt;type&gt;jar&lt;/type&gt;</tt> or <tt>&lt;type&gt;gwt-lib&lt;/type&gt;</tt> in your <tt>&lt;dependency&gt;</tt>.</p></div>
 <div class="section">
-<h3><a name="Parameter_Details"></a>Parameter Details</h3>
-        
-<p><b><a name="moduleName">moduleName</a>:</b></p>
-        
-<div>The main GWT module of the project.</div>
-        
-<ul>
-          
-<li><b>Type</b>: <tt>java.lang.String</tt></li>
-          
-<li><b>Required</b>: <tt>No</tt></li>
-        </ul><hr />
-<p><b><a name="outputDirectory">outputDirectory</a>:</b></p>
-        
-<div>The directory where the generated <tt>mainModule</tt> file will
-be put.</div>
-        
-<ul>
-          
-<li><b>Type</b>: <tt>java.io.File</tt></li>
-          
-<li><b>Required</b>: <tt>No</tt></li>
-          
-<li><b>Default</b>: <tt>${project.build.outputDirectory}/META-INF/gwt</tt></li>
-        </ul><hr />
-<p><b><a name="skipModuleMetadata">skipModuleMetadata</a>:</b></p>
-        
-<div>A flag to disable generation of the <tt>mainModule</tt>.</div>
-        
-<ul>
-          
-<li><b>Type</b>: <tt>boolean</tt></li>
-          
-<li><b>Required</b>: <tt>No</tt></li>
-          
-<li><b>Default</b>: <tt>false</tt></li>
-        </ul>
-      </div>
-    </div>
-  
-
+<h3><a name="GWT_Application:_gwt-app"></a>GWT Application: <tt>gwt-app</tt></h3>
+<p>A <tt>gwt-app</tt> is a WAR that only contains the output from the GWT Compiler: no <tt>WEB-INF/web.xml</tt> and no Java classes or libraries. You can depend on a <tt>gwt-app</tt> using either <tt>&lt;type&gt;war&lt;/type&gt;</tt> or <tt>&lt;type&gt;gwt-app&lt;/type&gt;</tt> in your <tt>&lt;dependency&gt;</tt>. Using <tt>&lt;type&gt;war&lt;/type&gt;</tt> has the advantage that the <tt>maven-war-plugin</tt> will automatically <i>overlay</i> the <tt>gwt-app</tt>&#x2019;s content in the resulting WAR.</p></div></div>
                   </div>
             </div>
           </div>

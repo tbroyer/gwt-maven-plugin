@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20150524" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>Maven Plugin for GWT &#x2013; gwt:generate-module-metadata</title>
+    <title>Maven Plugin for GWT &#x2013; Basic usage</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.4.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -55,7 +55,7 @@
         Maven Plugin for GWT</a>
                     <span class="divider">/</span>
       </li>
-        <li class="active ">gwt:generate-module-metadata</li>
+        <li class="active ">Basic usage</li>
         
                 
                     
@@ -89,12 +89,10 @@
         Introduction</a>
             </li>
                 
-      <li>
+      <li class="active">
   
-                          <a href="usage.html" title="Usage">
-          <span class="none"></span>
-        Usage</a>
-            </li>
+            <a href="#"><span class="none"></span>Usage</a>
+          </li>
                 
       <li>
   
@@ -137,124 +135,62 @@
                 
         <div id="bodyColumn"  class="span10" >
                                   
-            
-  
-    <div class="section">
-<h2><a name="gwt:generate-module-metadata"></a>gwt:generate-module-metadata</h2>
-      
-<p><b>Full name</b>:</p>
-      
-<p>net.ltgt.gwt.maven:gwt-maven-plugin:1.0-SNAPSHOT:generate-module-metadata</p>
-      
-<p><b>Description</b>:</p>
-      
-<div>(no description)</div>
-      
-<p><b>Attributes</b>:</p>
-      
-<ul>
-        
-<li>Requires a Maven project to be executed.</li>
-        
-<li>The goal is thread-safe and supports parallel builds.</li>
-        
-<li>Binds by default to the <a class="externalLink" href="http://maven.apache.org/ref/current/maven-core/lifecycles.html">lifecycle phase</a>: <tt>generate-resources</tt>.</li>
-      </ul>
-      
-<div class="section">
-<h3><a name="Optional_Parameters"></a>Optional Parameters</h3>
-        
-<table class="table table-striped" border="0">
-          
-<tr class="a">
-            
-<th>Name</th>
-            
-<th>Type</th>
-            
-<th>Since</th>
-            
-<th>Description</th>
-          </tr>
-          
-<tr class="b">
-            
-<td><b><a href="#moduleName">moduleName</a></b></td>
-            
-<td><tt>String</tt></td>
-            
-<td><tt>-</tt></td>
-            
-<td>The main GWT module of the project.<br /></td>
-          </tr>
-          
-<tr class="a">
-            
-<td><b><a href="#outputDirectory">outputDirectory</a></b></td>
-            
-<td><tt>File</tt></td>
-            
-<td><tt>-</tt></td>
-            
-<td>The directory where the generated <tt>mainModule</tt> file will
-be put.<br /><b>Default value is</b>: <tt>${project.build.outputDirectory}/META-INF/gwt</tt>.<br /></td>
-          </tr>
-          
-<tr class="b">
-            
-<td><b><a href="#skipModuleMetadata">skipModuleMetadata</a></b></td>
-            
-<td><tt>boolean</tt></td>
-            
-<td><tt>-</tt></td>
-            
-<td>A flag to disable generation of the <tt>mainModule</tt>.<br /><b>Default value is</b>: <tt>false</tt>.<br /></td>
-          </tr>
-        </table>
-      </div>
-      
-<div class="section">
-<h3><a name="Parameter_Details"></a>Parameter Details</h3>
-        
-<p><b><a name="moduleName">moduleName</a>:</b></p>
-        
-<div>The main GWT module of the project.</div>
-        
-<ul>
-          
-<li><b>Type</b>: <tt>java.lang.String</tt></li>
-          
-<li><b>Required</b>: <tt>No</tt></li>
-        </ul><hr />
-<p><b><a name="outputDirectory">outputDirectory</a>:</b></p>
-        
-<div>The directory where the generated <tt>mainModule</tt> file will
-be put.</div>
-        
-<ul>
-          
-<li><b>Type</b>: <tt>java.io.File</tt></li>
-          
-<li><b>Required</b>: <tt>No</tt></li>
-          
-<li><b>Default</b>: <tt>${project.build.outputDirectory}/META-INF/gwt</tt></li>
-        </ul><hr />
-<p><b><a name="skipModuleMetadata">skipModuleMetadata</a>:</b></p>
-        
-<div>A flag to disable generation of the <tt>mainModule</tt>.</div>
-        
-<ul>
-          
-<li><b>Type</b>: <tt>boolean</tt></li>
-          
-<li><b>Required</b>: <tt>No</tt></li>
-          
-<li><b>Default</b>: <tt>false</tt></li>
-        </ul>
-      </div>
-    </div>
-  
+            <div class="section">
+<h2><a name="Basic_usage"></a>Basic usage</h2>
 
+<ol style="list-style-type: decimal">
+  
+<li>
+<p>Add the plugin to your POM, enabling extensions to get the new packagings, and configuring your module name:</p>
+  
+<div class="source">
+<div class="source"><pre class="prettyprint">&lt;plugin&gt;
+  &lt;groupId&gt;net.ltgt.gwt.maven&lt;/groupId&gt;
+  &lt;artifactId&gt;gwt-maven-plugin&lt;/artifactId&gt;
+  &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+  &lt;extensions&gt;true&lt;/extensions&gt;
+  &lt;configuration&gt;
+    &lt;moduleName&gt;com.example.app.App&lt;/moduleName&gt;
+  &lt;/configuration&gt;
+&lt;/plugin&gt;
+</pre></div></div></li>
+  
+<li>
+<p>Set your <tt>&lt;packaging&gt;</tt> to either <tt>gwt-lib</tt> or <tt>gwt-app</tt></p></li>
+  
+<li>
+<p>Add dependencies on GWT</p>
+  
+<div class="source">
+<div class="source"><pre class="prettyprint">&lt;dependencyManagement&gt;
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.google.gwt&lt;/groupId&gt;
+      &lt;artifactId&gt;gwt&lt;/artifactId&gt;
+      &lt;version&gt;${gwt.version}&lt;/version&gt;
+      &lt;type&gt;pom&lt;/type&gt;
+      &lt;scope&gt;import&lt;/scope&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+&lt;/dependencyManagement&gt;
+&lt;build&gt;
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.google.gwt&lt;/groupId&gt;
+      &lt;artifactId&gt;gwt-user&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.google.gwt&lt;/groupId&gt;
+      &lt;artifactId&gt;gwt-dev&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.google.gwt&lt;/groupId&gt;
+      &lt;artifactId&gt;gwt-codeserever&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+&lt;/build&gt;
+</pre></div></div></li>
+</ol></div>
                   </div>
             </div>
           </div>
