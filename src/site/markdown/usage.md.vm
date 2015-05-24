@@ -49,3 +49,9 @@ $h2 Basic usage
       </dependencies>
     </build>
     ```
+
+$h3 GWT Version Compatibility
+
+Given its design, the ${project.name} should be compatible with a wide range of GWT versions.
+It is automatically tested against the latest two stable versions of GWT and the latest snapshot.
+At this time, the latest stable version is ${gwtVersion}.
