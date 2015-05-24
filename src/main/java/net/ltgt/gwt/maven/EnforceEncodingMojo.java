@@ -8,6 +8,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
+/**
+ * Enforces that the source encoding is UTF-8.
+ */
 @Mojo(name = "enforce-encoding", defaultPhase = LifecyclePhase.INITIALIZE, threadSafe = true)
 public class EnforceEncodingMojo extends AbstractMojo {
 

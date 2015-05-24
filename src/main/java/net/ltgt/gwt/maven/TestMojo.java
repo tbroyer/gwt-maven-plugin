@@ -22,6 +22,9 @@ import org.apache.maven.surefire.util.DefaultScanResult;
 import org.apache.maven.surefire.util.NestedCheckedException;
 import org.codehaus.plexus.util.StringUtils;
 
+/**
+ * Runs the project's tests with the specific setup needed for {@code GWTTestCase} tests.
+ */
 @Mojo(name = "test", defaultPhase = LifecyclePhase.TEST, threadSafe = true, requiresDependencyResolution = ResolutionScope.TEST)
 public class TestMojo extends AbstractSurefireMojo implements SurefireReportParameters, GwtOptions {
 

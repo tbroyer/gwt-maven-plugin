@@ -16,6 +16,9 @@ import org.codehaus.plexus.archiver.war.WarArchiver;
 
 import java.io.File;
 
+/**
+ * Package the compiled GWT application into a WAR-like archive.
+ */
 @Mojo(name = "package-app", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true)
 public class PackageAppMojo extends AbstractMojo {
 

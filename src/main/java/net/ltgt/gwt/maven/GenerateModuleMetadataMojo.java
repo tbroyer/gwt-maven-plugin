@@ -14,6 +14,9 @@ import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+/**
+ * Generates the {@code META-INF/gwt/mainModule} file used by {@code gwt:generate-module} in downstream projects.
+ */
 @Mojo(name = "generate-module-metadata", threadSafe = true, defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public class GenerateModuleMetadataMojo extends AbstractMojo {
 

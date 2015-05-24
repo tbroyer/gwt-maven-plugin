@@ -30,6 +30,9 @@ import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 
+/**
+ * Invokes the GWT Compiler on the project's sources and resources.
+ */
 @Mojo(name = "compile", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE)
 @SuppressWarnings("serial")
 public class CompileMojo extends AbstractMojo implements GwtOptions {
