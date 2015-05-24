@@ -32,7 +32,7 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/tbroyer/gwt-maven-plugin.git</connection>
+    <connection>scm:git:https://github.com/tbroyer/gwt-maven-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:tbroyer/gwt-maven-plugin.git</developerConnection>
     <url>https://github.com/tbroyer/gwt-maven-plugin</url>
   </scm>
