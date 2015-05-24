@@ -1,0 +1,37 @@
+<project>
+  <version position="right" />
+  <publishDate position="right" />
+
+  <body>
+    <breadcrumbs>
+      <item name="${project.name}" href="${project.url}" />
+    </breadcrumbs>
+    <links position="left">
+      <item name="GWT Project" href="http://www.gwtproject.org" />
+    </links>
+
+    <menu>
+      <item name="Introduction" href="index.html" />
+      <item name="Usage" href="usage.html" />
+      <item name="Goals" href="plugin-info.html" />
+      <item name="Lifecycles" href="lifecycles.html" />
+      <item name="Artifact Handlers" href="artifact-handlers.html" />
+    </menu>
+  </body>
+
+  <custom>
+    <fluidoSkin>
+      <gitHub>
+        <projectId>tbroyer/gwt-maven-plugin</projectId>
+        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonColor>black</ribbonColor>
+      </gitHub>
+    </fluidoSkin>
+  </custom>
+
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>1.4</version>
+  </skin>
+</project>

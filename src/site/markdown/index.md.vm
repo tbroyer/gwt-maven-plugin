@@ -1,0 +1,37 @@
+#set($h2 = '##')
+#set($h3 = '###')
+$h2 Introduction
+
+The ${project.name} aims at making it easier to build GWT projects with Maven, by providing specific [goals][], [lifecycles][], and [artifact handlers][].
+
+ [goals]: plugin-info.html
+ [lifecycles]: lifecycles.html
+ [artifact handlers]: artifact-handlers.html
+
+Java code in GWT falls into two buckets:
+
+ * code that's shared between the client and server (RPC interfaces and DTOs, RequestFactory interfaces, and other shared code), and
+ * code that's entirely client-side. That bucket can be subdivided in two again:
+   * library code, that needs to be packaged both in compiled and source form; and
+   * application code, that will only be compiled to JavaScript through the GWT Compiler.
+
+With Maven, shared code is just a standard project with `jar` packaging.
+You'd use [the `maven-source-plugin`'s `jar-no-fork` goal][source:jar-no-fork] to package the sources as an attached artifact,
+then in your GWT project add dependencies on both the _normal_ JAR and the _sources_ JAR (with `<type>java-source</type>` or `<classifier>sources</classifier>`),
+and possibly add a GWT module (`*.gwt.xml` file) in the appropriate package, or a `<source path="shared" />` in an existing GWT module, **within** the GWT project.
+Most of the time, such shared code is part of _one_ multi-module project, so adding things in another module isn't really a code-smell.
+For more complex scenarios, you'd better create a client library (sometimes called an _adapter library_) that depends on the shared one and add the GWT-specific files (see below).
+
+ [source:jar-no-fork]: https://maven.apache.org/plugins/maven-source-plugin/jar-no-fork-mojo.html
+
+Client-only libraries bundle both the compiled classes and their sources, along with a GWT module and possibly other GWT-specific files (UiBinder, etc.)
+Libraries only depend on other client-only libraries, or on shared libraries and their sources.
+Some libraries also need to emulate classes from shared libraries, using GWT's super-source feature.
+Finally, unit-tests will need special treatment if they use `GWTTestCase`.
+
+Last, but not least, applications are similar to client-only libraries, but their output is JavaScript, CSS, images, etc.
+after the Java sources and the resources have been processed by the GWT Compiler.
+
+The ${project.name} [makes it easier][usage] to build the two kinds of client-only artifacts, and consume shared libraries.
+
+ [usage]: usage.html

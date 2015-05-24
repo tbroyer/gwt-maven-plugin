@@ -1,0 +1,51 @@
+#set($h2 = '##')
+#set($h3 = '###')
+$h2 Basic usage
+
+1. Add the plugin to your POM, enabling extensions to get the new packagings, and configuring your module name:
+
+    ```xml
+    <plugin>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>${project.artifactId}</artifactId>
+      <version>${project.version}</version>
+      <extensions>true</extensions>
+      <configuration>
+        <moduleName>com.example.app.App</moduleName>
+      </configuration>
+    </plugin>
+    ```
+
+2. Set your `<packaging>` to either `gwt-lib` or `gwt-app`
+
+3. Add dependencies on GWT
+
+    ```xml
+    <dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt</artifactId>
+          <version>${gwt.version}</version>
+          <type>pom</type>
+          <scope>import</scope>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
+    <build>
+      <dependencies>
+        <dependency>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-user</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-dev</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-codeserever</artifactId>
+        </dependency>
+      </dependencies>
+    </build>
+    ```

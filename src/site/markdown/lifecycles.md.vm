@@ -1,0 +1,52 @@
+#set($h2 = '##')
+#set($h3 = '###')
+#macro( mojo $name )[`gwt:$name`](${name}-mojo.html)#end
+##
+$h2 Lifecycles and Packagings
+
+The ${project.name} provides two lifecycles, triggered by two new packaging values: `gwt-lib` and `gwt-app`.
+
+$h3 GWT Library: `gwt-lib`
+
+The `gwt-lib` packaging triggers a lifecycle that will build a [`gwt-lib` artifact](artifact-handlers.html).
+
+The `gwt-lib` lifecycle has the same phases as the [default lifecycle][], and resembles the [`jar` lifecycle][built-in bindings] but with different default bindings:
+
+ [default lifecycle]: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle#Lifecycle_Reference
+ [built-in bindings]: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle#Default_Lifecycle_Bindings_-_Packaging_ejb__ejb3__jar__par__rar__war
+
+| Phase                     | Bindings                                                                                   |
+| ------------------------- | ------------------------------------------------------------------------------------------ |
+| `initialize`              | #mojo("enforce-encoding"), #mojo("add-super-sources"), and #mojo('app-test-super-sources') |
+| `generate-resources`      | #mojo("import-sources"), #mojo("generate-module"), and #mojo("generate-module-metadata")   |
+| `process-resources`       | `resources:resources`                                                                      |
+| `compile`                 | `compiler:compile`                                                                         |
+| `generate-test-resources` | #mojo("import-test-sources")                                                               |
+| `process-test-resources`  | `resources:testResources`                                                                  |
+| `test-compile`            | `compiler:testCompile`                                                                     |
+| `test`                    | #mojo("test")                                                                              |
+| `package`                 | `jar:jar`                                                                                  |
+| `install`                 | `install:install`                                                                          |
+| `deploy`                  | `deploy:deploy`                                                                            |
+
+
+$h3 GWT Application: `gwt-app`
+
+The `gwt-app` packaging triggers a lifecycle that will build a [`gwt-app` artifact](artifact-handlers.html).
+
+The `gwt-app` lifecycle has the same phases as the [default lifecycle][], and resembles the [`war` lifecycle][built-in bindings] but with different default bindings:
+
+| Phase                     | Bindings                                                                                   |
+| ------------------------- | ------------------------------------------------------------------------------------------ |
+| `initialize`              | #mojo("enforce-encoding"), #mojo("add-super-sources"), and #mojo('app-test-super-sources') |
+| `generate-resources`      | #mojo("import-sources"), and #mojo("generate-module")                                      |
+| `process-resources`       | `resources:resources`                                                                      |
+| `compile`                 | `compiler:compile`                                                                         |
+| `generate-test-resources` | #mojo("import-test-sources")                                                               |
+| `process-test-resources`  | `resources:testResources`                                                                  |
+| `test-compile`            | `compiler:testCompile`                                                                     |
+| `test`                    | #mojo("test")                                                                              |
+| `prepare-package`         | #mojo("compile")                                                                           |
+| `package`                 | #mojo("package-app")                                                                       |
+| `install`                 | `install:install`                                                                          |
+| `deploy`                  | `deploy:deploy`                                                                            |

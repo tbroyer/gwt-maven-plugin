@@ -1,0 +1,16 @@
+#set($h2 = '##')
+#set($h3 = '###')
+$h2 Artifact Handlers
+
+The ${project.name} provides two artifact handlers, or in other words two dependency types: `gwt-lib` and `gwt-app`.
+
+$h3 GWT Library: `gwt-lib`
+
+A `gwt-lib` is a JAR that contains both compiles classes and their sources.
+You can depend on a `gwt-lib` using either `<type>jar</type>` or `<type>gwt-lib</type>` in your `<dependency>`.
+
+$h3 GWT Application: `gwt-app`
+
+A `gwt-app` is a WAR that only contains the output from the GWT Compiler: no `WEB-INF/web.xml` and no Java classes or libraries.
+You can depend on a `gwt-app` using either `<type>war</type>` or `<type>gwt-app</type>` in your `<dependency>`.
+Using `<type>war</type>` has the advantage that the `maven-war-plugin` will automatically _overlay_ the `gwt-app`'s content in the resulting WAR.
