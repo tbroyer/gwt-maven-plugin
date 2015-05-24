@@ -12,8 +12,8 @@ Java code in GWT falls into two buckets:
 
  * code that's shared between the client and server (RPC interfaces and DTOs, RequestFactory interfaces, and other shared code), and
  * code that's entirely client-side. That bucket can be subdivided in two again:
-   * library code, that needs to be packaged both in compiled and source form; and
-   * application code, that will only be compiled to JavaScript through the GWT Compiler.
+    * library code, that needs to be packaged both in compiled and source form; and
+    * application code, that will only be compiled to JavaScript through the GWT Compiler.
 
 With Maven, shared code is just a standard project with `jar` packaging.
 You'd use [the `maven-source-plugin`'s `jar-no-fork` goal][source:jar-no-fork] to package the sources as an attached artifact,
