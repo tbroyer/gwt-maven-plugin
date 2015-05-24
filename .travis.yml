@@ -11,7 +11,7 @@ env:
   - GWT_VERSION=2.8.0-SNAPSHOT
 
 install: mvn verify clean --fail-never --quiet -DskipTests=true -Dinvoker.skip=true
-script: mvn verify -Dinvoker.streamLogs=true -Dinvoker.mavenOpts="-Djava.net.preferIPv4Stack=true" -Dgwt.version=$GWT_VERSION
+script: mvn verify -Dinvoker.streamLogs=true -Dinvoker.mavenOpts="-Djava.net.preferIPv4Stack=true" -DgwtVersion=$GWT_VERSION
 
 after_success:
   - ci/deploy-snapshot.sh

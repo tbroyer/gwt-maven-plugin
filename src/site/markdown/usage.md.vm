@@ -26,7 +26,7 @@ $h2 Basic usage
         <dependency>
           <groupId>com.google.gwt</groupId>
           <artifactId>gwt</artifactId>
-          <version>${gwt.version}</version>
+          <version>${gwtVersion}</version>
           <type>pom</type>
           <scope>import</scope>
         </dependency>

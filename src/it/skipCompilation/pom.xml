@@ -11,12 +11,12 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>@gwt.version@</version>
+      <version>@gwtVersion@</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
-      <version>@gwt.version@</version>
+      <version>@gwtVersion@</version>
     </dependency>
   </dependencies>
   <build>
