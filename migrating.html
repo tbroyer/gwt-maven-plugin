@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20150525" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>Maven Plugin for GWT &#x2013; gwt:enforce-encoding</title>
+    <title>Maven Plugin for GWT &#x2013; Migrating from Mojos Maven Plugin for GWT</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.4.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -55,7 +55,7 @@
         Maven Plugin for GWT</a>
                     <span class="divider">/</span>
       </li>
-        <li class="active ">gwt:enforce-encoding</li>
+        <li class="active ">Migrating from Mojos Maven Plugin for GWT</li>
         
                 
                     
@@ -124,12 +124,10 @@
         Artifact Handlers</a>
             </li>
                 
-      <li>
+      <li class="active">
   
-                          <a href="migrating.html" title="Migrating from Mojo's Maven Plugin for GWT">
-          <span class="none"></span>
-        Migrating from Mojo's Maven Plugin for GWT</a>
-            </li>
+            <a href="#"><span class="none"></span>Migrating from Mojo's Maven Plugin for GWT</a>
+          </li>
             </ul>
                 
                     
@@ -151,38 +149,12 @@
                 
         <div id="bodyColumn"  class="span10" >
                                   
-            
-  
-    <div class="section">
-<h2><a name="gwt:enforce-encoding"></a>gwt:enforce-encoding</h2>
-      
-<p><b>Full name</b>:</p>
-      
-<p>net.ltgt.gwt.maven:gwt-maven-plugin:1.0-SNAPSHOT:enforce-encoding</p>
-      
-<p><b>Description</b>:</p>
-      
-<div>Enforces that the source encoding is UTF-8.</div>
-      
-<p><b>Attributes</b>:</p>
-      
-<ul>
-        
-<li>Requires a Maven project to be executed.</li>
-        
-<li>The goal is thread-safe and supports parallel builds.</li>
-        
-<li>Binds by default to the <a class="externalLink" href="http://maven.apache.org/ref/current/maven-core/lifecycles.html">lifecycle phase</a>: <tt>initialize</tt>.</li>
-      </ul>
-      
-<div class="section">
-<h3><a name="Parameters"></a>Parameters</h3>
-        
-<p>(no parameters)</p>
-      </div>
-    </div>
-  
-
+            <div class="section">
+<h2><a name="Migrating_from_Mojos_Maven_Plugin_for_GWT"></a>Migrating from Mojo&#x2019;s Maven Plugin for GWT</h2>
+<p>The Maven Plugin for GWT is very different from Mojo&#x2019;s Maven Plugin for GWT.</p>
+<p>To begin with, Mojo&#x2019;s plugin is tightly linked to a specific version of GWT, whereas the Maven Plugin for GWT is <a href="usage.html">independent of the GWT version</a>. This means that when migrating, you have to add dependencies to <tt>gwt-dev</tt> and <tt>gwt-codeserver</tt> to your project.</p>
+<p>Next, most goals of Mojo&#x2019;s plugin have no equivalent in the Maven Plugin for GWT. Only Mojo&#x2019;s plugin&#x2019;s <tt>gwt:compile</tt> and <tt>gwt:run-codeserver</tt> have equivalent goals, namely <a href="compile-mojo.html"><tt>gwt:compile</tt></a> and <a href="codeserver-mojo.html"><tt>gwt:codeserver</tt></a> respectively. The <a href="codeserver-mojo.html"><tt>gwt:codeserver</tt> goal</a> is quite different from Mojo&#x2019;s <tt>gwt:run-codeserver</tt> though: the Maven Plugin for GWT has been designed from the beginning with multi-module projects in mind, if only because <i>The Maven Way&#x2122;</i> dictates to separate your client- and server-side code into separate modules (for many reasons). I strongly believe this makes it much better, but that means it works quite differently.</p>
+<p>Finally, the way you configure the plugin is much different: the Maven Plugin for GWT has few properties, and arguments are passed to GWT explicitly through list properties (<tt>&lt;compilerArgs&gt;</tt> et al.) This allows the plugin to be usable with many versions of GWT, and allows you to control the arguments&#x2019; order (that one being important for GWT in some cases). The downside is that it makes it harder to change the configuration on-the-fly through properties you could set on the command-line (for example); an alternative is then to prepare some presets in profiles, and enable the appropriate ones as needed. Don&#x2019;t forget to take advantage of <a class="externalLink" href="https://maven.apache.org/pom.html#Plugins">the <tt>combine.children=&quot;append&quot;</tt> attribute</a>, particularly when defining such profiles.</p></div>
                   </div>
             </div>
           </div>
