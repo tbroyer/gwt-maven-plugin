@@ -35,3 +35,7 @@ after the Java sources and the resources have been processed by the GWT Compiler
 The ${project.name} [makes it easier][usage] to build the two kinds of client-only artifacts, and consume shared libraries.
 
  [usage]: usage.html
+
+$h3 Archetypes
+
+You can find a few Maven archetypes making use of the ${project.name} at https://github.com/tbroyer/gwt-maven-archetypes/

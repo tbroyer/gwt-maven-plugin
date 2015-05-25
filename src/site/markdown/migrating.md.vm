@@ -1,0 +1,26 @@
+#set($h2 = '##')
+#set($h3 = '###')
+$h2 Migrating from Mojo's Maven Plugin for GWT
+
+The ${project.name} is very different from Mojo's Maven Plugin for GWT.
+
+To begin with, Mojo's plugin is tightly linked to a specific version of GWT,
+whereas the ${project.name} is [independent of the GWT version](usage.html).
+This means that when migrating, you have to add dependencies to `gwt-dev` and `gwt-codeserver` to your project.
+
+Next, most goals of Mojo's plugin have no equivalent in the ${project.name}.
+Only Mojo's plugin's `gwt:compile` and `gwt:run-codeserver` have equivalent goals,
+namely [`gwt:compile`](compile-mojo.html) and [`gwt:codeserver`](codeserver-mojo.html) respectively.
+The [`gwt:codeserver` goal](codeserver-mojo.html) is quite different from Mojo's `gwt:run-codeserver` though:
+the ${project.name} has been designed from the beginning with multi-module projects in mind,
+if only because _The Maven Way™_ dictates to separate your client- and server-side code into separate modules (for many reasons).
+I strongly believe this makes it much better, but that means it works quite differently.
+
+Finally, the way you configure the plugin is much different:
+the ${project.name} has few properties, and arguments are passed to GWT explicitly through list properties (`<compilerArgs>` et al.)
+This allows the plugin to be usable with many versions of GWT,
+and allows you to control the arguments' order (that one being important for GWT in some cases).
+The downside is that it makes it harder to change the configuration on-the-fly through properties you could set on the command-line (for example);
+an alternative is then to prepare some presets in profiles, and enable the appropriate ones as needed.
+Don't forget to take advantage of [the `combine.children="append"` attribute](https://maven.apache.org/pom.html#Plugins),
+particularly when defining such profiles.

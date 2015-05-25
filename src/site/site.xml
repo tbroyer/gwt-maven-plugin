@@ -14,8 +14,10 @@
       <item name="Introduction" href="index.html" />
       <item name="Usage" href="usage.html" />
       <item name="Goals" href="plugin-info.html" />
+      <item name="Running and Debugging" href="codeserver.html" />
       <item name="Lifecycles" href="lifecycles.html" />
       <item name="Artifact Handlers" href="artifact-handlers.html" />
+      <item name="Migrating from Mojo's Maven Plugin for GWT" href="migrating.html" />
     </menu>
   </body>
 
