@@ -35,6 +35,11 @@
         <configuration>
           <moduleName>it.test.Test</moduleName>
           <moduleShortName>test</moduleShortName>
+          <webappDirectory>${project.build.directory/gwt/webapp</webappDirectory>
+          <devmodeArgs>
+            <arg>-startupUrl</arg>
+            <arg>test/index.html</arg>
+          </devmodeArgs>
         </configuration>
       </plugin>
     </plugins>

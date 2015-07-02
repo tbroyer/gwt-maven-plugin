@@ -34,62 +34,58 @@ import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 
 /**
- * Runs GWT's CodeServer (SuperDevMode).
+ * Runs GWT's DevMode.
  */
-@Mojo(name = "codeserver", requiresDependencyResolution = ResolutionScope.COMPILE, requiresDirectInvocation = true, threadSafe = true, aggregator = true)
+@Mojo(name = "devmode", requiresDependencyResolution = ResolutionScope.COMPILE, requiresDirectInvocation = true, threadSafe = true, aggregator = true)
 @Execute(phase = LifecyclePhase.PROCESS_CLASSES)
-public class CodeServerMojo extends AbstractDevModeMojo {
+public class DevModeMojo extends AbstractDevModeMojo {
 
   /**
    * The compiler work directory (must be writeable).
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt/codeserver")
-  private File codeserverWorkDir;
+  @Parameter(defaultValue = "${project.build.directory}/gwt/devmode")
+  private File devmodeWorkDir;
 
   /**
-   * Directory where files for launching SuperDevMode (e.g. {@code *.nocache.js}) will be written. (Optional.)
+   * Directory into which deployable output files will be written.
    */
-  @Parameter(property = "launcherDir")
-  private File launcherDir;
+  @Parameter(property = "webappDirectory", required = true)
+  private File webappDirectory;
 
   /**
    * Additional arguments to be passed to the GWT compiler.
    */
   @Parameter
-  private List<String> codeserverArgs;
+  private List<String> devmodeArgs;
 
   @Override
   protected String getMainClass() {
-    return "com.google.gwt.dev.codeserver.CodeServer";
+    return "com.google.gwt.dev.DevMode";
   }
 
   @Override
   protected File getWorkDir() {
-    return codeserverWorkDir;
+    return devmodeWorkDir;
   }
 
   @Override
   protected Collection<String> getSpecificArguments(Set<String> sources) {
-    ArrayList<String> args = new ArrayList<>(3 + (codeserverArgs == null ? 0 : codeserverArgs.size() * 2) + sources.size() * 2);
-    if (launcherDir != null) {
-      args.add("-launcherDir");
-      args.add(launcherDir.getAbsolutePath());
-    }
-    if (codeserverArgs != null) {
-      args.addAll(codeserverArgs);
-    }
-    args.add("-allowMissingSrc");
-    for (String src : sources) {
-      args.add("-src");
-      args.add(src);
+    ArrayList<String> args = new ArrayList<>(2 + (devmodeArgs == null ? 0 : devmodeArgs.size() * 2));
+    args.add("-war");
+    args.add(webappDirectory.getAbsolutePath());
+    if (devmodeArgs != null) {
+      args.addAll(devmodeArgs);
     }
     return args;
   }
 
   @Override
+  protected boolean prependSourcesToClasspath() {
+    return true;
+  }
+
+  @Override
   protected void forceMkdirs() throws IOException {
-    if (launcherDir != null) {
-      FileUtils.forceMkdir(launcherDir);
-    }
+    FileUtils.forceMkdir(webappDirectory);
   }
 }
