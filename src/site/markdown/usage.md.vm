@@ -44,7 +44,7 @@ $h2 Basic usage
         </dependency>
         <dependency>
           <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-codeserever</artifactId>
+          <artifactId>gwt-codeserver</artifactId>
         </dependency>
       </dependencies>
     </build>
