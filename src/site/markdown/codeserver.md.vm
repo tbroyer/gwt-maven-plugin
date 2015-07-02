@@ -26,3 +26,21 @@ which gives you an opportunity to configure it even in non-`gwt-app` projects.
 
 Finally, note that because the CodeServer takes a different set of arguments from the GWT Compiler,
 you'll have to define some arguments twice: both in `compilerArgs` for the GWT Compiler, and in `codeserverArgs` for the CodeServer.
+
+$h3 Standalone applications
+
+GWT's CodeServer is great for apps for which a server serves the HTML host page,
+but not so well for standalone applications,
+i.e. applications that only contain client-side code (offline, or using CORS).
+
+For standalone applications, use the [`gwt:devmode`](devmode-mojo.html) goal instead of [`gwt:codeserver`](codeserver-mojo.html).
+
+The goals works the same, except for a few configuration properties,
+and the `warDir` (somewhat equivalent to `gwt:codeserver`'s `launcherDir`) property has a default value (and is mandatory).
+
+You'll likely want to configure in `devmodeArgs` a `-startupUrl` argument pointing to an HTML host page living in the _public path_ of the module.
+Have a look at the `gwt-app` integration test for an example.
+
+Note: `gwt:devmode` can be configured for a webapp too
+(provided you previously run `war:exploded` or equivalent on the server part of the application)
+but this is discouraged as the webapp classloader in DevMode is somewhat broken.
