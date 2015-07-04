@@ -207,24 +207,7 @@
 </ol>
 <div class="section">
 <h3><a name="GWT_Version_Compatibility"></a>GWT Version Compatibility</h3>
-<p>Given its design, the Maven Plugin for GWT should be compatible with a wide range of GWT versions. It is automatically tested against the latest two stable versions of GWT and the latest snapshot. At this time, the latest stable version is 2.7.0.</p></div>
-<div class="section">
-<h3><a name="Sources_classifier_vs._java-source_type"></a>Sources classifier vs. <tt>java-source</tt> type</h3>
-<p>When adding a dependency on the sources of a shared library, Maven allows you to reference it in two ways: using <tt>&lt;type&gt;java-source&lt;/type&gt;</tt> or <tt>&lt;classifier&gt;sources&lt;/classifier&gt;</tt>. There&#x2019;s a big difference between those two forms:</p>
-
-<ul>
-  
-<li>a <tt>&lt;type&gt;java-source&lt;/type&gt;</tt> is not added to the classpath, it needs special processing by a plugin.</li>
-</ul>
-<p>The <a href="import-sources-mojo.html"><tt>gwt:import-sources</tt></a> and <a href="import-test-sources-mojo.html"><tt>gwt:import-test-sources</tt></a> goals  will (among other things), automatically unpack those dependencies and add the unpacked files to the project resources  so they&#x2019;re packaged within a <tt>gwt-lib</tt>.  Those goals have special treatment for reactor dependencies and will automatically pick sources from a referenced project  without the need for the <tt>java-source</tt> artifact to have been packaged already.</p>
-<p>You can declare the <tt>&lt;resource&gt;</tt> for the unpacked folder yourself and define includes and excludes patterns  (by default, the resource is created with an <tt>**/*.java</tt> include pattern).</p>
-<p>You&#x2019;ll want to use a <tt>&lt;scope&gt;provided&lt;/scope&gt;</tt> to prevent those dependencies being seen transitively.</p>
-
-<ul>
-  
-<li>a <tt>&lt;classifier&gt;sources&lt;/classifier&gt;</tt> is handled just like any other JAR dependency,  so it&#x2019;s put in the classpath and is transitive, and needs no special treatment.  The dependency however needs to be packaged already at the time it&#x2019;s needed (e.g. <a href="compile-mojo.html"><tt>gwt:compile</tt></a>).</li>
-</ul>
-<p><b>So, when to use which?</b> Use <tt>&lt;type&gt;java-source&lt;/type&gt;</tt> if you want to further filter which source files will be packaged (for example, exclude a class for which you provide a super-source), or to limit the number of dependencies in the classpath.</p></div></div>
+<p>Given its design, the Maven Plugin for GWT should be compatible with a wide range of GWT versions. It is automatically tested against the latest two stable versions of GWT and the latest snapshot. At this time, the latest stable version is 2.7.0.</p></div></div>
                   </div>
             </div>
           </div>
