@@ -9,9 +9,9 @@ whereas the ${project.name} is [independent of the GWT version](usage.html).
 This means that when migrating, you have to add dependencies to `gwt-dev` and `gwt-codeserver` to your project.
 
 Next, most goals of Mojo's plugin have no equivalent in the ${project.name}.
-Only Mojo's plugin's `gwt:compile` and `gwt:run-codeserver` have equivalent goals,
-namely [`gwt:compile`](compile-mojo.html) and [`gwt:codeserver`](codeserver-mojo.html) respectively.
-The [`gwt:codeserver` goal](codeserver-mojo.html) is quite different from Mojo's `gwt:run-codeserver` though:
+Only Mojo's plugin's `gwt:compile` and `gwt:run-codeserver` (and to some extent `gwt:run`) have equivalent goals,
+namely [`gwt:compile`](compile-mojo.html) and [`gwt:codeserver`](codeserver-mojo.html) (and [`gwt:devmode`](devmode-mojo.html)) respectively.
+The [`gwt:codeserver` and `gwt:devmode` goals](codeserver.html) are quite different from Mojo's `gwt:run-codeserver` and `gwt:run` though:
 the ${project.name} has been designed from the beginning with multi-module projects in mind,
 if only because _The Maven Way™_ dictates to separate your client- and server-side code into separate modules (for many reasons).
 I strongly believe this makes it much better, but that means it works quite differently.
