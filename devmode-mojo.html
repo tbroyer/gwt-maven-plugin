@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20150704" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>Maven Plugin for GWT &#x2013; gwt:add-super-sources</title>
+    <title>Maven Plugin for GWT &#x2013; gwt:devmode</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.4.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -55,7 +55,7 @@
         Maven Plugin for GWT</a>
                     <span class="divider">/</span>
       </li>
-        <li class="active ">gwt:add-super-sources</li>
+        <li class="active ">gwt:devmode</li>
         
                 
                     
@@ -154,20 +154,15 @@
             
   
     <div class="section">
-<h2><a name="gwt:add-super-sources"></a>gwt:add-super-sources</h2>
+<h2><a name="gwt:devmode"></a>gwt:devmode</h2>
       
 <p><b>Full name</b>:</p>
       
-<p>net.ltgt.gwt.maven:gwt-maven-plugin:1.0-SNAPSHOT:add-super-sources</p>
+<p>net.ltgt.gwt.maven:gwt-maven-plugin:1.0-SNAPSHOT:devmode</p>
       
 <p><b>Description</b>:</p>
       
-<div>Add super-source directory to project resources. 
-
-<p>The super-source directory contains emulated classes for GWT.
-Super-sources in GWT need to be in a subdirectory of the GWT
-module, and you can automatically relocate the super-source content
-within a <tt>super</tt> subfolder.</p></div>
+<div>Runs GWT's DevMode.</div>
       
 <p><b>Attributes</b>:</p>
       
@@ -175,9 +170,15 @@ within a <tt>super</tt> subfolder.</p></div>
         
 <li>Requires a Maven project to be executed.</li>
         
+<li>Executes as an aggregator plugin.</li>
+        
+<li>Executes by direct invocation only.</li>
+        
+<li>Requires dependency resolution of artifacts in scope: <tt>compile</tt>.</li>
+        
 <li>The goal is thread-safe and supports parallel builds.</li>
         
-<li>Binds by default to the <a class="externalLink" href="http://maven.apache.org/ref/current/maven-core/lifecycles.html">lifecycle phase</a>: <tt>initialize</tt>.</li>
+<li>Invokes the execution of the <a class="externalLink" href="http://maven.apache.org/ref/current/maven-core/lifecycles.html">lifecycle phase</a> <tt>process-classes</tt> prior to executing itself.</li>
       </ul>
       
 <div class="section">
@@ -198,43 +199,119 @@ within a <tt>super</tt> subfolder.</p></div>
           
 <tr class="b">
             
-<td><b><a href="#moduleName">moduleName</a></b></td>
+<td><b><a href="#devmodeArgs">devmodeArgs</a></b></td>
             
-<td><tt>String</tt></td>
+<td><tt>List</tt></td>
             
 <td><tt>-</tt></td>
             
-<td>Name of the module into which to optionally relocate super-sources.
-
-
-<p>Super-sources will be relocated into a <tt>super</tt>
-subfolder.</p><br /></td>
+<td>Additional arguments to be passed to the GWT compiler.<br /></td>
           </tr>
           
 <tr class="a">
             
-<td><b><a href="#relocateSuperSource">relocateSuperSource</a></b></td>
+<td><b><a href="#devmodeWorkDir">devmodeWorkDir</a></b></td>
+            
+<td><tt>File</tt></td>
+            
+<td><tt>-</tt></td>
+            
+<td>The compiler work directory (must be writeable).<br /><b>Default value is</b>: <tt>${project.build.directory}/gwt/devmode/work</tt>.<br /></td>
+          </tr>
+          
+<tr class="b">
+            
+<td><b><a href="#failOnError">failOnError</a></b></td>
             
 <td><tt>boolean</tt></td>
             
 <td><tt>-</tt></td>
             
-<td>Whether to relocate <tt>superSourceDirectory</tt> content
-within the module given in <tt>moduleName</tt>. 
-
-<p>Super-sources will be relocated into a <tt>super</tt>
-subfolder.</p><br /><b>Default value is</b>: <tt>false</tt>.<br /></td>
+<td>Only succeed if no input files have errors.<br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is</b>: <tt>gwt.failOnError</tt>.</td>
+          </tr>
+          
+<tr class="a">
+            
+<td><b><a href="#jvmArgs">jvmArgs</a></b></td>
+            
+<td><tt>List</tt></td>
+            
+<td><tt>-</tt></td>
+            
+<td>Arguments to be passed to the forked JVM (e.g. <tt>-Xmx</tt>)<br /></td>
           </tr>
           
 <tr class="b">
             
-<td><b><a href="#superSourceDirectory">superSourceDirectory</a></b></td>
+<td><b><a href="#logLevel">logLevel</a></b></td>
+            
+<td><tt>GwtOptions$LogLevel</tt></td>
+            
+<td><tt>-</tt></td>
+            
+<td>Sets the level of logging detail. Defaults to Maven's own log
+level.<br /><b>User property is</b>: <tt>gwt.logLevel</tt>.</td>
+          </tr>
+          
+<tr class="a">
+            
+<td><b><a href="#modules">modules</a></b></td>
             
 <td><tt>String</tt></td>
             
 <td><tt>-</tt></td>
             
-<td>Directory containing super-sources.<br /><b>Default value is</b>: <tt>src/main/super</tt>.<br /></td>
+<td>Comma-delimited list of the modules to run. 
+
+<p>Defaults to the discovered module names from
+<tt>gwt-app</tt> projects.</p><br /><b>User property is</b>: <tt>gwt.modules</tt>.</td>
+          </tr>
+          
+<tr class="b">
+            
+<td><b><a href="#projects">projects</a></b></td>
+            
+<td><tt>String</tt></td>
+            
+<td><tt>-</tt></td>
+            
+<td>Comma-delimited list of the reactor projects to run. 
+
+<p>Defaults to all the <tt>gwt-app</tt> projects in the
+reactor.</p><br /><b>User property is</b>: <tt>gwt.projects</tt>.</td>
+          </tr>
+          
+<tr class="a">
+            
+<td><b><a href="#sourceLevel">sourceLevel</a></b></td>
+            
+<td><tt>String</tt></td>
+            
+<td><tt>-</tt></td>
+            
+<td>Specifies Java source level.<br /><b>User property is</b>: <tt>maven.compiler.source</tt>.</td>
+          </tr>
+          
+<tr class="b">
+            
+<td><b><a href="#systemProperties">systemProperties</a></b></td>
+            
+<td><tt>Map</tt></td>
+            
+<td><tt>-</tt></td>
+            
+<td>List of system properties to pass to the GWT compiler.<br /></td>
+          </tr>
+          
+<tr class="a">
+            
+<td><b><a href="#warDir">warDir</a></b></td>
+            
+<td><tt>File</tt></td>
+            
+<td><tt>-</tt></td>
+            
+<td>Directory into which deployable output files will be written.<br /><b>Default value is</b>: <tt>${project.build.directory}/gwt/devmode/war</tt>.<br /></td>
           </tr>
         </table>
       </div>
@@ -242,27 +319,31 @@ subfolder.</p><br /><b>Default value is</b>: <tt>false</tt>.<br /></td>
 <div class="section">
 <h3><a name="Parameter_Details"></a>Parameter Details</h3>
         
-<p><b><a name="moduleName">moduleName</a>:</b></p>
+<p><b><a name="devmodeArgs">devmodeArgs</a>:</b></p>
         
-<div>Name of the module into which to optionally relocate super-sources.
-
-
-<p>Super-sources will be relocated into a <tt>super</tt>
-subfolder.</p></div>
+<div>Additional arguments to be passed to the GWT compiler.</div>
         
 <ul>
           
-<li><b>Type</b>: <tt>java.lang.String</tt></li>
+<li><b>Type</b>: <tt>java.util.List</tt></li>
           
 <li><b>Required</b>: <tt>No</tt></li>
         </ul><hr />
-<p><b><a name="relocateSuperSource">relocateSuperSource</a>:</b></p>
+<p><b><a name="devmodeWorkDir">devmodeWorkDir</a>:</b></p>
         
-<div>Whether to relocate <tt>superSourceDirectory</tt> content
-within the module given in <tt>moduleName</tt>. 
-
-<p>Super-sources will be relocated into a <tt>super</tt>
-subfolder.</p></div>
+<div>The compiler work directory (must be writeable).</div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>java.io.File</tt></li>
+          
+<li><b>Required</b>: <tt>No</tt></li>
+          
+<li><b>Default</b>: <tt>${project.build.directory}/gwt/devmode/work</tt></li>
+        </ul><hr />
+<p><b><a name="failOnError">failOnError</a>:</b></p>
+        
+<div>Only succeed if no input files have errors.</div>
         
 <ul>
           
@@ -270,11 +351,39 @@ subfolder.</p></div>
           
 <li><b>Required</b>: <tt>No</tt></li>
           
+<li><b>User Property</b>: <tt>gwt.failOnError</tt></li>
+          
 <li><b>Default</b>: <tt>false</tt></li>
         </ul><hr />
-<p><b><a name="superSourceDirectory">superSourceDirectory</a>:</b></p>
+<p><b><a name="jvmArgs">jvmArgs</a>:</b></p>
         
-<div>Directory containing super-sources.</div>
+<div>Arguments to be passed to the forked JVM (e.g. <tt>-Xmx</tt>)</div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>java.util.List</tt></li>
+          
+<li><b>Required</b>: <tt>No</tt></li>
+        </ul><hr />
+<p><b><a name="logLevel">logLevel</a>:</b></p>
+        
+<div>Sets the level of logging detail. Defaults to Maven's own log
+level.</div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>net.ltgt.gwt.maven.GwtOptions$LogLevel</tt></li>
+          
+<li><b>Required</b>: <tt>No</tt></li>
+          
+<li><b>User Property</b>: <tt>gwt.logLevel</tt></li>
+        </ul><hr />
+<p><b><a name="modules">modules</a>:</b></p>
+        
+<div>Comma-delimited list of the modules to run. 
+
+<p>Defaults to the discovered module names from
+<tt>gwt-app</tt> projects.</p></div>
         
 <ul>
           
@@ -282,7 +391,56 @@ subfolder.</p></div>
           
 <li><b>Required</b>: <tt>No</tt></li>
           
-<li><b>Default</b>: <tt>src/main/super</tt></li>
+<li><b>User Property</b>: <tt>gwt.modules</tt></li>
+        </ul><hr />
+<p><b><a name="projects">projects</a>:</b></p>
+        
+<div>Comma-delimited list of the reactor projects to run. 
+
+<p>Defaults to all the <tt>gwt-app</tt> projects in the
+reactor.</p></div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>java.lang.String</tt></li>
+          
+<li><b>Required</b>: <tt>No</tt></li>
+          
+<li><b>User Property</b>: <tt>gwt.projects</tt></li>
+        </ul><hr />
+<p><b><a name="sourceLevel">sourceLevel</a>:</b></p>
+        
+<div>Specifies Java source level.</div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>java.lang.String</tt></li>
+          
+<li><b>Required</b>: <tt>No</tt></li>
+          
+<li><b>User Property</b>: <tt>maven.compiler.source</tt></li>
+        </ul><hr />
+<p><b><a name="systemProperties">systemProperties</a>:</b></p>
+        
+<div>List of system properties to pass to the GWT compiler.</div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>java.util.Map</tt></li>
+          
+<li><b>Required</b>: <tt>No</tt></li>
+        </ul><hr />
+<p><b><a name="warDir">warDir</a>:</b></p>
+        
+<div>Directory into which deployable output files will be written.</div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>java.io.File</tt></li>
+          
+<li><b>Required</b>: <tt>No</tt></li>
+          
+<li><b>Default</b>: <tt>${project.build.directory}/gwt/devmode/war</tt></li>
         </ul>
       </div>
     </div>
