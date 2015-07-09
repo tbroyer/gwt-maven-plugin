@@ -70,7 +70,7 @@ public class CodeServerMojo extends AbstractDevModeMojo {
 
   @Override
   protected Collection<String> getSpecificArguments(Set<String> sources) {
-    ArrayList<String> args = new ArrayList<>(3 + (codeserverArgs == null ? 0 : codeserverArgs.size() * 2) + sources.size() * 2);
+    ArrayList<String> args = new ArrayList<>(3 + (codeserverArgs == null ? 0 : codeserverArgs.size()) + sources.size() * 2);
     if (launcherDir != null) {
       args.add("-launcherDir");
       args.add(launcherDir.getAbsolutePath());
