@@ -145,6 +145,9 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
 
     LinkedHashSet<String> sources = new LinkedHashSet<>();
     for (MavenProject p : projectList) {
+      if (p.getExecutionProject() != null) {
+        p = p.getExecutionProject();
+      }
       addSources(p, sources);
     }
 
