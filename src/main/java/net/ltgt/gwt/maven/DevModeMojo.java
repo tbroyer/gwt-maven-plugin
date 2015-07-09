@@ -34,6 +34,12 @@ public class DevModeMojo extends AbstractDevModeMojo {
   private File warDir;
 
   /**
+   * Automatically launches the specified URLs.
+   */
+  @Parameter
+  private List<String> startupUrls;
+
+  /**
    * Additional arguments to be passed to the GWT compiler.
    */
   @Parameter
@@ -51,9 +57,15 @@ public class DevModeMojo extends AbstractDevModeMojo {
 
   @Override
   protected Collection<String> getSpecificArguments(Set<String> sources) {
-    ArrayList<String> args = new ArrayList<>(2 + (devmodeArgs == null ? 0 : devmodeArgs.size() * 2));
+    ArrayList<String> args = new ArrayList<>(2 + (startupUrls == null ? 0 : startupUrls.size() * 2) + (devmodeArgs == null ? 0 : devmodeArgs.size()));
     args.add("-war");
     args.add(warDir.getAbsolutePath());
+    if (startupUrls != null) {
+      for (String startupUrl : startupUrls) {
+        args.add("-startupUrl");
+        args.add(startupUrl);
+      }
+    }
     if (devmodeArgs != null) {
       args.addAll(devmodeArgs);
     }
