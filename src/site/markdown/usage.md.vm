@@ -50,6 +50,11 @@ $h2 Basic usage
     </build>
     ```
 
+4. Manage your module in a `src/main/module.gwt.xml` file.
+   It will be processed and copied to the appropriate place and with the appropriate name according to the configured module name
+   by the [`gwt:generate-module` goal](generate-module-mojo.html).
+   This can be disabled by setting the `skipModule` configuration property to `true`.
+
 $h3 GWT Version Compatibility
 
 Given its design, the ${project.name} should be compatible with a wide range of GWT versions.

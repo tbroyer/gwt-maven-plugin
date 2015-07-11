@@ -8,6 +8,10 @@ To begin with, Mojo's plugin is tightly linked to a specific version of GWT,
 whereas the ${project.name} is [independent of the GWT version](usage.html).
 This means that when migrating, you have to add dependencies to `gwt-dev` and `gwt-codeserver` to your project.
 
+The module is managed in `src/main/module.gwt.xml` by default.
+When migrating your project, you have to either move your module file to `src/main/module.gwt.xml`
+or disable the [`gwt:generate-module` goal](generate-module-mojo.html) by setting the `skipModule` configuration property to `true`.
+
 Next, most goals of Mojo's plugin have no equivalent in the ${project.name}.
 Only Mojo's plugin's `gwt:compile` and `gwt:run-codeserver` (and to some extent `gwt:run`) have equivalent goals,
 namely [`gwt:compile`](compile-mojo.html) and [`gwt:codeserver`](codeserver-mojo.html) (and [`gwt:devmode`](devmode-mojo.html)) respectively.
