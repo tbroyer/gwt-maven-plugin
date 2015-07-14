@@ -8,7 +8,7 @@
     <version>1.0</version>
   </parent>
 
-  <!-- This module is not strictly needed, e2e-client could just depend on shared:jar and shared:java-source but we test transitive dependencies -->
+  <!-- This module is not strictly needed, e2e-client could just depend on shared:jar and shared:jar:sources but we test transitive dependencies -->
   <artifactId>e2e-shared-gwt</artifactId>
   <packaging>gwt-lib</packaging>
 
@@ -22,7 +22,7 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>e2e-shared</artifactId>
       <version>${project.version}</version>
-      <type>java-source</type>
+      <classifier>sources</classifier>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
