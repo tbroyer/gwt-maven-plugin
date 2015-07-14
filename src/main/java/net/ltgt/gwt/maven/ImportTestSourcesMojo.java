@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Adds all test-source directories as test resources.
  */
-@Mojo(name = "import-test-sources", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
+@Mojo(name = "import-test-sources", defaultPhase = LifecyclePhase.GENERATE_TEST_RESOURCES, threadSafe = true)
 public class ImportTestSourcesMojo extends AbstractImportSourcesMojo {
 
   @Override
