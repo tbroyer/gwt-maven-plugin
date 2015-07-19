@@ -60,7 +60,7 @@ public class GenerateModuleMetadataMojo extends AbstractMojo {
       try {
         String content = FileUtils.fileRead(outputFile, "UTF-8");
         if (content.trim().equals(moduleName)) {
-          getLog().info(outputFile.getAbsolutePath() + " up to date - skipping.");
+          getLog().info("Skip up to date module metadata " + outputFile.getAbsolutePath());
           return;
         }
       } catch (IOException e) {
@@ -70,6 +70,7 @@ public class GenerateModuleMetadataMojo extends AbstractMojo {
 
     outputDirectory.mkdirs();
     try {
+      getLog().info("Writing module metadata " + outputFile.getAbsolutePath());
       FileUtils.fileWrite(outputFile, "UTF-8", moduleName);
     } catch (IOException e) {
       throw new MojoExecutionException(e.getMessage(), e);

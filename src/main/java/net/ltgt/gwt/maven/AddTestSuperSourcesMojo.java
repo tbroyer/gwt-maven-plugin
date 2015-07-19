@@ -44,6 +44,7 @@ public class AddTestSuperSourcesMojo extends AbstractAddSuperSourcesMojo {
 
   @Override
   protected void addResource(Resource resource) {
+    getLog().info("Adding project.testResource " + resource);
     project.addTestResource(resource);
   }
 
