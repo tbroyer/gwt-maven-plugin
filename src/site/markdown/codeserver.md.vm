@@ -38,7 +38,7 @@ For standalone applications, use the [`gwt:devmode`](devmode-mojo.html) goal ins
 The goals works the same, except for a few configuration properties,
 and the `warDir` (somewhat equivalent to `gwt:codeserver`'s `launcherDir`) property has a default value (and is mandatory).
 
-You'll likely want to configure in `devmodeArgs` a `-startupUrl` argument pointing to an HTML host page living in the _public path_ of the module.
+You'll likely want to configure at least one value in `startupUrls` pointing to an HTML host page living in the _public path_ of the module.
 Have a look at the `gwt-app` integration test for an example.
 
 Note: `gwt:devmode` can be configured for a webapp too

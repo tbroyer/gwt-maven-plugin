@@ -35,10 +35,9 @@
         <configuration>
           <moduleName>it.test.Test</moduleName>
           <moduleShortName>test</moduleShortName>
-          <devmodeArgs>
-            <arg>-startupUrl</arg>
-            <arg>test/index.html</arg>
-          </devmodeArgs>
+          <startupUrls>
+            <startupUrl>test/index.html</startupUrl>
+          </startupUrls>
         </configuration>
       </plugin>
     </plugins>
