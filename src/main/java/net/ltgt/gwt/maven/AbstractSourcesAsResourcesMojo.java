@@ -9,7 +9,13 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractSourcesAsResourcesMojo extends AbstractMojo {
-  private static final List<String> JAVA_SOURCES = Collections.singletonList("**/*.java");
+  private static final List<String> DEFAULT_INCLUDES = Collections.singletonList("**/*.java");
+
+  /**
+   *  List of files to include for each source root. Default to {@code **&#47;*.java}.
+   */
+  @Parameter
+  protected List<String> sourceIncludes;
 
   @Parameter(defaultValue = "${project}", required = true, readonly = true)
   protected MavenProject project;
@@ -36,7 +42,7 @@ public abstract class AbstractSourcesAsResourcesMojo extends AbstractMojo {
   protected Resource createResource(String resourceDirectory) {
     Resource resource = new Resource();
     resource.setDirectory(resourceDirectory);
-    resource.setIncludes(JAVA_SOURCES);
+    resource.setIncludes(sourceIncludes != null ? sourceIncludes : DEFAULT_INCLUDES);
     return resource;
   }
 
