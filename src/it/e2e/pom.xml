@@ -45,6 +45,12 @@
           <artifactId>@project.artifactId@</artifactId>
           <version>@project.version@</version>
           <extensions>true</extensions>
+          <configuration>
+            <sourceIncludes>
+              <include>**/*.java</include>
+              <include>**/*.ui.xml</include>
+            </sourceIncludes>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
