@@ -112,7 +112,6 @@
           <test>
             ${project.groupId}:${project.artifactId}:${project.version}:test
           </test>
-          <!-- TODO: generate gwtar files in prepare-package phase -->
           <package>
             org.apache.maven.plugins:maven-jar-plugin:jar
           </package>
