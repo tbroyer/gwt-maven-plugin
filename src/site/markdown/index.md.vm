@@ -17,7 +17,7 @@ Java code in GWT falls into two buckets:
 
 With Maven, shared code is just a standard project with `jar` packaging.
 You'd use [the `maven-source-plugin`'s `jar-no-fork` goal][source:jar-no-fork] to package the sources as an attached artifact,
-then in your GWT project add dependencies on both the _normal_ JAR and the _sources_ JAR (with `<type>java-source</type>` or `<classifier>sources</classifier>`),
+then in your GWT project add dependencies on both the _normal_ JAR and the _sources_ JAR (with `<classifier>sources</classifier>`),
 and possibly add a GWT module (`*.gwt.xml` file) in the appropriate package, or a `<source path="shared" />` in an existing GWT module, **within** the GWT project.
 Most of the time, such shared code is part of _one_ multi-module project, so adding things in another module isn't really a code-smell.
 For more complex scenarios, you'd better create a client library (sometimes called an _adapter library_) that depends on the shared one and add the GWT-specific files (see below).

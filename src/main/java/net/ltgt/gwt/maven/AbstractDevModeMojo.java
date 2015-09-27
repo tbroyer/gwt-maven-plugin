@@ -251,10 +251,9 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
       if (!artifactFilter.include(artifact)) {
         continue;
       }
-      if (!"java-source".equals(artifact.getArtifactHandler().getPackaging()) &&
-          !"gwt-lib".equals(artifact.getArtifactHandler().getPackaging()) &&
+      if (!"gwt-lib".equals(artifact.getArtifactHandler().getPackaging()) &&
           !"sources".equals(artifact.getClassifier())) {
-        getLog().debug("Ignoring " + artifact.getId() + "; neither a java-source, gwt-lib or jar:sources.");
+        getLog().debug("Ignoring " + artifact.getId() + "; neither a gwt-lib or jar:sources.");
         continue;
       }
       String key = ArtifactUtils.key(artifact);
