@@ -5,11 +5,9 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractSourcesAsResourcesMojo extends AbstractMojo {
-  private static final List<String> JAVA_SOURCES = Collections.singletonList("**/*.java");
 
   @Parameter(defaultValue = "${project}", required = true, readonly = true)
   protected MavenProject project;
@@ -36,7 +34,6 @@ public abstract class AbstractSourcesAsResourcesMojo extends AbstractMojo {
   protected Resource createResource(String resourceDirectory) {
     Resource resource = new Resource();
     resource.setDirectory(resourceDirectory);
-    resource.setIncludes(JAVA_SOURCES);
     return resource;
   }
 
