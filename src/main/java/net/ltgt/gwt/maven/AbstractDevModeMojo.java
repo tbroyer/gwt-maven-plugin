@@ -239,7 +239,7 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
 
   protected abstract void forceMkdirs() throws IOException;
 
-  private final ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME_PLUS_SYSTEM);
+  private final ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_COMPILE);
 
   private void addSources(MavenProject p, LinkedHashSet<String> sources) {
     getLog().debug("Adding sources for " + p.getId());
