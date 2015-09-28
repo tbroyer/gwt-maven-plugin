@@ -145,9 +145,6 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
 
     LinkedHashSet<String> sources = new LinkedHashSet<>();
     for (MavenProject p : projectList) {
-      if (p.getExecutionProject() != null) {
-        p = p.getExecutionProject();
-      }
       addSources(p, sources);
     }
 
@@ -246,6 +243,9 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
 
   private void addSources(MavenProject p, LinkedHashSet<String> sources) {
     getLog().debug("Adding sources for " + p.getId());
+    if (p.getExecutionProject() != null) {
+      p = p.getExecutionProject();
+    }
     sources.addAll(p.getCompileSourceRoots());
     for (Artifact artifact : p.getDependencyArtifacts()) {
       if (!artifactFilter.include(artifact)) {
