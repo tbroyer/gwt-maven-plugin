@@ -47,6 +47,12 @@ public class CodeServerMojo extends AbstractDevModeMojo {
   private File codeserverWorkDir;
 
   /**
+   * Only succeed if no input files have errors.
+   */
+  @Parameter(property = "gwt.failOnError", defaultValue = "false")
+  protected boolean failOnError;
+
+  /**
    * Directory where files for launching SuperDevMode (e.g. {@code *.nocache.js}) will be written. (Optional.)
    */
   @Parameter(property = "launcherDir")
@@ -70,7 +76,10 @@ public class CodeServerMojo extends AbstractDevModeMojo {
 
   @Override
   protected Collection<String> getSpecificArguments(Set<String> sources) {
-    ArrayList<String> args = new ArrayList<>(3 + (codeserverArgs == null ? 0 : codeserverArgs.size()) + sources.size() * 2);
+    ArrayList<String> args = new ArrayList<>(4 + (codeserverArgs == null ? 0 : codeserverArgs.size()) + sources.size() * 2);
+    if (failOnError) {
+      args.add("-failOnError");
+    }
     if (launcherDir != null) {
       args.add("-launcherDir");
       args.add(launcherDir.getAbsolutePath());

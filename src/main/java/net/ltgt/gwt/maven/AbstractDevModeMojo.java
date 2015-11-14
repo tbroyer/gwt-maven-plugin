@@ -73,12 +73,6 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
   protected String sourceLevel;
 
   /**
-   * Only succeed if no input files have errors.
-   */
-  @Parameter(property = "gwt.failOnError", defaultValue = "false")
-  protected boolean failOnError;
-
-  /**
    * Arguments to be passed to the forked JVM (e.g. {@code -Xmx})
    */
   @Parameter
@@ -179,9 +173,6 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
     if (sourceLevel != null) {
       args.add("-sourceLevel");
       args.add(sourceLevel);
-    }
-    if (failOnError) {
-      args.add("-failOnError");
     }
     args.addAll(getSpecificArguments(sources));
     args.addAll(moduleList);
