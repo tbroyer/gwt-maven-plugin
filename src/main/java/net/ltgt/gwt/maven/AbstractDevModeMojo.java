@@ -14,7 +14,6 @@ import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -52,6 +51,20 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
    */
   @Parameter(property = "gwt.projects")
   protected String projects;
+
+  /**
+   * The dependency scope to use for the classpath.
+   * <p>The scope should be one of the scopes defined by org.apache.maven.artifact.Artifact. This includes the following:
+   * <ul>
+   * <li><i>compile</i> - system, provided, compile
+   * <li><i>runtime</i> - compile, runtime
+   * <li><i>compile+runtime</i> - system, provided, compile, runtime
+   * <li><i>runtime+system</i> - system, compile, runtime
+   * <li><i>test</i> - system, provided, compile, runtime, test
+   * </ul>
+   */
+  @Parameter(defaultValue = Artifact.SCOPE_RUNTIME)
+  protected String classpathScope;
 
   /**
    * Specifies Java source level.
@@ -177,12 +190,18 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
     if (prependSourcesToClasspath()) {
       cp.addAll(sources);
     }
-    try {
-      for (MavenProject p : projectList) {
-        cp.addAll(p.getCompileClasspathElements());
+    for (MavenProject p : projectList) {
+      ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(classpathScope);
+      cp.add(p.getBuild().getOutputDirectory());
+      for (Artifact artifact : p.getArtifacts()) {
+        if (!artifact.getArtifactHandler().isAddedToClasspath()) {
+          continue;
+        }
+        if (!artifactFilter.include(artifact)) {
+          continue;
+        }
+        cp.add(artifact.getFile().getPath());
       }
-    } catch (DependencyResolutionRequiredException e) {
-      throw new MojoExecutionException(e.getMessage(), e);
     }
 
     try {
@@ -239,15 +258,17 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
 
   protected abstract void forceMkdirs() throws IOException;
 
-  private final ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(Artifact.SCOPE_COMPILE);
-
   private void addSources(MavenProject p, LinkedHashSet<String> sources) {
     getLog().debug("Adding sources for " + p.getId());
     if (p.getExecutionProject() != null) {
       p = p.getExecutionProject();
     }
     sources.addAll(p.getCompileSourceRoots());
+    ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(classpathScope);
     for (Artifact artifact : p.getDependencyArtifacts()) {
+      if (!artifact.getArtifactHandler().isAddedToClasspath()) {
+        continue;
+      }
       if (!artifactFilter.include(artifact)) {
         continue;
       }

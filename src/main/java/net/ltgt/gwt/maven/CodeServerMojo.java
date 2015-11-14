@@ -36,7 +36,7 @@ import org.codehaus.plexus.util.cli.StreamConsumer;
 /**
  * Runs GWT's CodeServer (SuperDevMode).
  */
-@Mojo(name = "codeserver", requiresDependencyResolution = ResolutionScope.COMPILE, requiresDirectInvocation = true, threadSafe = true, aggregator = true)
+@Mojo(name = "codeserver", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDirectInvocation = true, threadSafe = true, aggregator = true)
 @Execute(phase = LifecyclePhase.PROCESS_CLASSES)
 public class CodeServerMojo extends AbstractDevModeMojo {
 

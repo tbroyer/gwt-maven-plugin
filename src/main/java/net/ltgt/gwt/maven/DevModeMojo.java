@@ -17,7 +17,7 @@ import org.apache.maven.shared.utils.io.FileUtils;
 /**
  * Runs GWT's DevMode.
  */
-@Mojo(name = "devmode", requiresDependencyResolution = ResolutionScope.COMPILE, requiresDirectInvocation = true, threadSafe = true, aggregator = true)
+@Mojo(name = "devmode", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDirectInvocation = true, threadSafe = true, aggregator = true)
 @Execute(phase = LifecyclePhase.PROCESS_CLASSES)
 public class DevModeMojo extends AbstractDevModeMojo {
 
