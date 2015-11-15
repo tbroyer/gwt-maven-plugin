@@ -6,7 +6,7 @@ The ${project.name} is very different from Mojo's Maven Plugin for GWT.
 
 To begin with, Mojo's plugin is tightly linked to a specific version of GWT,
 whereas the ${project.name} is [independent of the GWT version](usage.html).
-This means that when migrating, you have to add dependencies to `gwt-dev` and `gwt-codeserver` to your project.
+This means that when migrating, you have to add dependencies to `gwt-dev` to your project.
 
 The module is managed in `src/main/module.gwt.xml` by default.
 When migrating your project, you have to either move your module file to `src/main/module.gwt.xml`

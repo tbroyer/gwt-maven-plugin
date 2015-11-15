@@ -42,10 +42,6 @@ $h2 Basic usage
           <groupId>com.google.gwt</groupId>
           <artifactId>gwt-dev</artifactId>
         </dependency>
-        <dependency>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-codeserver</artifactId>
-        </dependency>
       </dependencies>
     </build>
     ```
