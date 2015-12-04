@@ -110,21 +110,33 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
       }
     } else {
       Map<String, MavenProject> projectMap = new HashMap<>();
+      Set<String> ambiguousProjectIds = new LinkedHashSet<>();
       for (MavenProject p : reactorProjects) {
-        // XXX: how about duplicates?
         String key = p.getArtifactId();
-        projectMap.put(key, p);
+        if (projectMap.put(key, p) != null) {
+          projectMap.remove(key);
+          ambiguousProjectIds.add(key);
+        }
         key = ":" + key;
-        projectMap.put(key, p);
+        if (projectMap.put(key, p) != null) {
+          projectMap.remove(key);
+          ambiguousProjectIds.add(key);
+        }
         key = p.getGroupId() + key;
-        projectMap.put(key, p);
+        if (projectMap.put(key, p) != null) {
+          projectMap.remove(key);
+          ambiguousProjectIds.add(key);
+        }
       }
       for (String key : StringUtils.split(projects, ",")) {
         MavenProject p = projectMap.get(key);
         if (p == null) {
-          throw new MojoExecutionException("Could not find the selected project in the reactor: " + key);
+          if (ambiguousProjectIds.contains(key)) {
+            throw new MojoExecutionException("Ambiguous project identifier, there are several matching projects in the reactor: " + key);
+          } else {
+            throw new MojoExecutionException("Could not find the selected project in the reactor: " + key);
+          }
         }
-        // XXX: check module packaging for known illegal values? (e.g. war, ear, etc.)
         projectList.add(p);
       }
     }
