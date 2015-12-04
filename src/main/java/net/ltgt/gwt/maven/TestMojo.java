@@ -193,9 +193,11 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
     checksum.add(localWorkers);
     checksum.add(devMode);
     checksum.add(sourceLevel);
-    checksum.add(compilerArgs);
     checksum.add(testArgs);
     checksum.add(useCompilerArgsForTests);
+    if (useCompilerArgsForTests) {
+      checksum.add(compilerArgs);
+    }
   }
 
   // Properties copied from Surefire
