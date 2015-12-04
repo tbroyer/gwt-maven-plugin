@@ -125,7 +125,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   public Map<String, String> getSystemPropertyVariables() {
     Map<String, String> props = super.getSystemPropertyVariables();
     if (props == null) {
-      props = new HashMap<String, String>(2);
+      props = new HashMap<>(2);
     }
     if (!props.containsKey("gwt.args")) {
       StringBuilder sb = new StringBuilder();

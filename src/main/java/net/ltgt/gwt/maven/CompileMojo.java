@@ -172,7 +172,7 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
       return;
     }
 
-    List<String> args = new ArrayList<String>();
+    List<String> args = new ArrayList<>();
     if (jvmArgs != null) {
       args.addAll(jvmArgs);
     }
@@ -191,7 +191,7 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     }
     args.add(moduleName);
 
-    Set<String> cp = new LinkedHashSet<String>();
+    Set<String> cp = new LinkedHashSet<>();
     try {
       cp.addAll(project.getCompileClasspathElements());
     } catch (DependencyResolutionRequiredException e) {

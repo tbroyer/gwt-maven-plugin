@@ -126,9 +126,7 @@ public class GenerateModuleMojo extends AbstractMojo {
       uptodate = buildContext.isUptodate(outputFile, moduleTemplate);
       try {
         template = Xpp3DomBuilder.build(Files.newReader(moduleTemplate, Charsets.UTF_8));
-      } catch (XmlPullParserException e) {
-        throw new MojoExecutionException(e.getMessage(), e);
-      } catch (IOException e) {
+      } catch (XmlPullParserException | IOException e) {
         throw new MojoExecutionException(e.getMessage(), e);
       }
     } else {
@@ -241,9 +239,7 @@ public class GenerateModuleMojo extends AbstractMojo {
         }
         realm.addURL(artifact.getFile().toURI().toURL());
       }
-    } catch (DuplicateRealmException e) {
-      throw new MojoExecutionException(e.getMessage(), e);
-    } catch (MalformedURLException e) {
+    } catch (DuplicateRealmException | MalformedURLException e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
 
