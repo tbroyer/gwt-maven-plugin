@@ -99,9 +99,13 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
   public void execute() throws MojoExecutionException, MojoFailureException {
     List<MavenProject> projectList = new ArrayList<>();
     if (StringUtils.isBlank(projects)) {
-      for (MavenProject p : reactorProjects) {
-        if (p.getPackaging().equals("gwt-app")) {
-          projectList.add(p);
+      if (reactorProjects.size() == 1) {
+        projectList.add(reactorProjects.get(0));
+      } else {
+        for (MavenProject p : reactorProjects) {
+          if (p.getPackaging().equals("gwt-app")) {
+            projectList.add(p);
+          }
         }
       }
     } else {
