@@ -27,6 +27,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 public abstract class AbstractDevModeMojo extends AbstractMojo {
 
@@ -130,17 +131,18 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
 
     List<String> moduleList = new ArrayList<>();
     if (StringUtils.isBlank(modules)) {
-      List<String> nonGwtAppProjects = new ArrayList<>();
+      List<String> nonGwtProjects = new ArrayList<>();
       for (MavenProject p : projectList) {
-        if (!"gwt-app".equals(p.getPackaging())) {
-          nonGwtAppProjects.add(ArtifactUtils.versionlessKey(p.getGroupId(), p.getArtifactId()));
-          continue;
+        Xpp3Dom configuration = p.getGoalConfiguration(pluginDescriptor.getGroupId(), pluginDescriptor.getArtifactId(), null, null);
+        if (configuration == null) {
+          nonGwtProjects.add(ArtifactUtils.versionlessKey(p.getGroupId(), p.getArtifactId()));
+        } else {
+          moduleList.add(configuration.getChild("moduleName").getValue());
         }
-        moduleList.add(p.getGoalConfiguration(pluginDescriptor.getGroupId(), pluginDescriptor.getArtifactId(), null, null).getChild("moduleName").getValue());
       }
-      if (!nonGwtAppProjects.isEmpty()) {
-        getLog().warn("Found projects with packaging different form gwt-app when discovering GWT modules; they've been ignored: "
-            + StringUtils.join(nonGwtAppProjects.iterator(), ", "));
+      if (!nonGwtProjects.isEmpty()) {
+        getLog().warn("Found projects without the gwt-maven-plugin's moduleName when discovering GWT modules; they've been ignored: "
+            + StringUtils.join(nonGwtProjects.iterator(), ", "));
       }
     } else {
       moduleList.addAll(Arrays.asList(StringUtils.split(modules, ",")));
