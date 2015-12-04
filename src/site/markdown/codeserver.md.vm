@@ -7,8 +7,8 @@ This is an aggregator goal, which means its configuration is done in your root P
 This gives the goal the opportunity to use several `gwt-app` modules from the reactor (which it will do automatically by default).
 
 Note that `gwt:codeserver` has a slightly different behavior than [`gwt:compile`](compile-mojo.html) to accomodate development needs.
-First, all modules from the reactor that are depended on with `<type>gwt-lib</type>` or `<classifier>sources</classifier>` have their source roots used as-is so that changes can be seen immediately;
-this means that if anyone of those is declared as a resource directory with filtering or relocation, behavior will different from `gwt:compile`.
+First, the applications and all modules from the reactor that are depended on with `<type>gwt-lib</type>` or `<classifier>sources</classifier>` have their source roots used as-is so that changes can be seen immediately;
+this means that if anyone of those is declared as a resource directory with filtering or relocation, behavior will be different from `gwt:compile`.
 Also, dependencies by default use the `runtime` scope, whereas `gwt:compile` uses the `compile` scope;
 this allows some differences between `gwt:compile` and `gwt:codeserver` classpaths when needed,
 while working in identical ways most of the time (where dependencies are put in the default `compile` scope).

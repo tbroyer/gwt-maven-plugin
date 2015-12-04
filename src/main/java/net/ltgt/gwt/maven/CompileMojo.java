@@ -192,7 +192,6 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     args.add(moduleName);
 
     Set<String> cp = new LinkedHashSet<String>();
-    cp.addAll(project.getCompileSourceRoots());
     try {
       cp.addAll(project.getCompileClasspathElements());
     } catch (DependencyResolutionRequiredException e) {
@@ -261,17 +260,9 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
       }
     });
 
-    ArrayList<String> sourceRoots = new ArrayList<String>();
-    // sources (incl. generated sources)
-    sourceRoots.addAll(project.getCompileSourceRoots());
-    // compiled (processed) classes and resources (incl. processed and generated ones)
-    sourceRoots.add(project.getBuild().getOutputDirectory());
-    for (String sourceRoot : sourceRoots) {
-      File rootFile = new File( sourceRoot );
-
-      if (isStale(scanner, rootFile, nocacheJs)) {
-        return true;
-      }
+    // compiled (processed) classes and resources (incl. processed and generated ones, and sources through gwt:import-sources)
+    if (isStale(scanner, new File(project.getBuild().getOutputDirectory()), nocacheJs)) {
+      return true;
     }
     // POM
     if (isStale(scanner, project.getFile(), nocacheJs)) {
