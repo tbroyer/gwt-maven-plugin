@@ -66,12 +66,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private Style style;
 
   /**
-   * Runs tests in Development Mode, using the Java virtual machine.
-   */
-  @Parameter(property = "gwt.test.devMode", defaultValue = "true")
-  private boolean devMode;
-
-  /**
    * Compile quickly with minimal optimizations.
    */
   @Parameter(property = "gwt.draftCompile", defaultValue = "false")
@@ -144,7 +138,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
       for (String arg : CommandlineBuilder.buildArgs(getLog(), this)) {
         sb.append(" ").append(quote(arg));
       }
-      sb.append(devMode ? " -devMode" : " -nodevMode");
       sb.append(effectiveIsEnableAssertions() ? " -checkAssertions" : " -nocheckAssertions");
 
       if (useCompilerArgsForTests && compilerArgs != null) {
@@ -191,7 +184,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
     checksum.add(style.name());
     checksum.add(draftCompile);
     checksum.add(localWorkers);
-    checksum.add(devMode);
     checksum.add(sourceLevel);
     checksum.add(testArgs);
     checksum.add(useCompilerArgsForTests);
