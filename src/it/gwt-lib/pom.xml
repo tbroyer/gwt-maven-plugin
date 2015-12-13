@@ -34,6 +34,8 @@
         <extensions>true</extensions>
         <configuration>
           <moduleName>it.testlib.TestLib</moduleName>
+          <relocateSuperSource>true</relocateSuperSource>
+          <relocateTestSuperSource>true</relocateTestSuperSource>
         </configuration>
       </plugin>
     </plugins>

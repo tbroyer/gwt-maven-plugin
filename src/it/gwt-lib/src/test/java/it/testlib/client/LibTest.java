@@ -12,4 +12,8 @@ public class LibTest extends GWTTestCase {
   public void testShouldRun() {
     GWT.log("Hello world!");
   }
+
+  public void testSuperSource() {
+    assertTrue(SuperSourced.isSuperSourced());
+  }
 }

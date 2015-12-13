@@ -3,6 +3,7 @@
 
   <!-- tests that gwt:generate-module doesn't add other sources -->
   <source path="client"/>
+  <super-source path="translatable" />
 
   <entry-point class="it.test.client.Test"/>
 </module>
