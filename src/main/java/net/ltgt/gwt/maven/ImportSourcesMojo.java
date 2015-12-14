@@ -19,6 +19,7 @@ public class ImportSourcesMojo extends AbstractImportSourcesMojo {
 
   @Override
   protected void addResource(Resource resource) {
+    getLog().info("Adding project.resource " + resource);
     project.addResource(resource);
   }
 

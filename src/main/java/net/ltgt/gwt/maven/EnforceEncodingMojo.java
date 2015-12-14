@@ -24,6 +24,8 @@ public class EnforceEncodingMojo extends AbstractMojo {
       getLog().info("Setting project.build.sourceEncoding to UTF-8");
     } else if (!encoding.equalsIgnoreCase("UTF-8")) {
       getLog().warn("Encoding was set to " + encoding + "; forcing it to UTF-8");
+    } else {
+      getLog().info("Project already has UTF-8 encoding");
     }
     project.getProperties().setProperty("project.build.sourceEncoding", "UTF-8");
   }

@@ -214,10 +214,11 @@ public class GenerateModuleMojo extends AbstractMojo {
 
     try {
       if (outputFile.isFile() && writer.toString().equals(FileUtils.fileRead(outputFile, "UTF-8"))) {
-        getLog().info(outputFile.getAbsolutePath() + " up to date - skipping");
+        getLog().info("Skip up to date module " + outputFile.getAbsolutePath());
         return;
       }
 
+      getLog().info("Writing module " + outputFile.getAbsolutePath());
       FileUtils.fileWrite(outputFile, "UTF-8", writer.toString());
       buildContext.refresh(outputFile);
     } catch (IOException e) {
