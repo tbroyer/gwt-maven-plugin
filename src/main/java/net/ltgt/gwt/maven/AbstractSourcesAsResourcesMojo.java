@@ -39,8 +39,6 @@ public abstract class AbstractSourcesAsResourcesMojo extends AbstractMojo {
 
   protected abstract List<Resource> getProjectResources();
 
-  protected abstract void addResource(Resource resource);
-
   protected String ensureTrailingSlash(String directory) {
     if (directory.endsWith("/")) {
       return directory;

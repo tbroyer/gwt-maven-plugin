@@ -42,4 +42,6 @@ public abstract class AbstractAddSuperSourcesMojo extends AbstractSourcesAsResou
   protected abstract String getSuperSourceRoot();
 
   protected abstract boolean isSuperSourceRelocated();
+
+  protected abstract void addResource(Resource resource);
 }
