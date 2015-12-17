@@ -21,13 +21,13 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 					"Name must be at least 4 characters long");
 		}
 
-		GreetingResponse response = new GreetingResponse();
+		GreetingResponse.Builder response = GreetingResponse.builder();
 
 		response.setServerInfo(getServletContext().getServerInfo());
 		response.setUserAgent(getThreadLocalRequest().getHeader("User-Agent"));
 
 		response.setGreeting("Hello, " + input + "!");
 
-		return response;
+		return response.build();
 	}
 }

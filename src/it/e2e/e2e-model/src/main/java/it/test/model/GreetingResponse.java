@@ -1,34 +1,31 @@
 package it.test.model;
 
 import java.io.Serializable;
+import com.google.auto.value.AutoValue;
+import com.google.common.annotations.GwtCompatible;
 
 @SuppressWarnings("serial")
-public class GreetingResponse implements Serializable {
-	private String greeting;
-	private String serverInfo;
-	private String userAgent;
-
-	public String getGreeting() {
-		return greeting;
+@AutoValue
+@GwtCompatible(serializable = true)
+public abstract class GreetingResponse {
+	public static Builder builder() {
+		return new AutoValue_GreetingResponse.Builder();
 	}
 
-	public void setGreeting(String greeting) {
-		this.greeting = greeting;
-	}
+	public abstract String getGreeting();
 
-	public String getServerInfo() {
-		return serverInfo;
-	}
+	public abstract String getServerInfo();
 
-	public void setServerInfo(String serverInfo) {
-		this.serverInfo = serverInfo;
-	}
+	public abstract String getUserAgent();
 
-	public String getUserAgent() {
-		return userAgent;
-	}
+	@AutoValue.Builder
+	public static abstract class Builder {
+		public abstract Builder setGreeting(String greeting);
 
-	public void setUserAgent(String userAgent) {
-		this.userAgent = userAgent;
+		public abstract Builder setServerInfo(String serverInfo);
+
+		public abstract Builder setUserAgent(String userAgent);
+
+		public abstract GreetingResponse build();
 	}
 }

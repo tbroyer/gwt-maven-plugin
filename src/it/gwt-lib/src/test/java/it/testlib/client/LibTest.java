@@ -16,4 +16,9 @@ public class LibTest extends GWTTestCase {
   public void testSuperSource() {
     assertTrue(SuperSourced.isSuperSourced());
   }
+
+  public void testProcessed() {
+    assertEquals("foo", Processed.create("foo").getProperty());
+    assertEquals("bar", Processed2.create("bar").getProperty());
+  }
 }

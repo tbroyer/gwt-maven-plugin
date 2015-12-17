@@ -60,7 +60,7 @@ try {
     System.err.println("Encoding is not set.");
     return false;
   }
-  if (!buildLog.contains("Tests run: 2, Failures: 0, Errors: 0, Skipped: 0")) {
+  if (!buildLog.contains("Tests run: 3, Failures: 0, Errors: 0, Skipped: 0")) {
     System.err.println("build.log does not talk about running tests");
     return false;
   }

@@ -6,6 +6,7 @@ public class Test implements EntryPoint {
 
   @Override
   public void onModuleLoad() {
+    Processed.create("foo").getProperty();
     // So what?
   }
 }

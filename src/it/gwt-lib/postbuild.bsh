@@ -36,6 +36,8 @@ try {
   boolean seenClass = false;
   boolean seenSuperJava = false;
   boolean seenSuperClass = false;
+  boolean seenGeneratedJava = false;
+  boolean seenGeneratedClass = false;
   while (entries.hasMoreElements()) {
     JarEntry entry = entries.nextElement();
     String name = entry.getName();
@@ -51,6 +53,10 @@ try {
       seenSuperJava = true;
     } else if (name.equals("it/testlib/super/it/testlib/client/Super.class")) {
       seenSuperClass = true;
+    } else if (name.equals("it/testlib/client/AutoValue_Processed.java")) {
+      seenGeneratedJava = true;
+    } else if (name.equals("it/testlib/client/AutoValue_Processed.class")) {
+      seenGeneratedClass = true;
     }
   }
   boolean result = true;
@@ -78,6 +84,14 @@ try {
     System.err.println("jar erroneously contains compiled Java super-source");
     result = false;
   }
+  if (!seenGeneratedJava) {
+    System.err.println("Generated java source missing from jar");
+    result = false;
+  }
+  if (!seenGeneratedClass) {
+    System.err.println("Compiled generated Java class missing from jar");
+    result = false;
+  }
 
   File buildLogFile = new File(basedir, "build.log");
   if (!buildLogFile.exists() || buildLogFile.isDirectory()) {
@@ -89,7 +103,7 @@ try {
       System.err.println("Encoding is not set.");
       result = false;
     }
-    if (!buildLog.contains("Tests run: 2, Failures: 0, Errors: 0, Skipped: 0")) {
+    if (!buildLog.contains("Tests run: 3, Failures: 0, Errors: 0, Skipped: 0")) {
       System.err.println("build.log does not talk about running tests");
       result = false;
     }

@@ -1,18 +1,14 @@
 package it.test.client;
 
 import it.test.model.FieldVerifier;
-import it.test.model.GreetingResponse;
-import it.test.shared.GreetingService;
-import it.test.shared.GreetingServiceAsync;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
@@ -32,12 +28,6 @@ public class E2E implements EntryPoint {
 	private static final String SERVER_ERROR = "An error occurred while "
 			+ "attempting to contact the server. Please check your network "
 			+ "connection and try again.";
-
-	/**
-	 * Create a remote service proxy to talk to the server-side Greeting service.
-	 */
-	private final GreetingServiceAsync greetingService = GWT
-			.create(GreetingService.class);
 
 	/**
 	 * This is the entry point method.
@@ -123,8 +113,8 @@ public class E2E implements EntryPoint {
 				sendButton.setEnabled(false);
 				textToServerLabel.setText(textToServer);
 				serverResponseLabel.setText("");
-				greetingService.greetServer(textToServer,
-						new AsyncCallback<GreetingResponse>() {
+				new Greeter().greet(textToServer,
+						new Callback<Greeter.Result, Throwable>() {
 							public void onFailure(Throwable caught) {
 								// Show the RPC error message to the user
 								dialogBox
@@ -136,17 +126,11 @@ public class E2E implements EntryPoint {
 								closeButton.setFocus(true);
 							}
 
-							public void onSuccess(GreetingResponse result) {
+							public void onSuccess(Greeter.Result result) {
 								dialogBox.setText("Remote Procedure Call");
 								serverResponseLabel
 										.removeStyleName("serverResponseLabelError");
-								serverResponseLabel.setHTML(new SafeHtmlBuilder()
-										.appendEscaped(result.getGreeting())
-										.appendHtmlConstant("<br><br>I am running ")
-										.appendEscaped(result.getServerInfo())
-										.appendHtmlConstant(".<br><br>It looks like you are using:<br>")
-										.appendEscaped(result.getUserAgent())
-										.toSafeHtml());
+								serverResponseLabel.setHTML(result.getHtml());
 								dialogBox.center();
 								closeButton.setFocus(true);
 							}
