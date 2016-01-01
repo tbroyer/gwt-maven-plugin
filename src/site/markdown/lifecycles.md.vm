@@ -18,12 +18,13 @@ The `gwt-lib` lifecycle has the same phases as the [default lifecycle][], and re
 | Phase                     | Bindings                                                                                   |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
 | `initialize`              | #mojo("enforce-encoding"), #mojo("add-super-sources"), and #mojo('app-test-super-sources') |
-| `generate-resources`      | #mojo("import-sources"), #mojo("generate-module"), and #mojo("generate-module-metadata")   |
+| `generate-resources`      | #mojo("generate-module"), and #mojo("generate-module-metadata")                            |
 | `process-resources`       | `resources:resources`                                                                      |
 | `compile`                 | `compiler:compile`                                                                         |
-| `generate-test-resources` | #mojo("import-test-sources")                                                               |
+| `processes-classes`       | #mojo("import-sources")                                                                    |
 | `process-test-resources`  | `resources:testResources`                                                                  |
 | `test-compile`            | `compiler:testCompile`                                                                     |
+| `process-test-classes`    | #mojo("import-test-sources")                                                               |
 | `test`                    | #mojo("test")                                                                              |
 | `package`                 | `jar:jar`                                                                                  |
 | `install`                 | `install:install`                                                                          |
@@ -39,12 +40,13 @@ The `gwt-app` lifecycle has the same phases as the [default lifecycle][], and re
 | Phase                     | Bindings                                                                                   |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
 | `initialize`              | #mojo("enforce-encoding"), #mojo("add-super-sources"), and #mojo('app-test-super-sources') |
-| `generate-resources`      | #mojo("import-sources"), and #mojo("generate-module")                                      |
+| `generate-resources`      | #mojo("generate-module")                                                                   |
 | `process-resources`       | `resources:resources`                                                                      |
 | `compile`                 | `compiler:compile`                                                                         |
+| `processes-classes`       | #mojo("import-sources")                                                                    |
 | `generate-test-resources` | #mojo("import-test-sources")                                                               |
-| `process-test-resources`  | `resources:testResources`                                                                  |
 | `test-compile`            | `compiler:testCompile`                                                                     |
+| `process-test-classes`    | #mojo("import-test-sources")                                                               |
 | `test`                    | #mojo("test")                                                                              |
 | `prepare-package`         | #mojo("compile")                                                                           |
 | `package`                 | #mojo("package-app")                                                                       |
