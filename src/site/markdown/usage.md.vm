@@ -1,5 +1,7 @@
 #set($h2 = '##')
 #set($h3 = '###')
+#macro( mojo $name )[`gwt:$name`](${name}-mojo.html)#end
+##
 $h2 Basic usage
 
 1. Add the plugin to your POM, enabling extensions to get the new packagings, and configuring your module name:
@@ -50,6 +52,20 @@ $h2 Basic usage
    It will be processed and copied to the appropriate place and with the appropriate name according to the configured module name
    by the [`gwt:generate-module` goal](generate-module-mojo.html).
    This can be disabled by setting the `skipModule` configuration property to `true`.
+
+$h3 Project layout
+
+The default configuration of [goals](plugin-info.html) provided by the ${project.name} expect the following project layout:
+
+| File or directory         | Usage |
+| ------------------------- | ----- |
+| `src/main/module.gwt.xml` | GWT module definition, used by #mojo("generate-module"). The `rename-to=""` and some `<inherits/>` will be generated. |
+| `src/main/java/`          | Standard Java sources |
+| `src/main/resources/`     | Standard resources |
+| `src/main/super/`         | GWT super-sources, used by #mojo("add-super-sources") |
+| `src/test/java/`          | Standard test Java sources |
+| `src/test/resources/`     | Standard test resources |
+| `src/test/super/`         | GWT test super-sources, used by #mojo("add-test-super-sources") |
 
 $h3 GWT Version Compatibility
 
