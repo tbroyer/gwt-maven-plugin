@@ -204,6 +204,9 @@
           <cloneProjectsTo>${project.build.directory}/it-tests</cloneProjectsTo>
           <localRepositoryPath>${project.build.directory}/it-repo</localRepositoryPath>
           <settingsFile>src/it/settings.xml</settingsFile>
+          <filterProperties>
+            <gwtVersion>${gwtVersion}</gwtVersion>
+          </filterProperties>
         </configuration>
       </plugin>
       <plugin>
