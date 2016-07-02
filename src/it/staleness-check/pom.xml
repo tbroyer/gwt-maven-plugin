@@ -27,6 +27,7 @@
         <version>@project.version@</version>
         <extensions>true</extensions>
         <configuration>
+          <failOnError>true</failOnError>
           <moduleName>it.test.Test</moduleName>
           <moduleShortName>test</moduleShortName>
         </configuration>

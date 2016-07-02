@@ -62,6 +62,9 @@
           <artifactId>@project.artifactId@</artifactId>
           <version>@project.version@</version>
           <extensions>true</extensions>
+          <configuration>
+            <failOnError>true</failOnError>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
