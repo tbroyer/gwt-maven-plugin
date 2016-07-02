@@ -10,7 +10,7 @@ env:
   - GWT_VERSION=2.7.0
   - GWT_VERSION=2.8.0-SNAPSHOT
 
-install: mvn verify clean --fail-never --quiet -DskipTests=true -Dinvoker.skip=true
+install: true
 script: mvn verify -Dinvoker.streamLogs=true -Dinvoker.mavenOpts="-Djava.net.preferIPv4Stack=true" -DgwtVersion=$GWT_VERSION
 
 after_success:
