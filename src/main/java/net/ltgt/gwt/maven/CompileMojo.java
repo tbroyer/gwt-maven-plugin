@@ -1,7 +1,6 @@
 package net.ltgt.gwt.maven;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -25,10 +24,6 @@ import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SourceMapping;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.cli.CommandLineException;
-import org.codehaus.plexus.util.cli.CommandLineUtils;
-import org.codehaus.plexus.util.cli.Commandline;
-import org.codehaus.plexus.util.cli.StreamConsumer;
 
 /**
  * Invokes the GWT Compiler on the project's sources and resources.
@@ -198,33 +193,7 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
       throw new MojoExecutionException(e.getMessage(), e);
     }
 
-    Commandline commandline = new Commandline();
-    commandline.setWorkingDirectory(project.getBuild().getDirectory());
-    commandline.setExecutable(Paths.get(System.getProperty("java.home"), "bin", "java").toString());
-    commandline.addEnvironment("CLASSPATH", StringUtils.join(cp.iterator(), File.pathSeparator));
-    commandline.addArguments(args.toArray(new String[args.size()]));
-
-    int result;
-    try {
-      result = CommandLineUtils.executeCommandLine(commandline,
-          new StreamConsumer() {
-            @Override
-            public void consumeLine(String s) {
-              getLog().info(s);
-            }
-          },
-          new StreamConsumer() {
-            @Override
-            public void consumeLine(String s) {
-              getLog().warn(s);
-            }
-          });
-    } catch (CommandLineException e) {
-      throw new MojoExecutionException(e.getMessage(), e);
-    }
-    if (result != 0) {
-      throw new MojoExecutionException("GWT Compiler exited with status " + result);
-    }
+    CommandLine.execute(getLog(), project, cp, args);
 
     // XXX: workaround for GWT 2.7.0 not setting nocache.js lastModified correctly.
     if (isStale()) {

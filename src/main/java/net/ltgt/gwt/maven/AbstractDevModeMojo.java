@@ -2,7 +2,6 @@ package net.ltgt.gwt.maven;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,10 +22,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.utils.StringUtils;
 import org.apache.maven.shared.utils.io.FileUtils;
-import org.codehaus.plexus.util.cli.CommandLineException;
-import org.codehaus.plexus.util.cli.CommandLineUtils;
-import org.codehaus.plexus.util.cli.Commandline;
-import org.codehaus.plexus.util.cli.StreamConsumer;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 public abstract class AbstractDevModeMojo extends AbstractMojo {
@@ -221,38 +216,7 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
       throw new MojoFailureException(ioe.getMessage(), ioe);
     }
 
-    Commandline commandline = new Commandline();
-    commandline.setWorkingDirectory(project.getBuild().getDirectory());
-    commandline.setExecutable(Paths.get(System.getProperty("java.home"), "bin", "java").toString());
-    commandline.addEnvironment("CLASSPATH", StringUtils.join(cp.iterator(), File.pathSeparator));
-    commandline.addArguments(args.toArray(new String[args.size()]));
-
-    if (getLog().isDebugEnabled()) {
-      getLog().debug("Arguments: " + StringUtils.join(commandline.getArguments(), " "));
-      getLog().debug("Classpath: " + StringUtils.join(cp.iterator(), File.pathSeparator));
-    }
-
-    int result;
-    try {
-      result = CommandLineUtils.executeCommandLine(commandline,
-          new StreamConsumer() {
-            @Override
-            public void consumeLine(String s) {
-              getLog().info(s);
-            }
-          },
-          new StreamConsumer() {
-            @Override
-            public void consumeLine(String s) {
-              getLog().warn(s);
-            }
-          });
-    } catch (CommandLineException e) {
-      throw new MojoExecutionException(e.getMessage(), e);
-    }
-    if (result != 0) {
-      throw new MojoExecutionException("GWT exited with status " + result);
-    }
+    CommandLine.execute(getLog(), project, cp, args);
   }
 
   protected abstract String getMainClass();
