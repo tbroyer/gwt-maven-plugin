@@ -204,6 +204,8 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     commandline.addEnvironment("CLASSPATH", StringUtils.join(cp.iterator(), File.pathSeparator));
     commandline.addArguments(args.toArray(new String[args.size()]));
 
+    getLog().info("Executing: " + commandline.toString());
+    
     int result;
     try {
       result = CommandLineUtils.executeCommandLine(commandline,
