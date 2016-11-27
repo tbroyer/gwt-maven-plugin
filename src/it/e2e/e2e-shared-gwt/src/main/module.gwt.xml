@@ -1,0 +1,5 @@
+<module>
+  <inherits name="com.google.gwt.user.AsyncCallback"/>
+
+  <source path="shared" />
+</module>
