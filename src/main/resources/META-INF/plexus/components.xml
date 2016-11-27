@@ -92,7 +92,6 @@
             ${project.groupId}:${project.artifactId}:${project.version}:add-test-super-sources
           </initialize>
           <generate-resources>
-            ${project.groupId}:${project.artifactId}:${project.version}:import-sources,
             ${project.groupId}:${project.artifactId}:${project.version}:generate-module,
             ${project.groupId}:${project.artifactId}:${project.version}:generate-module-metadata
           </generate-resources>
@@ -102,15 +101,18 @@
           <compile>
             org.apache.maven.plugins:maven-compiler-plugin:compile
           </compile>
-          <generate-test-resources>
-            ${project.groupId}:${project.artifactId}:${project.version}:import-test-sources
-          </generate-test-resources>
+          <process-classes>
+            ${project.groupId}:${project.artifactId}:${project.version}:import-sources
+          </process-classes>
           <process-test-resources>
             org.apache.maven.plugins:maven-resources-plugin:testResources
           </process-test-resources>
           <test-compile>
             org.apache.maven.plugins:maven-compiler-plugin:testCompile
           </test-compile>
+          <process-test-classes>
+            ${project.groupId}:${project.artifactId}:${project.version}:import-test-sources
+          </process-test-classes>
           <test>
             ${project.groupId}:${project.artifactId}:${project.version}:test
           </test>
