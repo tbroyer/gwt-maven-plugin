@@ -7,16 +7,25 @@
   <version>1.0</version>
   <packaging>gwt-lib</packaging>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt</artifactId>
+        <version>@gwtVersion@</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>@gwtVersion@</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
-      <version>@gwtVersion@</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
