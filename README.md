@@ -34,7 +34,7 @@ Basic usage
 Features
 --------
 
-* **Adds all source roots are resources** so they're packaged within the generated JAR.
+* **Adds all source roots as resources** so they're packaged within the generated JAR.
 
 * **Uses `src/main/super` for super-sources** and possibly relocate them within your module's package
   with `<relocateSuperSource>true</relocateSuperSource>`.
