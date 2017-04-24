@@ -17,7 +17,7 @@ The `gwt-lib` lifecycle has the same phases as the [default lifecycle][], and re
 
 | Phase                     | Bindings                                                                                   |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
-| `initialize`              | #mojo("enforce-encoding"), #mojo("add-super-sources"), and #mojo('app-test-super-sources') |
+| `initialize`              | #mojo("enforce-encoding"), #mojo("add-super-sources"), and #mojo('add-test-super-sources') |
 | `generate-resources`      | #mojo("generate-module"), and #mojo("generate-module-metadata")                            |
 | `process-resources`       | `resources:resources`                                                                      |
 | `compile`                 | `compiler:compile`                                                                         |
@@ -39,12 +39,11 @@ The `gwt-app` lifecycle has the same phases as the [default lifecycle][], and re
 
 | Phase                     | Bindings                                                                                   |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
-| `initialize`              | #mojo("enforce-encoding"), #mojo("add-super-sources"), and #mojo('app-test-super-sources') |
+| `initialize`              | #mojo("enforce-encoding"), #mojo("add-super-sources"), and #mojo('add-test-super-sources') |
 | `generate-resources`      | #mojo("generate-module")                                                                   |
 | `process-resources`       | `resources:resources`                                                                      |
 | `compile`                 | `compiler:compile`                                                                         |
 | `processes-classes`       | #mojo("import-sources")                                                                    |
-| `generate-test-resources` | #mojo("import-test-sources")                                                               |
 | `test-compile`            | `compiler:testCompile`                                                                     |
 | `process-test-classes`    | #mojo("import-test-sources")                                                               |
 | `test`                    | #mojo("test")                                                                              |
