@@ -29,10 +29,15 @@ public abstract class AbstractAddSuperSourcesMojo extends AbstractSourcesAsResou
           throw new MojoExecutionException("Cannot relocate super-sources if moduleName is not specified");
         }
         String targetPath = moduleName.replace('.', '/');
-        // Keep only package name
-        targetPath = targetPath.substring(0, targetPath.lastIndexOf('/'));
+        // Keep only package name (if there is one)
+        int lastTrailingSlash = targetPath.lastIndexOf('/');
+        if (lastTrailingSlash > 0) {
+          targetPath = targetPath.substring(0, lastTrailingSlash + 1);
+        } else {
+          targetPath = "";	
+        }
         // Relocate into 'super' subfolder
-        targetPath = ensureTrailingSlash(targetPath) + "super/";
+        targetPath += "super/";
         resource.setTargetPath(targetPath);
       }
       addResource(resource);
