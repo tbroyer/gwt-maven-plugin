@@ -21,10 +21,8 @@ The `gwt-lib` lifecycle has the same phases as the [default lifecycle][], and re
 | `generate-resources`      | #mojo("generate-module"), and #mojo("generate-module-metadata")                            |
 | `process-resources`       | `resources:resources`                                                                      |
 | `compile`                 | `compiler:compile`                                                                         |
-| `processes-classes`       | #mojo("import-sources")                                                                    |
 | `process-test-resources`  | `resources:testResources`                                                                  |
 | `test-compile`            | `compiler:testCompile`                                                                     |
-| `process-test-classes`    | #mojo("import-test-sources")                                                               |
 | `test`                    | #mojo("test")                                                                              |
 | `package`                 | `jar:jar`                                                                                  |
 | `install`                 | `install:install`                                                                          |
@@ -43,9 +41,7 @@ The `gwt-app` lifecycle has the same phases as the [default lifecycle][], and re
 | `generate-resources`      | #mojo("generate-module")                                                                   |
 | `process-resources`       | `resources:resources`                                                                      |
 | `compile`                 | `compiler:compile`                                                                         |
-| `processes-classes`       | #mojo("import-sources")                                                                    |
 | `test-compile`            | `compiler:testCompile`                                                                     |
-| `process-test-classes`    | #mojo("import-test-sources")                                                               |
 | `test`                    | #mojo("test")                                                                              |
 | `prepare-package`         | #mojo("compile")                                                                           |
 | `package`                 | #mojo("package-app")                                                                       |

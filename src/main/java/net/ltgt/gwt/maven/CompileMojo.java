@@ -187,6 +187,9 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     args.add(moduleName);
 
     Set<String> cp = new LinkedHashSet<>();
+    List<String> sourceRoots = SourcesAsResourcesHelper.filterSourceRoots(
+        getLog(), project.getResources(), project.getCompileSourceRoots());
+    cp.addAll(sourceRoots);
     try {
       cp.addAll(project.getCompileClasspathElements());
     } catch (DependencyResolutionRequiredException e) {

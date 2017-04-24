@@ -27,18 +27,12 @@
           <compile>
             org.apache.maven.plugins:maven-compiler-plugin:compile
           </compile>
-          <process-classes>
-            ${project.groupId}:${project.artifactId}:${project.version}:import-sources
-          </process-classes>
           <process-test-resources>
             org.apache.maven.plugins:maven-resources-plugin:testResources
           </process-test-resources>
           <test-compile>
             org.apache.maven.plugins:maven-compiler-plugin:testCompile
           </test-compile>
-          <process-test-classes>
-            ${project.groupId}:${project.artifactId}:${project.version}:import-test-sources
-          </process-test-classes>
           <test>
             ${project.groupId}:${project.artifactId}:${project.version}:test
           </test>
@@ -101,23 +95,17 @@
           <compile>
             org.apache.maven.plugins:maven-compiler-plugin:compile
           </compile>
-          <process-classes>
-            ${project.groupId}:${project.artifactId}:${project.version}:import-sources
-          </process-classes>
           <process-test-resources>
             org.apache.maven.plugins:maven-resources-plugin:testResources
           </process-test-resources>
           <test-compile>
             org.apache.maven.plugins:maven-compiler-plugin:testCompile
           </test-compile>
-          <process-test-classes>
-            ${project.groupId}:${project.artifactId}:${project.version}:import-test-sources
-          </process-test-classes>
           <test>
             ${project.groupId}:${project.artifactId}:${project.version}:test
           </test>
           <package>
-            org.apache.maven.plugins:maven-jar-plugin:jar
+            ${project.groupId}:${project.artifactId}:${project.version}:package-lib
           </package>
           <install>
             org.apache.maven.plugins:maven-install-plugin:install

@@ -2,6 +2,7 @@ package net.ltgt.gwt.maven;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.surefire.AbstractSurefireMojo;
@@ -189,6 +191,27 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
     if (useCompilerArgsForTests) {
       checksum.add(compilerArgs);
     }
+  }
+
+  private String[] computedAdditionalClasspathElements;
+
+  @Override
+  public String[] getAdditionalClasspathElements() {
+    if (computedAdditionalClasspathElements == null) {
+      List<Resource> resources = new ArrayList<>();
+      resources.addAll(getProject().getResources());
+      resources.addAll(getProject().getTestResources());
+      List<String> sourceRoots = new ArrayList<>();
+      sourceRoots.addAll(getProject().getCompileSourceRoots());
+      sourceRoots.addAll(getProject().getTestCompileSourceRoots());
+
+      List<String> filteredSourceRoots = SourcesAsResourcesHelper.filterSourceRoots(getLog(), resources, sourceRoots);
+
+      filteredSourceRoots.addAll(Arrays.asList(super.getAdditionalClasspathElements()));
+
+      computedAdditionalClasspathElements = sourceRoots.toArray(new String[filteredSourceRoots.size()]);
+    }
+    return computedAdditionalClasspathElements;
   }
 
   // Properties copied from Surefire
