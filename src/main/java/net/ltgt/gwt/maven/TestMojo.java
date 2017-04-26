@@ -63,8 +63,8 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * Script output style: OBFUSCATED, PRETTY, or DETAILED.
    */
-  @Parameter(property = "gwt.style", defaultValue = "OBFUSCATED")
-  private Style style;
+  @Parameter(property = "gwt.style")
+  private String style;
 
   /**
    * Compile quickly with minimal optimizations.
@@ -77,20 +77,20 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    * with "C", the number part is multiplied with the number of CPU cores. Floating
    * point values are only accepted together with "C".
    */
-  @Parameter(property = "gwt.localWorkers", defaultValue = "1C")
+  @Parameter(property = "gwt.localWorkers")
   private String localWorkers;
 
   /**
-   * Sets the level of logging detail. Defaults to Maven's own log level.
+   * Sets the level of logging detail.
    */
   @Parameter(property = "gwt.logLevel")
-  private LogLevel logLevel;
+  private String logLevel;
 
   /**
    * Sets the optimization level used by the compiler.  0=none 9=maximum.
    */
-  @Parameter(property = "gwt.optimize", defaultValue = "9")
-  private int optimize;
+  @Parameter(property = "gwt.optimize")
+  private Integer optimize;
 
   /**
    * Specifies Java source level.
@@ -184,7 +184,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
     checksum.add(deploy);
     checksum.add(extra);
     checksum.add(workDir);
-    checksum.add(style.name());
+    checksum.add(style);
     checksum.add(draftCompile);
     checksum.add(localWorkers);
     checksum.add(sourceLevel);
@@ -760,18 +760,21 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
 
   // GwtOptions
 
+  @Nullable
   @Override
-  public LogLevel getLogLevel() {
+  public String getLogLevel() {
     return logLevel;
   }
 
+  @Nullable
   @Override
-  public Style getStyle() {
+  public String getStyle() {
     return style;
   }
 
+  @Nullable
   @Override
-  public int getOptimize() {
+  public Integer getOptimize() {
     return optimize;
   }
 
@@ -801,11 +804,13 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
     return draftCompile;
   }
 
+  @Nullable
   @Override
   public String getLocalWorkers() {
     return localWorkers;
   }
 
+  @Nullable
   @Override
   public String getSourceLevel() {
     return sourceLevel;

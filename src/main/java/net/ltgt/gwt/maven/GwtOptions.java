@@ -9,42 +9,14 @@ import javax.annotation.Nullable;
 import org.apache.maven.plugin.logging.Log;
 
 public interface GwtOptions {
-  enum LogLevel {
-    ERROR,
-    WARN,
-    INFO,
-    TRACE,
-    DEBUG,
-    SPAM,
-    ;
-
-    public static LogLevel getLogLevel(Log log) {
-      LogLevel logLevel;
-      if (log.isDebugEnabled()) {
-        logLevel = DEBUG;
-      } else if (log.isInfoEnabled()) {
-        logLevel = INFO;
-      } else if (log.isWarnEnabled()) {
-        logLevel = WARN;
-      } else {
-        logLevel = ERROR;
-      }
-      return logLevel;
-    }
-  }
-
-  enum Style {
-    DETAILED,
-    OBFUSCATED,
-    PRETTY,
-    ;
-  }
 
   class CommandlineBuilder {
     public static List<String> buildArgs(Log log, GwtOptions options) {
       List<String> args = new ArrayList<>();
-      args.add("-logLevel");
-      args.add(getLogLevel(log, options.getLogLevel()));
+      if (options.getLogLevel() != null) {
+        args.add("-logLevel");
+        args.add(options.getLogLevel());
+      }
       args.add("-war");
       args.add(options.getWarDir().getAbsolutePath());
       args.add("-workDir");
@@ -55,25 +27,25 @@ public interface GwtOptions {
         args.add("-extra");
         args.add(options.getExtraDir().getAbsolutePath());
       }
-      args.add("-style");
-      args.add(options.getStyle().name());
-      args.add("-localWorkers");
-      args.add(getLocalWorkers(options.getLocalWorkers()));
+      if (options.getStyle() != null) {
+        args.add("-style");
+        args.add(options.getStyle());
+      }
+      if (options.getLocalWorkers() != null) {
+        args.add("-localWorkers");
+        args.add(getLocalWorkers(options.getLocalWorkers()));
+      }
       if (options.isDraftCompile()) {
         args.add("-draftCompile");
-      } else {
+      } else if (options.getOptimize() != null) {
         args.add("-optimize");
-        args.add(getOptimize(options.getOptimize()));
+        args.add(String.valueOf(options.getOptimize().intValue()));
       }
       if (options.getSourceLevel() != null) {
         args.add("-sourceLevel");
         args.add(options.getSourceLevel());
       }
       return args;
-    }
-
-    private static String getLogLevel(Log log, LogLevel logLevel) {
-      return (logLevel == null ? LogLevel.getLogLevel(log) : logLevel).name();
     }
 
     private static String getLocalWorkers(String localWorkers) {
@@ -87,22 +59,13 @@ public interface GwtOptions {
       }
       return String.valueOf(workers);
     }
-
-    private static String getOptimize(int optimize) {
-      if (optimize < 0) {
-        optimize = 0;
-      } else if (optimize > 9) {
-        optimize = 9;
-      }
-      return String.valueOf(optimize);
-    }
   }
 
-  LogLevel getLogLevel();
+  @Nullable String getLogLevel();
 
-  Style getStyle();
+  @Nullable String getStyle();
 
-  int getOptimize();
+  @Nullable Integer getOptimize();
 
   File getWarDir();
 
@@ -114,7 +77,7 @@ public interface GwtOptions {
 
   boolean isDraftCompile();
 
-  String getLocalWorkers();
+  @Nullable String getLocalWorkers();
 
   @Nullable String getSourceLevel();
 }

@@ -60,6 +60,7 @@
         <extensions>true</extensions>
         <configuration>
           <failOnError>true</failOnError>
+          <localWorkers>1C</localWorkers>
           <moduleName>it.test.Test</moduleName>
           <moduleShortName>test</moduleShortName>
           <startupUrls>

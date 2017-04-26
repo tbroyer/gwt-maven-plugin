@@ -27,10 +27,10 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 public abstract class AbstractDevModeMojo extends AbstractMojo {
 
   /**
-   * Sets the level of logging detail. Defaults to Maven's own log level.
+   * Sets the level of logging detail.
    */
   @Parameter(property = "gwt.logLevel")
-  protected GwtOptions.LogLevel logLevel;
+  protected String logLevel;
 
   /**
    * Comma-delimited list of the modules to run.
@@ -179,8 +179,10 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
     }
 
     args.add(getMainClass());
-    args.add("-logLevel");
-    args.add((logLevel == null ? GwtOptions.LogLevel.getLogLevel(getLog()) : logLevel).name());
+    if (logLevel != null) {
+      args.add("-logLevel");
+      args.add(logLevel);
+    }
     args.add("-workDir");
     args.add(getWorkDir().getAbsolutePath());
     if (sourceLevel != null) {

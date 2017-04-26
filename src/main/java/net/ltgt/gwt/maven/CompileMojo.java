@@ -55,14 +55,14 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
    * with "C", the number part is multiplied with the number of CPU cores. Floating
    * point values are only accepted together with "C".
    */
-  @Parameter(property = "gwt.localWorkers", defaultValue = "1C")
+  @Parameter(property = "gwt.localWorkers")
   private String localWorkers;
 
   /**
-   * Sets the level of logging detail. Defaults to Maven's own log level.
+   * Sets the level of logging detail.
    */
   @Parameter(property = "gwt.logLevel")
-  private LogLevel logLevel;
+  private String logLevel;
 
   /**
    * Name of the module to compile.
@@ -79,8 +79,8 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
   /**
    * Sets the optimization level used by the compiler.  0=none 9=maximum.
    */
-  @Parameter(property = "gwt.optimize", defaultValue = "9")
-  private int optimize;
+  @Parameter(property = "gwt.optimize")
+  private Integer optimize;
 
   /**
    * Specifies Java source level.
@@ -91,14 +91,14 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
   /**
    * Script output style: OBFUSCATED, PRETTY, or DETAILED.
    */
-  @Parameter(property = "gwt.style", defaultValue = "OBFUSCATED")
-  private Style style;
+  @Parameter(property = "gwt.style")
+  private String style;
 
   /**
    * Only succeed if no input files have errors.
    */
-  @Parameter(property = "gwt.failOnError", defaultValue = "false")
-  private boolean failOnError;
+  @Parameter(property = "gwt.failOnError")
+  private Boolean failOnError;
 
   /**
    * Specifies the location of the target war directory.
@@ -180,8 +180,8 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     }
     args.add("com.google.gwt.dev.Compiler");
     args.addAll(CommandlineBuilder.buildArgs(getLog(), this));
-    if (failOnError) {
-      args.add("-failOnError");
+    if (failOnError != null) {
+      args.add(failOnError ? "-failOnError" : "-nofailOnError");
     }
     if (compilerArgs != null) {
       args.addAll(compilerArgs);
@@ -289,18 +289,21 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     return moduleShortName;
   }
 
+  @Nullable
   @Override
-  public LogLevel getLogLevel() {
+  public String getLogLevel() {
     return logLevel;
   }
 
+  @Nullable
   @Override
-  public Style getStyle() {
+  public String getStyle() {
     return style;
   }
 
+  @Nullable
   @Override
-  public int getOptimize() {
+  public Integer getOptimize() {
     return optimize;
   }
 
@@ -330,11 +333,13 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     return draftCompile;
   }
 
+  @Nullable
   @Override
   public String getLocalWorkers() {
     return localWorkers;
   }
 
+  @Nullable
   @Override
   public String getSourceLevel() {
     return sourceLevel;

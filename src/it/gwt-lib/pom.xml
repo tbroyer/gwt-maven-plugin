@@ -59,6 +59,7 @@
         <version>@project.version@</version>
         <extensions>true</extensions>
         <configuration>
+          <localWorkers>1C</localWorkers>
           <moduleName>it.testlib.TestLib</moduleName>
           <relocateSuperSource>true</relocateSuperSource>
           <relocateTestSuperSource>true</relocateTestSuperSource>
