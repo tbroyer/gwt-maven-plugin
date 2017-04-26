@@ -24,7 +24,7 @@ The `gwt-lib` lifecycle has the same phases as the [default lifecycle][], and re
 | `process-test-resources`  | `resources:testResources`                                                                  |
 | `test-compile`            | `compiler:testCompile`                                                                     |
 | `test`                    | #mojo("test")                                                                              |
-| `package`                 | `jar:jar`                                                                                  |
+| `package`                 | #mojo("package-lib")                                                                       |
 | `install`                 | `install:install`                                                                          |
 | `deploy`                  | `deploy:deploy`                                                                            |
 
