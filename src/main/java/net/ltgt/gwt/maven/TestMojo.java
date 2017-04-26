@@ -73,10 +73,12 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private boolean draftCompile;
 
   /**
-   * The number of local workers to use when compiling permutations.
+   * The number of local workers to use when compiling permutations. When terminated
+   * with "C", the number part is multiplied with the number of CPU cores. Floating
+   * point values are only accepted together with "C".
    */
-  @Parameter(property = "gwt.localWorkers")
-  private int localWorkers;
+  @Parameter(property = "gwt.localWorkers", defaultValue = "1C")
+  private String localWorkers;
 
   /**
    * Sets the level of logging detail. Defaults to Maven's own log level.
@@ -800,7 +802,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   }
 
   @Override
-  public int getLocalWorkers() {
+  public String getLocalWorkers() {
     return localWorkers;
   }
 

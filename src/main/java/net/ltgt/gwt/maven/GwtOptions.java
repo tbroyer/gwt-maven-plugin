@@ -58,7 +58,7 @@ public interface GwtOptions {
       args.add("-style");
       args.add(options.getStyle().name());
       args.add("-localWorkers");
-      args.add(getLocalWorkers(log, options.getLocalWorkers()));
+      args.add(getLocalWorkers(options.getLocalWorkers()));
       if (options.isDraftCompile()) {
         args.add("-draftCompile");
       } else {
@@ -76,14 +76,16 @@ public interface GwtOptions {
       return (logLevel == null ? LogLevel.getLogLevel(log) : logLevel).name();
     }
 
-    private static String getLocalWorkers(Log log, int localWorkers) {
-      if (localWorkers < 1) {
-        localWorkers = Runtime.getRuntime().availableProcessors();
-        if (log.isDebugEnabled()) {
-          log.debug("Using " + localWorkers + " local workers");
-        }
+    private static String getLocalWorkers(String localWorkers) {
+      final int workers;
+      // Use the same algorithm as org.apache.maven.cli.MavenCli
+      if (localWorkers.contains("C")) {
+        workers = (int) (Float.valueOf(localWorkers.replace("C", ""))
+            * Runtime.getRuntime().availableProcessors());
+      } else {
+        workers = Integer.valueOf(localWorkers);
       }
-      return String.valueOf(localWorkers);
+      return String.valueOf(workers);
     }
 
     private static String getOptimize(int optimize) {
@@ -112,7 +114,7 @@ public interface GwtOptions {
 
   boolean isDraftCompile();
 
-  int getLocalWorkers();
+  String getLocalWorkers();
 
   @Nullable String getSourceLevel();
 }
