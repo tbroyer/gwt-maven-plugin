@@ -68,7 +68,7 @@
     <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <gwtVersion>2.8.0</gwtVersion>
+    <gwtVersion>2.8.1</gwtVersion>
   </properties>
 
   <dependencies>

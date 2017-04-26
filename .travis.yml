@@ -8,6 +8,7 @@ jdk:
 env:
   - GWT_VERSION=2.7.0
   - GWT_VERSION=2.8.0
+  - GWT_VERSION=2.8.1
   - GWT_VERSION=HEAD-SNAPSHOT
 
 matrix:
