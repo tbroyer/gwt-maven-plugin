@@ -198,6 +198,14 @@
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
+          <proc>none</proc><!-- maven-plugin-api bring's in an annotation processor that generates warnings -->
+          <showDeprecation>true</showDeprecation>
+          <showWarnings>true</showWarnings>
+          <compilerArgs>
+            <arg>-Xlint:all</arg>
+            <arg>-Xlint:-options</arg><!-- disable warning about cross-compilation when building with JDK 8 -->
+            <arg>-Werror</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
       <plugin>
