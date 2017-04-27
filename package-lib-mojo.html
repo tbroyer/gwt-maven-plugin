@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20170427" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>Maven Plugin for GWT &#x2013; gwt:generate-module</title>
+    <title>Maven Plugin for GWT &#x2013; gwt:package-lib</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.4.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -55,7 +55,7 @@
         Maven Plugin for GWT</a>
                     <span class="divider">/</span>
       </li>
-        <li class="active ">gwt:generate-module</li>
+        <li class="active ">gwt:package-lib</li>
         
                 
                     
@@ -154,46 +154,15 @@
             
   
     <div class="section">
-<h2><a name="gwt:generate-module"></a>gwt:generate-module</h2>
+<h2><a name="gwt:package-lib"></a>gwt:package-lib</h2>
       
 <p><b>Full name</b>:</p>
       
-<p>net.ltgt.gwt.maven:gwt-maven-plugin:1.0-rc-7:generate-module</p>
+<p>net.ltgt.gwt.maven:gwt-maven-plugin:1.0-rc-7:package-lib</p>
       
 <p><b>Description</b>:</p>
       
-<div>Generates a GWT module definition from Maven dependencies, or merge
-<tt>&lt;inherits/&gt;</tt> with a module template. 
-
-<p>When no module template exist, the behavior is identical to
-using an empty file.</p>
-
-<p><tt>META-INF/gwt/mainModule</tt> files from the project
-dependencies (<b>not</b> transitive) are used to generate
-<tt>&lt;inherits/&gt;</tt> directives. Those directives are
-inserted at the very beginning of the generated module (notably,
-they'll appear before any existing <tt>&lt;inherits/&gt;</tt>
-directive in the module template).</p>
-
-<p>If <tt>moduleShortName</tt> is specified (and not empty), it
-<b>overwrites</b> any existing <tt>rename-to</tt> from the
-module template.</p>
-
-<p>Unless the module template contains a source folder (either
-<tt>&lt;source/&gt;</tt> or <tt>&lt;super-source/&gt;</tt>,
-those three lines will be inserted at the very end of the generated
-module (this is to keep any <tt>includes</tt> or
-<tt>excludes</tt> or specific <tt>path</tt> from the module
-template):</p>
-
-<div>
-<pre>
-<tt>
-&lt;source path=&quot;client&quot;/&gt;
-&lt;source path=&quot;shared&quot;/&gt;
-&lt;super-source path=&quot;super&quot;/&gt;
-</tt>
-</pre></div></div>
+<div>Package the compiled GWT library into a JAR archive.</div>
       
 <p><b>Attributes</b>:</p>
       
@@ -201,12 +170,51 @@ template):</p>
         
 <li>Requires a Maven project to be executed.</li>
         
-<li>Requires dependency resolution of artifacts in scope: <tt>runtime</tt>.</li>
-        
 <li>The goal is thread-safe and supports parallel builds.</li>
         
-<li>Binds by default to the <a class="externalLink" href="http://maven.apache.org/ref/current/maven-core/lifecycles.html">lifecycle phase</a>: <tt>generate-resources</tt>.</li>
+<li>Binds by default to the <a class="externalLink" href="http://maven.apache.org/ref/current/maven-core/lifecycles.html">lifecycle phase</a>: <tt>package</tt>.</li>
       </ul>
+      
+<div class="section">
+<h3><a name="Required_Parameters"></a>Required Parameters</h3>
+        
+<table class="table table-striped" border="0">
+          
+<tr class="a">
+            
+<th>Name</th>
+            
+<th>Type</th>
+            
+<th>Since</th>
+            
+<th>Description</th>
+          </tr>
+          
+<tr class="b">
+            
+<td><b><a href="#classesDirectory">classesDirectory</a></b></td>
+            
+<td><tt>File</tt></td>
+            
+<td><tt>-</tt></td>
+            
+<td>Directory containing the classes and resource files that should be
+packaged into the JAR.<br /><b>Default value is</b>: <tt>${project.build.outputDirectory}</tt>.<br /></td>
+          </tr>
+          
+<tr class="a">
+            
+<td><b><a href="#outputDirectory">outputDirectory</a></b></td>
+            
+<td><tt>File</tt></td>
+            
+<td><tt>-</tt></td>
+            
+<td>Directory containing the generated JAR.<br /><b>Default value is</b>: <tt>${project.build.directory}</tt>.<br /></td>
+          </tr>
+        </table>
+      </div>
       
 <div class="section">
 <h3><a name="Optional_Parameters"></a>Optional Parameters</h3>
@@ -226,59 +234,35 @@ template):</p>
           
 <tr class="b">
             
-<td><b><a href="#moduleName">moduleName</a></b></td>
+<td><b><a href="#archive">archive</a></b></td>
             
-<td><tt>String</tt></td>
+<td><tt>MavenArchiveConfiguration</tt></td>
             
 <td><tt>-</tt></td>
             
-<td>The module to generate.<br /></td>
+<td>The archive configuration to use. See <a class="externalLink" href="http://maven.apache.org/shared/maven-archiver/index.html">Maven
+Archiver Reference</a>.<br /></td>
           </tr>
           
 <tr class="a">
             
-<td><b><a href="#moduleShortName">moduleShortName</a></b></td>
-            
-<td><tt>String</tt></td>
-            
-<td><tt>-</tt></td>
-            
-<td>The short name of the module, used to name the output
-<tt>.nocache.js</tt> file.<br /></td>
-          </tr>
-          
-<tr class="b">
-            
-<td><b><a href="#moduleTemplate">moduleTemplate</a></b></td>
-            
-<td><tt>File</tt></td>
-            
-<td><tt>-</tt></td>
-            
-<td>Module definition to merge with.<br /><b>Default value is</b>: <tt>${project.basedir}/src/main/module.gwt.xml</tt>.<br /></td>
-          </tr>
-          
-<tr class="a">
-            
-<td><b><a href="#outputDirectory">outputDirectory</a></b></td>
-            
-<td><tt>File</tt></td>
-            
-<td><tt>-</tt></td>
-            
-<td>The directory where the GWT module descriptor will be generated.<br /><b>Default value is</b>: <tt>${project.build.outputDirectory}</tt>.<br /></td>
-          </tr>
-          
-<tr class="b">
-            
-<td><b><a href="#skipModule">skipModule</a></b></td>
+<td><b><a href="#forceCreation">forceCreation</a></b></td>
             
 <td><tt>boolean</tt></td>
             
 <td><tt>-</tt></td>
             
-<td>A flag to disable generation of the GWT module in favor of a
-hand-authored module descriptor.<br /><b>Default value is</b>: <tt>false</tt>.<br /></td>
+<td>Require the GWT plugin to build a new JAR even if none of the
+contents appear to have changed. By default, this plugin looks to
+see if the output jar exists and inputs have not changed. If these
+conditions are true, the plugin skips creation of the jar. This
+does not work when other plugins, like the maven-shade-plugin, are
+configured to post-process the jar. This plugin can not detect the
+post-processing, and so leaves the post-processed jar in place.
+This can lead to failures when those plugins do not expect to find
+their own output as an input. Set this parameter to <tt>true</tt>
+to avoid these problems by forcing this plugin to recreate the jar
+every time.<br /><br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is</b>: <tt>maven.jar.forceCreation</tt>.</td>
           </tr>
         </table>
       </div>
@@ -286,55 +270,43 @@ hand-authored module descriptor.<br /><b>Default value is</b>: <tt>false</tt>.<b
 <div class="section">
 <h3><a name="Parameter_Details"></a>Parameter Details</h3>
         
-<p><b><a name="moduleName">moduleName</a>:</b></p>
+<p><b><a name="archive">archive</a>:</b></p>
         
-<div>The module to generate.</div>
-        
-<ul>
-          
-<li><b>Type</b>: <tt>java.lang.String</tt></li>
-          
-<li><b>Required</b>: <tt>No</tt></li>
-        </ul><hr />
-<p><b><a name="moduleShortName">moduleShortName</a>:</b></p>
-        
-<div>The short name of the module, used to name the output
-<tt>.nocache.js</tt> file.</div>
+<div>The archive configuration to use. See <a class="externalLink" href="http://maven.apache.org/shared/maven-archiver/index.html">Maven
+Archiver Reference</a>.</div>
         
 <ul>
           
-<li><b>Type</b>: <tt>java.lang.String</tt></li>
+<li><b>Type</b>: <tt>org.apache.maven.archiver.MavenArchiveConfiguration</tt></li>
           
 <li><b>Required</b>: <tt>No</tt></li>
         </ul><hr />
-<p><b><a name="moduleTemplate">moduleTemplate</a>:</b></p>
+<p><b><a name="classesDirectory">classesDirectory</a>:</b></p>
         
-<div>Module definition to merge with.</div>
+<div>Directory containing the classes and resource files that should be
+packaged into the JAR.</div>
         
 <ul>
           
 <li><b>Type</b>: <tt>java.io.File</tt></li>
           
-<li><b>Required</b>: <tt>No</tt></li>
-          
-<li><b>Default</b>: <tt>${project.basedir}/src/main/module.gwt.xml</tt></li>
-        </ul><hr />
-<p><b><a name="outputDirectory">outputDirectory</a>:</b></p>
-        
-<div>The directory where the GWT module descriptor will be generated.</div>
-        
-<ul>
-          
-<li><b>Type</b>: <tt>java.io.File</tt></li>
-          
-<li><b>Required</b>: <tt>No</tt></li>
+<li><b>Required</b>: <tt>Yes</tt></li>
           
 <li><b>Default</b>: <tt>${project.build.outputDirectory}</tt></li>
         </ul><hr />
-<p><b><a name="skipModule">skipModule</a>:</b></p>
+<p><b><a name="forceCreation">forceCreation</a>:</b></p>
         
-<div>A flag to disable generation of the GWT module in favor of a
-hand-authored module descriptor.</div>
+<div>Require the GWT plugin to build a new JAR even if none of the
+contents appear to have changed. By default, this plugin looks to
+see if the output jar exists and inputs have not changed. If these
+conditions are true, the plugin skips creation of the jar. This
+does not work when other plugins, like the maven-shade-plugin, are
+configured to post-process the jar. This plugin can not detect the
+post-processing, and so leaves the post-processed jar in place.
+This can lead to failures when those plugins do not expect to find
+their own output as an input. Set this parameter to <tt>true</tt>
+to avoid these problems by forcing this plugin to recreate the jar
+every time.<br /></div>
         
 <ul>
           
@@ -342,7 +314,21 @@ hand-authored module descriptor.</div>
           
 <li><b>Required</b>: <tt>No</tt></li>
           
+<li><b>User Property</b>: <tt>maven.jar.forceCreation</tt></li>
+          
 <li><b>Default</b>: <tt>false</tt></li>
+        </ul><hr />
+<p><b><a name="outputDirectory">outputDirectory</a>:</b></p>
+        
+<div>Directory containing the generated JAR.</div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>java.io.File</tt></li>
+          
+<li><b>Required</b>: <tt>Yes</tt></li>
+          
+<li><b>Default</b>: <tt>${project.build.directory}</tt></li>
         </ul>
       </div>
     </div>
