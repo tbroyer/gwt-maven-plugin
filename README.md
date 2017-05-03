@@ -54,4 +54,4 @@ Documentation
 The plugin documentation is published at https://tbroyer.github.io/gwt-maven-plugin/
 
 You can also look at the [integration tests](https://github.com/tbroyer/gwt-maven-plugin/tree/master/src/it),
-particularly `gwt-lib`, `gwt-app`, `import-sources` and `e2e`.
+particularly `gwt-lib`, `gwt-app`, and `e2e`.

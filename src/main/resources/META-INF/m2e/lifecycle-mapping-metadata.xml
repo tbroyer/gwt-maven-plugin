@@ -29,16 +29,5 @@
         </execute>
       </action>
     </pluginExecution>
-    <pluginExecution>
-      <pluginExecutionFilter>
-        <goals>
-          <goal>import-sources</goal>
-          <goal>import-test-sources</goal>
-        </goals>
-      </pluginExecutionFilter>
-      <action>
-        <ignore />
-      </action>
-    </pluginExecution>
   </pluginExecutions>
 </lifecycleMappingMetadata>
