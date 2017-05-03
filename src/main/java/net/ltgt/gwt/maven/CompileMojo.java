@@ -164,7 +164,10 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
       return;
     }
 
-    if (!forceCompilation && !isStale()) {
+    List<String> sourceRoots = SourcesAsResourcesHelper.filterSourceRoots(
+        getLog(), project.getResources(), project.getCompileSourceRoots());
+
+    if (!forceCompilation && !isStale(sourceRoots)) {
       getLog().info("Compilation output seems uptodate. GWT compilation skipped.");
       return;
     }
@@ -189,8 +192,6 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     args.add(moduleName);
 
     Set<String> cp = new LinkedHashSet<>();
-    List<String> sourceRoots = SourcesAsResourcesHelper.filterSourceRoots(
-        getLog(), project.getResources(), project.getCompileSourceRoots());
     cp.addAll(sourceRoots);
     try {
       cp.addAll(project.getCompileClasspathElements());
@@ -201,14 +202,14 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     CommandLine.execute(getLog(), project, cp, args);
 
     // XXX: workaround for GWT 2.7.0 not setting nocache.js lastModified correctly.
-    if (isStale()) {
+    if (isStale(sourceRoots)) {
       final String shortName = getModuleShortName();
       final File nocacheJs = new File(webappDirectory, shortName + File.separator + shortName + ".nocache.js");
       nocacheJs.setLastModified(System.currentTimeMillis());
     }
   }
 
-  private boolean isStale() throws MojoExecutionException {
+  private boolean isStale(List<String> sourceRoots) throws MojoExecutionException {
     if (!webappDirectory.exists()) {
       return true;
     }
@@ -234,7 +235,13 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
       }
     });
 
-    // compiled (processed) classes and resources (incl. processed and generated ones, and sources through gwt:import-sources)
+    // sources (incl. generated ones)
+    for (String sourceRoot : sourceRoots) {
+      if (isStale(scanner, new File(sourceRoot), nocacheJs)) {
+        return true;
+      }
+    }
+    // compiled (processed) classes and resources (incl. processed and generated ones)
     if (isStale(scanner, new File(project.getBuild().getOutputDirectory()), nocacheJs)) {
       return true;
     }
