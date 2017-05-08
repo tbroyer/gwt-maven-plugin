@@ -93,6 +93,13 @@ public class GenerateModuleMojo extends AbstractMojo {
   @Parameter(defaultValue = "false")
   private boolean skipModule;
 
+  /**
+   * A flag to enable generation of {@code <inherits/>} from {@code META-INF/gwt/mainModule} files
+   * in dependencies.
+   */
+  @Parameter(defaultValue = "true")
+  private boolean generateInheritsFromDependencies;
+
   @Parameter(defaultValue = "${project.dependencyArtifacts}", required = true, readonly = true)
   private Set<Artifact> dependencyArtifacts;
 
@@ -226,6 +233,10 @@ public class GenerateModuleMojo extends AbstractMojo {
   }
 
   private boolean generateInheritsFromDependencies(XMLWriter xmlWriter) throws IOException, MojoExecutionException {
+    if (!generateInheritsFromDependencies) {
+      return false;
+    }
+
     ClassWorld world = new ClassWorld();
     ClassRealm  realm;
     try {
