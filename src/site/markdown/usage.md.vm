@@ -34,18 +34,16 @@ $h2 Basic usage
         </dependency>
       </dependencies>
     </dependencyManagement>
-    <build>
-      <dependencies>
-        <dependency>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-user</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-dev</artifactId>
-        </dependency>
-      </dependencies>
-    </build>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-user</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-dev</artifactId>
+      </dependency>
+    </dependencies>
     ```
 
 4. Manage your module in a `src/main/module.gwt.xml` file.
