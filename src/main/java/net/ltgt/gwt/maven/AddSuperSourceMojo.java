@@ -20,7 +20,7 @@ public class AddSuperSourceMojo extends AbstractAddSuperSourcesMojo {
   /**
    * Directory containing super-sources.
    */
-  @Parameter(defaultValue = "src/main/super")
+  @Parameter(defaultValue = "src/main/super", required = true)
   private String superSourceDirectory;
 
   /**

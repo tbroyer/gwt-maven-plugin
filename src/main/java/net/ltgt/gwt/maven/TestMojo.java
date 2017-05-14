@@ -45,7 +45,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * The directory into which deployable but not servable output files will be written.
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt-tests/deploy")
+  @Parameter(defaultValue = "${project.build.directory}/gwt-tests/deploy", required = true)
   private File deploy;
 
   /**
@@ -57,7 +57,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * The compiler work directory (must be writeable).
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt/work")
+  @Parameter(defaultValue = "${project.build.directory}/gwt/work", required = true)
   private File workDir;
 
   /**
@@ -101,7 +101,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * The directory to write output files into.
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt-tests/www")
+  @Parameter(defaultValue = "${project.build.directory}/gwt-tests/www", required = true)
   private File outDir;
 
   /**

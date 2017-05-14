@@ -41,7 +41,7 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
   /**
    * The directory into which deployable but not servable output files will be written.
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt/deploy")
+  @Parameter(defaultValue = "${project.build.directory}/gwt/deploy", required = true)
   private File deploy;
 
   /**
@@ -109,7 +109,7 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
   /**
    * The compiler work directory (must be writeable).
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt/work")
+  @Parameter(defaultValue = "${project.build.directory}/gwt/work", required = true)
   private File workDir;
 
   /**

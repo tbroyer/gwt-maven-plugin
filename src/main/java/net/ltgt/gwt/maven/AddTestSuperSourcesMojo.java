@@ -20,7 +20,7 @@ public class AddTestSuperSourcesMojo extends AbstractAddSuperSourcesMojo {
   /**
    * Directory containing super-sources for tests.
    */
-  @Parameter(defaultValue = "src/test/super")
+  @Parameter(defaultValue = "src/test/super", required = true)
   private String testSuperSourceDirectory;
 
   /**

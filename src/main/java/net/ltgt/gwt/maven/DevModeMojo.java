@@ -24,13 +24,13 @@ public class DevModeMojo extends AbstractDevModeMojo {
   /**
    * The compiler work directory (must be writeable).
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt/devmode/work")
+  @Parameter(defaultValue = "${project.build.directory}/gwt/devmode/work", required = true)
   private File devmodeWorkDir;
 
   /**
    * Directory into which deployable output files will be written.
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt/devmode/war")
+  @Parameter(defaultValue = "${project.build.directory}/gwt/devmode/war", required = true)
   private File warDir;
 
   /**

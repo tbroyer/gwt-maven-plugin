@@ -29,7 +29,7 @@ public class GenerateModuleMetadataMojo extends AbstractMojo {
   /**
    * The directory where the generated {@code mainModule} file will be put.
    */
-  @Parameter(defaultValue = "${project.build.outputDirectory}/META-INF/gwt")
+  @Parameter(defaultValue = "${project.build.outputDirectory}/META-INF/gwt", required = true)
   private File outputDirectory;
 
   /**

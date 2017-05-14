@@ -24,7 +24,7 @@ public class CodeServerMojo extends AbstractDevModeMojo {
   /**
    * The compiler work directory (must be writeable).
    */
-  @Parameter(defaultValue = "${project.build.directory}/gwt/codeserver")
+  @Parameter(defaultValue = "${project.build.directory}/gwt/codeserver", required = true)
   private File codeserverWorkDir;
 
   /**

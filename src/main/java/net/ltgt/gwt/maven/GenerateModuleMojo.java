@@ -66,7 +66,7 @@ public class GenerateModuleMojo extends AbstractMojo {
   /**
    * The directory where the GWT module descriptor will be generated.
    */
-  @Parameter(defaultValue = "${project.build.outputDirectory}")
+  @Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
   private File outputDirectory;
 
   /**
@@ -98,7 +98,7 @@ public class GenerateModuleMojo extends AbstractMojo {
    * in dependencies.
    */
   @Parameter(defaultValue = "true")
-  private boolean generateInheritsFromDependencies;
+  private boolean generateInheritsFromDependencies = true;
 
   @Parameter(defaultValue = "${project.dependencyArtifacts}", required = true, readonly = true)
   private Set<Artifact> dependencyArtifacts;
@@ -129,7 +129,7 @@ public class GenerateModuleMojo extends AbstractMojo {
 
     boolean uptodate;
     Xpp3Dom template;
-    if (moduleTemplate.isFile()) {
+    if (moduleTemplate != null && moduleTemplate.isFile()) {
       uptodate = buildContext.isUptodate(outputFile, moduleTemplate);
       try {
         template = Xpp3DomBuilder.build(Files.newReader(moduleTemplate, Charsets.UTF_8));

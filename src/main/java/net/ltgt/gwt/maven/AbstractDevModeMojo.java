@@ -59,7 +59,7 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
    * <li><i>test</i> - system, provided, compile, runtime, test
    * </ul>
    */
-  @Parameter(defaultValue = Artifact.SCOPE_RUNTIME)
+  @Parameter(defaultValue = Artifact.SCOPE_RUNTIME, required = true)
   protected String classpathScope;
 
   /**
