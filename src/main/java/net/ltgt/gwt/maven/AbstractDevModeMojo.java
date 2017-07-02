@@ -140,6 +140,14 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
       throw new MojoExecutionException("No project found");
     }
 
+    // resolve executed projects
+    for (int i = 0; i < projectList.size(); i++) {
+      MavenProject p = projectList.get(i).getExecutionProject();
+      if (p != null) {
+        projectList.set(i, p);
+      }
+    }
+
     List<String> moduleList = new ArrayList<>();
     if (StringUtils.isBlank(modules)) {
       List<String> nonGwtProjects = new ArrayList<>();
@@ -243,9 +251,6 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
 
   private void addSources(MavenProject p, LinkedHashSet<String> sources) {
     getLog().debug("Adding sources for " + p.getId());
-    if (p.getExecutionProject() != null) {
-      p = p.getExecutionProject();
-    }
     sources.addAll(p.getCompileSourceRoots());
     ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(classpathScope);
     for (Artifact artifact : p.getDependencyArtifacts()) {
