@@ -206,6 +206,14 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
         if (!artifactFilter.include(artifact)) {
           continue;
         }
+        // gwt-lib dependencies will be resolved from the repository rather than the reactor,
+        // we'd rather use the project's "artifact" here (which will generally be its target/classes).
+        if ("gwt-lib".equals(artifact.getArtifactHandler().getPackaging())) {
+          MavenProject reference = getReferencedProject(p, artifact);
+          if (reference != null && reference.getArtifact() != null && reference.getArtifact().getFile() != null) {
+            artifact = reference.getArtifact();
+          }
+        }
         cp.add(artifact.getFile().getPath());
       }
     }
@@ -260,5 +268,14 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
       }
       addSources(reference, sources);
     }
+  }
+
+  private MavenProject getReferencedProject(MavenProject p, Artifact artifact) {
+    String key = ArtifactUtils.key(artifact.getGroupId(), artifact.getArtifactId(), artifact.getBaseVersion());
+    MavenProject reference = p.getProjectReferences().get(key);
+    if (reference != null && reference.getExecutionProject() != null) {
+      reference = reference.getExecutionProject();
+    }
+    return reference;
   }
 }
