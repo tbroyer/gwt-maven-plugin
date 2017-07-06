@@ -1,11 +1,15 @@
 package net.ltgt.gwt.maven;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Set;
 
@@ -33,11 +37,6 @@ import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.Xpp3DomWriter;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.sonatype.plexus.build.incremental.BuildContext;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-import com.google.common.io.LineProcessor;
-import com.google.common.io.Resources;
 
 /**
  * Generates a GWT module definition from Maven dependencies, or merge {@code <inherits/>} with a module template.
@@ -132,7 +131,8 @@ public class GenerateModuleMojo extends AbstractMojo {
     if (moduleTemplate != null && moduleTemplate.isFile()) {
       uptodate = buildContext.isUptodate(outputFile, moduleTemplate);
       try {
-        template = Xpp3DomBuilder.build(Files.newReader(moduleTemplate, Charsets.UTF_8));
+        template = Xpp3DomBuilder.build(
+          new BufferedReader(new InputStreamReader(new FileInputStream(moduleTemplate), StandardCharsets.UTF_8)));
       } catch (XmlPullParserException | IOException e) {
         throw new MojoExecutionException(e.getMessage(), e);
       }
@@ -259,33 +259,25 @@ public class GenerateModuleMojo extends AbstractMojo {
     Enumeration<URL> resources = realm.getResources("META-INF/gwt/mainModule");
     while (resources.hasMoreElements()) {
       final URL resource = resources.nextElement();
-      String moduleName = Resources.readLines(resource, Charsets.UTF_8, new LineProcessor<String>() {
-        private String module;
-
-        @Override
-        public boolean processLine(String line) throws IOException {
+      String moduleName = null;
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
+        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
           line = StringUtils.substringBefore(line, "#").trim();
           if (line.isEmpty()) {
-            return true;
+            continue;
           }
-          if (module != null) {
+          if (moduleName != null) {
             getLog().warn("Configuration file contains more than one module name, picking first: " + resource);
-            return false;
+            break;
           }
-//          if (!ModuleDef.isValidModuleName(line)) {
-//            getLog().warn("Illegal configuration-file syntax, skipping " + resource);
-//            return false;
-//          }
-          module = line;
+//        if (!ModuleDef.isValidModuleName(moduleName)) {
+//          getLog().warn("Illegal configuration-file syntax, skipping " + resource);
+//          break;
+//        }
+          moduleName = line;
           // Continue processing lines to warn of illegal syntax
-          return true;
         }
-
-        @Override
-        public String getResult() {
-          return module;
-        }
-      });
+      }
 
       if (moduleName != null) {
         hasInherits = true;
