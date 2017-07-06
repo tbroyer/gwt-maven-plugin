@@ -19,7 +19,7 @@ matrix:
       env: GWT_VERSION=HEAD-SNAPSHOT
 
 install: true
-script: mvn verify -Dinvoker.streamLogs=true -Dinvoker.mavenOpts="-Djava.net.preferIPv4Stack=true" -DgwtVersion=$GWT_VERSION
+script: mvn -U verify -Dinvoker.streamLogs=true -Dinvoker.mavenOpts="-Djava.net.preferIPv4Stack=true" -DgwtVersion=$GWT_VERSION
 
 after_success:
   - ci/deploy-snapshot.sh
@@ -28,6 +28,9 @@ notifications:
   email: false
 
 sudo: false
+before_cache:
+  - shopt -s globstar && rm -fr $HOME/.m2/**/*-SNAPSHOT/
+  - shopt -s globstar && rm -fr target/it-repo/**/*-SNAPSHOT/
 cache:
   directories:
     - $HOME/.m2
