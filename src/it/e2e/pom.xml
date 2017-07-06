@@ -41,7 +41,7 @@
       <dependency>
         <groupId>com.google.auto.value</groupId>
         <artifactId>auto-value</artifactId>
-        <version>1.1</version>
+        <version>1.4.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -62,7 +62,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.5.1</version>
+          <version>3.6.1</version>
           <configuration>
             <source>1.7</source>
             <target>1.7</target>
@@ -71,7 +71,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.2</version>
+          <version>3.0.1</version>
           <executions>
             <execution>
               <id>attach-sources</id>
