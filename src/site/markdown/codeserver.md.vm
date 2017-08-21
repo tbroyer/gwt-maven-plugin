@@ -52,3 +52,52 @@ Have a look at the `gwt-app` integration test for an example.
 Note: `gwt:devmode` can be configured for a webapp too
 (provided you previously run `war:exploded` or equivalent on the server part of the application)
 but this is discouraged as the webapp classloader in DevMode is somewhat broken.
+
+
+$h3 Custom server in Super Dev Mode
+
+To use a custom server in the backend (for example to enable full JEE support), use `devmodeArgs`.
+
+$h4 WildFly
+
+Use a WildFly server on the backend by adding the `errai-cdi-jboss` dependency and using this configuration:
+
+```
+        <plugin>
+          <artifactId>gwt-maven-plugin</artifactId>
+          ...
+          <configuration>
+            <devmodeArgs>
+              <!-- GWT Super Dev Mode: Replace default backend by WildFly -->
+              <arg>-server</arg>
+              <arg>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</arg>
+            </devmodeArgs>
+            <!-- GWT Super Dev Mode: deploy backend correctly -->
+            <warDir>foo-webapp/target/foo-webapp-${project.version}</warDir>
+            <systemProperties>
+              <!-- GWT Super Dev Mode: which WildFly to use -->
+              <errai.jboss.home>${wildfly.home}</errai.jboss.home>
+              <!-- Make IDE war run config and GWT Super Dev Mode use same deployment context to avoid duplicate, conflicting deployment -->
+              <errai.dev.context>foo-webapp-${project.version}</errai.dev.context>
+            </systemProperties>
+          </configuration>
+        </plugin>
+```
+
+$h4 Remote debugging the custom server
+
+To debug a custom server with a remote debugger from your IDE, add the `agentlib` line as a `jvmArg`:
+
+```
+        <plugin>
+          <artifactId>gwt-maven-plugin</artifactId>
+          ...
+          <configuration>
+            <jvmArgs>
+              <arg>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</arg>
+            </jvmArgs>
+            ...
+          </configuration>
+        </plugin>
+```
+
