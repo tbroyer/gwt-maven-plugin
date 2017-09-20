@@ -139,6 +139,27 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+    <!-- Some artifacts used by invoker tests, declared here so they're resolved early -->
+    <!-- Actually because invoker plugin cannot install snapshots through extraArtifacts -->
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -214,9 +235,6 @@
             <artifact>com.google.guava:guava:19.0</artifact>
             <artifact>com.google.guava:guava-gwt:19.0</artifact>
             <artifact>com.google.auto.value:auto-value:1.4.1</artifact>
-            <artifact>com.google.gwt:gwt-user:${gwtVersion}</artifact>
-            <artifact>com.google.gwt:gwt-dev:${gwtVersion}</artifact>
-            <artifact>com.google.gwt:gwt-servlet:${gwtVersion}</artifact>
             <artifact>javax.servlet:servlet-api:2.5</artifact>
             <artifact>junit:junit:4.12</artifact>
           </extraArtifacts>
