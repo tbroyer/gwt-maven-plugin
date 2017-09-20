@@ -3,6 +3,7 @@ language: java
 jdk:
   - openjdk7
   - oraclejdk8
+  - oraclejdk9
 
 env:
   - GWT_VERSION=2.7.0
@@ -11,8 +12,17 @@ env:
   - GWT_VERSION=HEAD-SNAPSHOT
 
 matrix:
+  exclude:
+    - jdk: oraclejdk9
+      env: GWT_VERSION=2.7.0
+    - jdk: oraclejdk9
+      env: GWT_VERSION=2.8.0
+    - jdk: oraclejdk9
+      env: GWT_VERSION=2.8.1
   allow_failures:
     - jdk: openjdk7
+      env: GWT_VERSION=HEAD-SNAPSHOT
+    - jdk: oraclejdk9
       env: GWT_VERSION=HEAD-SNAPSHOT
 
 install: true
