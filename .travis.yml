@@ -1,7 +1,6 @@
 language: java
 
 jdk:
-  - oraclejdk7
   - openjdk7
   - oraclejdk8
 
@@ -13,8 +12,6 @@ env:
 
 matrix:
   allow_failures:
-    - jdk: oraclejdk7
-      env: GWT_VERSION=HEAD-SNAPSHOT
     - jdk: openjdk7
       env: GWT_VERSION=HEAD-SNAPSHOT
 
