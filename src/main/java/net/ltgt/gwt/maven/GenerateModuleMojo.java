@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
@@ -30,6 +29,7 @@ import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.classworlds.realm.DuplicateRealmException;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.PrettyPrintXMLWriter;
 import org.codehaus.plexus.util.xml.XMLWriter;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
@@ -262,7 +262,7 @@ public class GenerateModuleMojo extends AbstractMojo {
       String moduleName = null;
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
         for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-          line = StringUtils.substringBefore(line, "#").trim();
+          line = removeCommentAndTrim(line);
           if (line.isEmpty()) {
             continue;
           }
@@ -289,5 +289,13 @@ public class GenerateModuleMojo extends AbstractMojo {
     }
 
     return hasInherits;
+  }
+
+  private String removeCommentAndTrim(String line) {
+    int commentPos = line.indexOf('#');
+    if (commentPos >= 0) {
+      line = line.substring(0, commentPos);
+    }
+    return line.trim();
   }
 }

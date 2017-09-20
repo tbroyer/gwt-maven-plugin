@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -500,6 +501,12 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   protected String getReportSchemaLocation() {
     return "https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd";
+  }
+
+  @Override
+  protected Artifact getMojoArtifact() {
+    final Map<String, Artifact> pluginArtifactMap = getPluginArtifactMap();
+    return pluginArtifactMap.get("net.ltgt.gwt.maven:gwt-maven-plugin" );
   }
 
   //
