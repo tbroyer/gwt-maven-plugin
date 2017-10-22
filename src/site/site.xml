@@ -6,7 +6,7 @@
     <breadcrumbs>
       <item name="${project.name}" href="${project.url}" />
     </breadcrumbs>
-    <links position="left">
+    <links>
       <item name="GWT Project" href="http://www.gwtproject.org" />
     </links>
 
@@ -34,6 +34,6 @@
   <skin>
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-fluido-skin</artifactId>
-    <version>1.4</version>
+    <version>1.6</version>
   </skin>
 </project>
