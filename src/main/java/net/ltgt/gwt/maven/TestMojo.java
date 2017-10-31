@@ -26,6 +26,9 @@ import org.apache.maven.surefire.suite.RunResult;
 
 /**
  * Runs the project's tests with the specific setup needed for {@code GWTTestCase} tests.
+ *
+ * <p>Please note that some documentation is inherited from Surefire and cannot be changed,
+ * so versions (mainly) and other bits of documentation might be wrong or irrelevant.</p>
  */
 @Mojo(name = "test", defaultPhase = LifecyclePhase.TEST, threadSafe = true, requiresDependencyResolution = ResolutionScope.TEST)
 public class TestMojo extends AbstractSurefireMojo implements SurefireReportParameters, GwtOptions {
@@ -247,10 +250,10 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    * This parameter overrides the <code>includes/excludes</code> parameters, and the TestNG <code>suiteXmlFiles</code>
    * parameter.
    * <p/>
-   * Since 2.7.3, you can execute a limited number of methods in the test by adding #myMethod or #my*ethod. For
+   * You can execute a limited number of methods in the test by adding #myMethod or #my*ethod. For
    * example, "-Dtest=MyTest#myMethod". This is supported for junit 4.x and testNg.<br/>
    * <br/>
-   * Since 2.19 a complex syntax is supported in one parameter (JUnit 4, JUnit 4.7+, TestNG):<br/>
+   * A complex syntax is supported in one parameter (JUnit 4, JUnit 4.7+, TestNG):<br/>
    * "-Dtest=???Test, !Unstable*, pkg&#47;**&#47;Ci*leTest.java, *Test#test*One+testTwo?????, #fast*+slowTest"<br/>
    * "-Dtest=Basic*, !%regex[.*.Unstable.*], !%regex[.*.MyTest.class#one.*|two.*], %regex[#fast.*|slow.*]"<br/>
    * <br/>
@@ -349,7 +352,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    * <p/>
    * Each include item may also contain a comma-separated sublist of items, which will be treated as multiple
    * &nbsp;&lt;include> entries.<br/>
-   * Since 2.19 a complex syntax is supported in one parameter (JUnit 4, JUnit 4.7+, TestNG):<br/>
+   * A complex syntax is supported in one parameter (JUnit 4, JUnit 4.7+, TestNG):<br/>
    * &nbsp;&lt;include>%regex[.*[Cat|Dog].*], Basic????, !Unstable*&lt;/include><br/>
    * &nbsp;&lt;include>%regex[.*[Cat|Dog].*], !%regex[pkg.*Slow.*.class], pkg&#47;**&#47;*Fast*.java&lt;/include><br/>
    * <p/>
