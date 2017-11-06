@@ -8,7 +8,7 @@ The ${project.name} provides two artifact handlers, or in other words two depend
 
 $h3 GWT Library: `gwt-lib`
 
-A `gwt-lib` is a JAR that contains both compiles classes and their sources.
+A `gwt-lib` is a JAR that contains both compiled classes and their sources.
 You can depend on a `gwt-lib` using either `<type>jar</type>` or `<type>gwt-lib</type>` in your `<dependency>`.
 
 The layout of a `gwt-lib` is as follows:
