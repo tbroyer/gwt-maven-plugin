@@ -21,8 +21,8 @@ public interface GwtOptions {
       args.add(options.getWarDir().getAbsolutePath());
       args.add("-workDir");
       args.add(options.getWorkDir().getAbsolutePath());
-      args.add("-deploy");
-      args.add(options.getDeployDir().getAbsolutePath());
+      //args.add("-deploy");
+      //args.add(options.getDeployDir().getAbsolutePath());
       if (options.getExtraDir() != null) {
         args.add("-extra");
         args.add(options.getExtraDir().getAbsolutePath());
