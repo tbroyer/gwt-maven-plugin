@@ -140,7 +140,7 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
       throw new MojoExecutionException("No project found");
     }
 
-    List<String> moduleList = new ArrayList<>();
+    Set<String> moduleList = new LinkedHashSet<>();
     if (StringUtils.isBlank(modules)) {
       List<String> nonGwtProjects = new ArrayList<>();
       for (MavenProject p : projectList) {
