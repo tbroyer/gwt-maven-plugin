@@ -28,7 +28,7 @@ import org.codehaus.plexus.util.StringUtils;
 /**
  * Invokes the GWT Compiler on the project's sources and resources.
  */
-@Mojo(name = "compile", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE)
+@Mojo(name = "compile", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
 @SuppressWarnings("serial")
 public class CompileMojo extends AbstractMojo implements GwtOptions {
 
