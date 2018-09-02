@@ -2,8 +2,8 @@ language: java
 
 jdk:
   - openjdk7
-  - oraclejdk8
-  - oraclejdk9
+  - openjdk8
+  - oraclejdk10
 
 env:
   - GWT_VERSION=2.8.0
@@ -13,9 +13,9 @@ env:
 
 matrix:
   exclude:
-    - jdk: oraclejdk9
+    - jdk: oraclejdk10
       env: GWT_VERSION=2.8.0
-    - jdk: oraclejdk9
+    - jdk: oraclejdk10
       env: GWT_VERSION=2.8.1
   allow_failures:
     - jdk: openjdk7
