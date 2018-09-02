@@ -453,6 +453,16 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Parameter(property = "surefire.shutdown", defaultValue = "testset")
   private String shutdown;
 
+  /**
+   * The character encoding scheme to be applied while generating test report
+   * files (see target/surefire-reports/yourTestName.txt).
+   * The report output files (*-out.txt) are still encoded with JVM's encoding used in standard out/err pipes.
+   *
+   *
+   */
+  @Parameter(property = "encoding", defaultValue = "${project.reporting.outputEncoding}")
+  private String encoding;
+
   @Override
   public int getRerunFailingTestsCount() {
     return rerunFailingTestsCount;
@@ -764,6 +774,16 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   protected boolean hasSuiteXmlFiles() {
     return suiteXmlFiles != null && suiteXmlFiles.length != 0;
+  }
+
+  @Override
+  public String getEncoding() {
+    return encoding;
+  }
+
+  @Override
+  public void setEncoding(String encoding) {
+    this.encoding = encoding;
   }
 
   // GwtOptions
