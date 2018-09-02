@@ -53,11 +53,11 @@ import org.sonatype.plexus.build.incremental.BuildContext;
  * Unless the module template contains a source folder (either {@code <source/>} or {@code <super-source/>}, those
  * three lines will be inserted at the very end of the generated module (this is to keep any {@code includes} or
  * {@code excludes} or specific {@code path} from the module template):
- * <pre><code>
- * &lt;source path="client"/>
- * &lt;source path="shared"/>
- * &lt;super-source path="super"/>
- * </code></pre>
+ * <pre>{@code
+ * <source path="client"/>
+ * <source path="shared"/>
+ * <super-source path="super"/>
+ * }</pre>
  */
 @Mojo(name = "generate-module", threadSafe = true, defaultPhase = LifecyclePhase.GENERATE_RESOURCES, requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class GenerateModuleMojo extends AbstractMojo {

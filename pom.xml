@@ -65,6 +65,7 @@
 
   <properties>
     <mavenVersion>3.0</mavenVersion>
+    <targetJdk>7</targetJdk>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
@@ -176,8 +177,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>${targetJdk}</source>
+          <target>${targetJdk}</target>
           <proc>none</proc><!-- maven-plugin-api bring's in an annotation processor that generates warnings -->
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
@@ -303,6 +304,32 @@
 
   <profiles>
     <profile>
+      <id>jdk9plus</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <release>${targetJdk}</release>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <additionalOptions>
+                <option>-html5</option>
+              </additionalOptions>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>release</id>
       <build>
         <plugins>
@@ -320,7 +347,7 @@
             <configuration>
               <rules>
                 <requireJavaVersion>
-                  <version>[1.7,1.8)</version>
+                  <version>[9,)</version>
                 </requireJavaVersion>
                 <requireReleaseDeps />
                 <requireNoRepositories>
