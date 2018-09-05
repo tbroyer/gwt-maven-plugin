@@ -68,5 +68,5 @@ The default configuration of [goals](plugin-info.html) provided by the ${project
 $h3 GWT Version Compatibility
 
 Given its design, the ${project.name} should be compatible with a wide range of GWT versions.
-It is automatically tested against the latest two stable versions of GWT and the latest snapshot.
+It is automatically tested against the latest stable version of GWT and the latest snapshot.
 At this time, the latest stable version is ${gwtVersion}.
