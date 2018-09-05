@@ -17,7 +17,6 @@ matrix:
       env: GWT_VERSION=2.8.0
     - jdk: oraclejdk10
       env: GWT_VERSION=2.8.1
-  allow_failures:
     - jdk: openjdk7
       env: GWT_VERSION=HEAD-SNAPSHOT
 
