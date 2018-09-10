@@ -27,6 +27,12 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 public abstract class AbstractDevModeMojo extends AbstractMojo {
 
   /**
+   * Only succeed if no input files have errors.
+   */
+  @Parameter(property = "gwt.failOnError")
+  protected Boolean failOnError;
+
+  /**
    * Sets the level of logging detail.
    */
   @Parameter(property = "gwt.logLevel")
@@ -185,6 +191,9 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
     }
 
     args.add(getMainClass());
+    if (failOnError != null) {
+      args.add(failOnError ? "-failOnError" : "-nofailOnError");
+    }
     if (logLevel != null) {
       args.add("-logLevel");
       args.add(logLevel);
