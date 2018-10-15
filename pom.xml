@@ -125,7 +125,7 @@
     <dependency>
       <groupId>org.apache.maven.surefire</groupId>
       <artifactId>maven-surefire-common</artifactId>
-      <version>2.22.0</version>
+      <version>2.22.1</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.maven</groupId>
@@ -230,13 +230,14 @@
             <gwtVersion>${gwtVersion}</gwtVersion>
           </filterProperties>
           <extraArtifacts>
-            <artifact>org.apache.maven.plugins:maven-compiler-plugin:3.6.1:maven-plugin</artifact>
+            <artifact>org.apache.maven.plugins:maven-compiler-plugin:3.8.0:maven-plugin</artifact>
             <artifact>org.apache.maven.plugins:maven-source-plugin:3.0.1:maven-plugin</artifact>
             <artifact>org.codehaus.mojo:build-helper-maven-plugin:3.0.0:maven-plugin</artifact>
             <artifact>org.codehaus.gmaven:groovy-maven-plugin:2.0:maven-plugin</artifact>
             <artifact>com.google.guava:guava:19.0</artifact>
             <artifact>com.google.guava:guava-gwt:19.0</artifact>
-            <artifact>com.google.auto.value:auto-value:1.4.1</artifact>
+            <artifact>com.google.auto.value:auto-value:1.6.2</artifact>
+            <artifact>com.google.auto.value:auto-value-annotations:1.6.2</artifact>
             <artifact>javax.servlet:servlet-api:2.5</artifact>
             <artifact>junit:junit:4.12</artifact>
           </extraArtifacts>

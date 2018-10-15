@@ -39,7 +39,15 @@
     <dependency>
       <groupId>com.google.auto.value</groupId>
       <artifactId>auto-value</artifactId>
-      <version>1.4.1</version>
+      <version>1.6.2</version>
+      <!-- This is only need at compile-time, there's no runtime dependency -->
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.google.auto.value</groupId>
+      <artifactId>auto-value-annotations</artifactId>
+      <version>1.6.2</version>
       <!-- This is only need at compile-time, there's no runtime dependency -->
       <scope>provided</scope>
       <optional>true</optional>
@@ -71,7 +79,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.6.1</version>
+          <version>3.8.0</version>
           <configuration>
             <source>1.7</source>
             <target>1.7</target>
