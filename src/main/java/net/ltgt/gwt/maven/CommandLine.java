@@ -1,49 +1,40 @@
 package net.ltgt.gwt.maven;
 
-import java.io.File;
-import java.nio.file.Paths;import java.util.List;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.cli.CommandLineException;
-import org.codehaus.plexus.util.cli.CommandLineUtils;
-import org.codehaus.plexus.util.cli.Commandline;
-import org.codehaus.plexus.util.cli.StreamConsumer;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 class CommandLine {
   static void execute(final Log log, MavenProject project, Iterable<String> classpath, List<String> arguments) throws MojoExecutionException {
     final String cp = StringUtils.join(classpath.iterator(), File.pathSeparator);
-    final String[] args = arguments.toArray(new String[arguments.size()]);
 
-    Commandline commandline = new Commandline();
-    commandline.setWorkingDirectory(project.getBuild().getDirectory());
-    commandline.setExecutable(Paths.get(System.getProperty("java.home"), "bin", "java").toString());
-    commandline.addEnvironment("CLASSPATH", cp);
-    commandline.addArguments(args);
+    final List<String> cmd = new ArrayList<>();
+    cmd.add(Paths.get(System.getProperty("java.home"), "bin", "java").toString());
+    cmd.addAll(arguments);
 
+    ProcessBuilder pb = new ProcessBuilder(cmd);
+    pb.directory(Paths.get(project.getBuild().getDirectory()).toFile());
+    pb.environment().put("CLASSPATH", cp);
+    pb.inheritIO();
+    
     if (log.isDebugEnabled()) {
       log.debug("Classpath: " + cp);
-      log.debug("Arguments: " + CommandLineUtils.toString(args));
+      log.debug("Command: " + StringUtils.join(cmd.iterator(), " "));
     }
-
+    
     int result;
+
     try {
-      result = CommandLineUtils.executeCommandLine(commandline,
-          new StreamConsumer() {
-            @Override
-            public void consumeLine(String s) {
-              log.info(s);
-            }
-          },
-          new StreamConsumer() {
-            @Override
-            public void consumeLine(String s) {
-              log.warn(s);
-            }
-          });
-    } catch (CommandLineException e) {
+      Process p = pb.start();
+      result = p.waitFor();
+    } catch (IOException | InterruptedException e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
     if (result != 0) {
