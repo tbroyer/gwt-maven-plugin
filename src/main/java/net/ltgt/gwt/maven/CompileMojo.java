@@ -13,13 +13,16 @@ import javax.annotation.Nullable;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.toolchain.ToolchainManager;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SourceMapping;
@@ -155,8 +158,28 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
   @Parameter(property = "gwt.skipCompilation", defaultValue="false")
   private boolean skipCompilation;
 
+  /**
+   * Path to the Java executable to use.
+   * By default, will use the configured toolchain, or fallback to the same JVM as the one used to run Maven.
+   */
+  @Parameter
+  private String jvm;
+
+  /**
+   * Requirements for this jdk toolchain, if {@link #jvm} is not set.
+   * <p>This overrides the toolchain selected by the maven-toolchains-plugin.
+   */
+  @Parameter
+  private Map<String, String> jdkToolchain;
+
   @Parameter(defaultValue = "${project}", required = true, readonly = true)
   private MavenProject project;
+
+  @Parameter(defaultValue = "${session}", readonly = true, required = true)
+  protected MavenSession session;
+
+  @Component
+  protected ToolchainManager toolchainManager;
 
   public void execute() throws MojoExecutionException {
     if (skipCompilation) {
@@ -199,7 +222,8 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
       throw new MojoExecutionException(e.getMessage(), e);
     }
 
-    CommandLine.execute(getLog(), project, cp, args);
+    CommandLine commandLine = new CommandLine(getLog(), project, session, toolchainManager, jdkToolchain, jvm);
+    commandLine.execute(cp, args);
 
     // XXX: workaround for GWT 2.7.0 not setting nocache.js lastModified correctly.
     if (isStale(sourceRoots)) {

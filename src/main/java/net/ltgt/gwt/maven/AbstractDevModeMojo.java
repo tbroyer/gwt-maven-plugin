@@ -14,14 +14,17 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.utils.StringUtils;
 import org.apache.maven.shared.utils.io.FileUtils;
+import org.apache.maven.toolchain.ToolchainManager;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 public abstract class AbstractDevModeMojo extends AbstractMojo {
@@ -87,6 +90,20 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
   protected List<String> jvmArgs;
 
   /**
+   * Path to the Java executable to use.
+   * By default, will use the configured toolchain, or fallback to the same JVM as the one used to run Maven.
+   */
+  @Parameter
+  protected String jvm;
+
+  /**
+   * Requirements for this jdk toolchain, if {@link #jvm} is not set.
+   * <p>This overrides the toolchain selected by the maven-toolchains-plugin.
+   */
+  @Parameter
+  protected Map<String, String> jdkToolchain;
+
+  /**
    * List of system properties to pass to the GWT compiler.
    */
   @Parameter
@@ -100,6 +117,12 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
 
   @Parameter(defaultValue = "${plugin}", required = true, readonly = true)
   PluginDescriptor pluginDescriptor;
+
+  @Parameter(defaultValue = "${session}", readonly = true, required = true)
+  protected MavenSession session;
+
+  @Component
+  protected ToolchainManager toolchainManager;
 
 
   @Override
@@ -245,7 +268,8 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
       throw new MojoFailureException(ioe.getMessage(), ioe);
     }
 
-    CommandLine.execute(getLog(), project, cp, args);
+    CommandLine commandLine = new CommandLine(getLog(), project, session, toolchainManager, jdkToolchain, jvm);
+    commandLine.execute(cp, args);
   }
 
   protected abstract String getMainClass();
