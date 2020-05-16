@@ -6,6 +6,7 @@ jdk:
 
 env:
   - GWT_VERSION=2.8.2
+  - GWT_VERSION=2.9.0
   - GWT_VERSION=HEAD-SNAPSHOT
 
 install: true
