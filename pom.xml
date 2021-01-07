@@ -239,7 +239,7 @@
             <artifact>com.google.auto.value:auto-value:1.6.2</artifact>
             <artifact>com.google.auto.value:auto-value-annotations:1.6.2</artifact>
             <artifact>javax.servlet:servlet-api:2.5</artifact>
-            <artifact>junit:junit:4.12</artifact>
+            <artifact>junit:junit:4.13.1</artifact>
           </extraArtifacts>
         </configuration>
       </plugin>
