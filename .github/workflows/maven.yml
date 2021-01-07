@@ -30,7 +30,15 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
 
       - name: Build with Maven
+        id: maven-build
         run: mvn -B -U -ntp verify --fail-at-end
+
+      - name: Store reports
+        if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-reports
+          path: target/it-tests/*/build.log
 
   windows:
     runs-on: windows-latest
@@ -51,7 +59,15 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
 
       - name: Build with Maven
+        id: maven-build
         run: mvn -B -U -ntp verify --fail-at-end
+
+      - name: Store reports
+        if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
+        uses: actions/upload-artifact@v2
+        with:
+          name: windows-reports
+          path: target/it-tests/*/build.log
 
   test-jdks:
     needs: linux
@@ -88,8 +104,15 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
 
       - name: Build with Maven
+        id: maven-build
         run: mvn -B -U -ntp verify --fail-at-end
 
+      - name: Store reports
+        if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
+        uses: actions/upload-artifact@v2
+        with:
+          name: jdk-${{ matrix.java }}-reports
+          path: target/it-tests/*/build.log
 
   test-gwt:
     needs: linux
@@ -116,4 +139,12 @@ jobs:
             ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
 
       - name: Build with Maven
+        id: maven-build
         run: mvn -B -U -ntp verify --fail-at-end -DgwtVersion=${{ matrix.gwt }}
+
+      - name: Store reports
+        if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
+        uses: actions/upload-artifact@v2
+        with:
+          name: gwt-${{ matrix.gwt }}-reports
+          path: target/it-tests/*/build.log
