@@ -1,8 +1,6 @@
 gwt-maven-plugin
 ================
 
-[![Build Status](https://travis-ci.org/tbroyer/gwt-maven-plugin.png?branch=master)](https://travis-ci.org/tbroyer/gwt-maven-plugin)
-
 This plugin aims at making it easier to build GWT projects with Maven, by providing two specific packagings: `gwt-lib` and `gwt-app`.
 
 Basic usage
