@@ -148,3 +148,34 @@ jobs:
         with:
           name: gwt-${{ matrix.gwt }}-reports
           path: target/it-tests/*/build.log
+
+  deploy_snapshot:
+    needs:
+      - linux
+      - windows
+      - test-jdks
+      - test-gwt
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup environment
+        run: echo "JAVA_HOME=${JAVA_HOME_11_X64}" | tee -a $GITHUB_ENV
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.m2/repository/
+            !~/.m2/repository/**/*-SNAPSHOT/
+            target/it-repo/
+            !target/it-repo/**/*-SNAPSHOT/
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+
+      - name: Deploy with Maven
+        id: maven-build
+        run: mvn -B -U -ntp -s .github/workflows/settings.xml source:jar deploy -Dmaven.test.skip=true -Dinvoker.skip=true
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
