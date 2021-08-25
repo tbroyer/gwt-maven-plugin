@@ -144,24 +144,9 @@
 
     <!-- Some artifacts used by invoker tests, declared here so they're resolved early -->
     <!-- Actually because invoker plugin cannot install snapshots through extraArtifacts -->
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <version>${gwtVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-dev</artifactId>
-      <version>${gwtVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-servlet</artifactId>
-      <version>${gwtVersion}</version>
-      <scope>test</scope>
-    </dependency>
+    
+    
+    
   </dependencies>
 
   <build>
