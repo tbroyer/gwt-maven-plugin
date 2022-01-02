@@ -248,6 +248,10 @@ public class GenerateModuleMojo extends AbstractMojo {
         if (!artifact.getArtifactHandler().isAddedToClasspath()) {
           continue;
         }
+        if (artifact.getFile() == null) {
+          // This can happen for relocated artifacts
+          continue;
+        }
         realm.addURL(artifact.getFile().toURI().toURL());
       }
     } catch (DuplicateRealmException | MalformedURLException e) {
