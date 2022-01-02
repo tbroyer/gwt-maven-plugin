@@ -43,17 +43,17 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>groovy-maven-plugin</artifactId>
-        <version>2.0</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.0.0</version>
         <executions>
           <execution>
             <id>default-cli</id>
             <configuration>
-              <source><![CDATA[
-                def f = new File('src/main/java/it/test/client/Test.ui.xml')
-                f.text = f.text.replace('Hello World!', 'Bonjour le monde&#160;!')
-              ]]></source>
+              <target>
+                <replace file="src/main/java/it/test/client/Test.ui.xml"
+                         token="Hello World!" value="Bonjour le monde&#160;!" />
+              </target>
             </configuration>
           </execution>
         </executions>
