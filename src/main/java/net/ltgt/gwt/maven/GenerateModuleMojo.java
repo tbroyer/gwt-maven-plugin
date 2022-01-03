@@ -153,9 +153,8 @@ public class GenerateModuleMojo extends AbstractMojo {
     }
 
     outputFile.getParentFile().mkdirs();
-    Writer writer = null;
+    StringWriter writer = new StringWriter();
     try {
-      writer = new StringWriter();
       XMLWriter xmlWriter = new PrettyPrintXMLWriter(writer);
 
       xmlWriter.startElement("module");
@@ -215,8 +214,6 @@ public class GenerateModuleMojo extends AbstractMojo {
       xmlWriter.endElement(); // module
     } catch (IOException e) {
       throw new MojoExecutionException(e.getMessage(), e);
-    } finally {
-      IOUtil.close(writer);
     }
 
     try {
