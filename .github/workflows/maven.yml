@@ -144,7 +144,7 @@ jobs:
 
       - name: Build with Maven
         id: maven-build
-        run: ./mvnw -B -U -ntp verify --fail-at-end
+        run: ./mvnw -B -U verify --fail-at-end
 
       - name: Store reports
         if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
