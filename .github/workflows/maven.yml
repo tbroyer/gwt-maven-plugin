@@ -135,7 +135,7 @@ jobs:
             !~/.m2/repository/**/*-SNAPSHOT/
             target/it-repo/
             !target/it-repo/**/*-SNAPSHOT/
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}-gwt-${{ matrix.gwt }}
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}-mvn-${{ matrix.mvn }}
           restore-keys: |
             ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
       - name: Set up maven wrapper for specified version
@@ -194,6 +194,7 @@ jobs:
       - windows
       - test-jdks
       - test-gwt
+      - test-mvn
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
