@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 11, 17 ]
+        java: [ 11, 17, 18 ]
     steps:
       - uses: actions/checkout@v2
 
@@ -114,12 +114,51 @@ jobs:
           name: jdk-${{ matrix.java }}-reports
           path: target/it-tests/*/build.log
 
+  test-mvn:
+    needs: linux
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # Don't fail unfinished builds until we know which versions are compatible
+      matrix:
+        mvn: ['3.8.5', '3.6.3', '3.5.4', '3.3.9'] # Latest bugfix release in all supported minor versions
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup environment
+        run: echo "JAVA_HOME=${JAVA_HOME_8_X64}" | tee -a $GITHUB_ENV
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.m2/repository/
+            !~/.m2/repository/**/*-SNAPSHOT/
+            target/it-repo/
+            !target/it-repo/**/*-SNAPSHOT/
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}-gwt-${{ matrix.gwt }}
+          restore-keys: |
+            ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+      - name: Set up maven wrapper for specified version
+        run: |
+          mvn wrapper:wrapper -Dmaven=${{ matrix.mvn }}
+
+      - name: Build with Maven
+        id: maven-build
+        run: ./mvnw -B -U -ntp verify --fail-at-end
+
+      - name: Store reports
+        if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
+        uses: actions/upload-artifact@v2
+        with:
+          name: mvn-${{ matrix.mvn }}-reports
+          path: target/it-tests/*/build.log
+
   test-gwt:
     needs: linux
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gwt: [ "2.8.2", "HEAD-SNAPSHOT" ]
+        gwt: [ "2.8.2", "2.9.0", "HEAD-SNAPSHOT" ]
     steps:
       - uses: actions/checkout@v2
 
