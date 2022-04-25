@@ -15,7 +15,7 @@
     <dependencies>
       <dependency>
         <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-user</artifactId>
+        <artifactId>gwt</artifactId>
         <version>@gwtVersion@</version>
         <type>pom</type>
         <scope>import</scope>
