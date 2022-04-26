@@ -85,12 +85,8 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: temurin
 
-      - name: Setup JAVA_HOME_${{ matrix.java }}_X64 environment variable
-        run: echo "JAVA_HOME_${{ matrix.java }}_X64=${{ steps.setup-test-java.outputs.path }}" | tee -a $GITHUB_ENV
-
-      # TODO: investigate only running IT tests with that JDK, rather than the whole build, through Toolchains
       - name: Setup environment
-        run: echo "JAVA_HOME=${JAVA_HOME_${{ matrix.java }}_X64}" | tee -a $GITHUB_ENV
+        run: echo "JAVA_HOME=${JAVA_HOME_8_X64}" | tee -a $GITHUB_ENV
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -104,7 +100,7 @@ jobs:
 
       - name: Build with Maven
         id: maven-build
-        run: mvn -B -U -ntp verify --fail-at-end
+        run: mvn -B -U -ntp verify --fail-at-end "-Dinvoker.javaHome=${{ steps.setup-test-java.outputs.path }}"
 
       - name: Store reports
         if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
