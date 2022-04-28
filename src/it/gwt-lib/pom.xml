@@ -30,8 +30,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava-gwt</artifactId>
-      <!-- NOTE: Guava 19.0 is not compatible with GWT 2.8+, but we only use it for annotations -->
-      <version>19.0</version>
+      <version>31.1-jre</version>
       <!-- We only use it for annotations, so we only need it at compile-time -->
       <scope>provided</scope>
       <optional>true</optional>
@@ -39,7 +38,7 @@
     <dependency>
       <groupId>com.google.auto.value</groupId>
       <artifactId>auto-value</artifactId>
-      <version>1.6.2</version>
+      <version>1.9</version>
       <!-- This is only need at compile-time, there's no runtime dependency -->
       <scope>provided</scope>
       <optional>true</optional>
@@ -47,7 +46,7 @@
     <dependency>
       <groupId>com.google.auto.value</groupId>
       <artifactId>auto-value-annotations</artifactId>
-      <version>1.6.2</version>
+      <version>1.9</version>
       <!-- This is only need at compile-time, there's no runtime dependency -->
       <scope>provided</scope>
       <optional>true</optional>
@@ -55,7 +54,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13.1</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -79,7 +78,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
+          <version>3.10.1</version>
           <configuration>
             <source>1.7</source>
             <target>1.7</target>

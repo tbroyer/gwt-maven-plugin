@@ -90,7 +90,7 @@
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
-      <version>3.6.2</version>
+      <version>3.6.4</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -111,7 +111,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-compiler-api</artifactId>
-      <version>2.9.0</version>
+      <version>2.11.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -122,7 +122,7 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-archiver</artifactId>
-      <version>3.5.1</version>
+      <version>3.5.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.surefire</groupId>
@@ -177,7 +177,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.10.1</version>
         <configuration>
           <source>${targetJdk}</source>
           <target>${targetJdk}</target>
@@ -194,7 +194,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.6.2</version>
+        <version>3.6.4</version>
         <configuration>
           <goalPrefix>gwt</goalPrefix>
         </configuration>
@@ -232,22 +232,23 @@
             <gwtVersion>${gwtVersion}</gwtVersion>
           </filterProperties>
           <extraArtifacts>
-            <artifact>org.apache.maven.plugins:maven-compiler-plugin:3.8.1:maven-plugin</artifact>
+            <artifact>org.apache.maven.plugins:maven-compiler-plugin:3.10.1:maven-plugin</artifact>
             <artifact>org.apache.maven.plugins:maven-source-plugin:3.2.1:maven-plugin</artifact>
-            <artifact>org.apache.maven.plugins:maven-antrun-plugin:3.0.0:maven-plugin</artifact>
-            <artifact>com.google.guava:guava:19.0</artifact>
-            <artifact>com.google.guava:guava-gwt:19.0</artifact>
-            <artifact>com.google.auto.value:auto-value:1.6.2</artifact>
-            <artifact>com.google.auto.value:auto-value-annotations:1.6.2</artifact>
+            <artifact>org.apache.maven.plugins:maven-antrun-plugin:3.1.0:maven-plugin</artifact>
+            <artifact>com.google.guava:guava-bom:31.1-jre:pom</artifact>
+            <artifact>com.google.guava:guava:31.1-jre</artifact>
+            <artifact>com.google.guava:guava-gwt:31.1-jre</artifact>
+            <artifact>com.google.auto.value:auto-value:1.9</artifact>
+            <artifact>com.google.auto.value:auto-value-annotations:1.9</artifact>
             <artifact>javax.servlet:servlet-api:2.5</artifact>
-            <artifact>junit:junit:4.13.1</artifact>
+            <artifact>junit:junit:4.13.2</artifact>
           </extraArtifacts>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.10.0</version>
+        <version>3.12.0</version>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.doxia</groupId>
@@ -291,12 +292,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.6.2</version>
+        <version>3.6.4</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.1.2</version>
+        <version>3.3.0</version>
         <configuration>
           <skip>true</skip>
         </configuration>
@@ -304,7 +305,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.3.1</version>
+        <version>3.4.0</version>
       </plugin>
     </plugins>
   </reporting>
