@@ -20,23 +20,10 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <!-- We only use it for annotations, so we only need it at compile-time -->
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>com.google.auto.value</groupId>
-      <artifactId>auto-value</artifactId>
-      <!-- This is only need at compile-time, there's no runtime dependency -->
-      <scope>provided</scope>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>com.google.auto.value</groupId>
       <artifactId>auto-value-annotations</artifactId>
-      <!-- This is only need at compile-time, there's no runtime dependency -->
-      <scope>provided</scope>
-      <optional>true</optional>
     </dependency>
   </dependencies>
   <build>
