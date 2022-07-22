@@ -114,7 +114,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gwt: [ "2.8.2", "HEAD-SNAPSHOT" ]
+        # groupId depends on GWT version, so no need to use it in cache keys and other identifiers
+        include:
+          - gwt: "2.9.0"
+            groupId: "com.google.gwt"
+          - gwt: "HEAD-SNAPSHOT"
+            # TODO: move to org.gwtproject once they're deployed
+            groupId: "com.google.gwt"
     steps:
       - uses: actions/checkout@v3
 
@@ -135,7 +141,7 @@ jobs:
 
       - name: Build with Maven
         id: maven-build
-        run: mvn -B -U -ntp verify --fail-at-end -DgwtVersion=${{ matrix.gwt }}
+        run: mvn -B -U -ntp verify --fail-at-end -DgwtVersion=${{ matrix.gwt }} -DgwtGroupId=${{ matrix.groupId }}
 
       - name: Store reports
         if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'

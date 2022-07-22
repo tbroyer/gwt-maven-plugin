@@ -12,7 +12,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.google.gwt</groupId>
+      <groupId>@gwtGroupId@</groupId>
       <artifactId>gwt-servlet</artifactId>
       <!-- Needed for the CustomFieldSerializer; can be provided by gwt-servlet or gwt-user -->
       <scope>provided</scope>
