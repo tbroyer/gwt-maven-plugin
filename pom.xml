@@ -231,6 +231,7 @@
           <localRepositoryPath>${project.build.directory}/it-repo</localRepositoryPath>
           <settingsFile>src/it/settings.xml</settingsFile>
           <filterProperties>
+            <gwtGroupId>${gwtGroupId}</gwtGroupId>
             <gwtVersion>${gwtVersion}</gwtVersion>
           </filterProperties>
           <extraArtifacts>
