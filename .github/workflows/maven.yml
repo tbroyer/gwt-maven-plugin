@@ -34,7 +34,7 @@ jobs:
         run: mvn -B -U -ntp verify --fail-at-end
 
       - name: Store reports
-        if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: linux-reports
@@ -63,7 +63,7 @@ jobs:
         run: mvn -B -U -ntp verify --fail-at-end
 
       - name: Store reports
-        if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: windows-reports
@@ -103,7 +103,7 @@ jobs:
         run: mvn -B -U -ntp verify --fail-at-end "-Dinvoker.javaHome=${{ steps.setup-test-java.outputs.path }}"
 
       - name: Store reports
-        if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: jdk-${{ matrix.java }}-reports
@@ -144,7 +144,7 @@ jobs:
         run: mvn -B -U -ntp verify --fail-at-end -DgwtVersion=${{ matrix.gwt }} -DgwtGroupId=${{ matrix.groupId }}
 
       - name: Store reports
-        if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: gwt-${{ matrix.gwt }}-reports
