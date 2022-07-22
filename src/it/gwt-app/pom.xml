@@ -10,7 +10,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.google.gwt</groupId>
+        <groupId>@gwtGroupId@</groupId>
         <artifactId>gwt</artifactId>
         <version>@gwtVersion@</version>
         <type>pom</type>
@@ -20,11 +20,11 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
-      <groupId>com.google.gwt</groupId>
+      <groupId>@gwtGroupId@</groupId>
       <artifactId>gwt-user</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
+      <groupId>@gwtGroupId@</groupId>
       <artifactId>gwt-dev</artifactId>
     </dependency>
     <dependency>

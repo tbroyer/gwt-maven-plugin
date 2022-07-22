@@ -26,7 +26,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
+      <groupId>@gwtGroupId@</groupId>
       <artifactId>gwt-servlet</artifactId>
     </dependency>
     <dependency>

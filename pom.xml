@@ -52,6 +52,7 @@
 
   <repositories>
     <repository>
+      <!-- TODO: move to ossrh once org.gwtproject snapshots are deployed there -->
       <id>google-snapshots</id>
       <url>https://oss.sonatype.org/content/repositories/google-snapshots/</url>
       <releases>
@@ -71,7 +72,8 @@
     <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <gwtVersion>2.9.0</gwtVersion>
+    <gwtGroupId>org.gwtproject</gwtGroupId>
+    <gwtVersion>2.10.0</gwtVersion>
   </properties>
 
   <dependencies>
@@ -147,19 +149,19 @@
     <!-- Some artifacts used by invoker tests, declared here so they're resolved early -->
     <!-- Actually because invoker plugin cannot install snapshots through extraArtifacts -->
     <dependency>
-      <groupId>com.google.gwt</groupId>
+      <groupId>${gwtGroupId}</groupId>
       <artifactId>gwt-user</artifactId>
       <version>${gwtVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
+      <groupId>${gwtGroupId}</groupId>
       <artifactId>gwt-dev</artifactId>
       <version>${gwtVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
+      <groupId>${gwtGroupId}</groupId>
       <artifactId>gwt-servlet</artifactId>
       <version>${gwtVersion}</version>
       <scope>test</scope>
