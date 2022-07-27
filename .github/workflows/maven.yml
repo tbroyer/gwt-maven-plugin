@@ -119,8 +119,7 @@ jobs:
           - gwt: "2.9.0"
             groupId: "com.google.gwt"
           - gwt: "HEAD-SNAPSHOT"
-            # TODO: move to org.gwtproject once they're deployed
-            groupId: "com.google.gwt"
+            groupId: "org.gwtproject"
     steps:
       - uses: actions/checkout@v3
 

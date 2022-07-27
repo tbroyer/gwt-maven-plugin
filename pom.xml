@@ -52,9 +52,8 @@
 
   <repositories>
     <repository>
-      <!-- TODO: move to ossrh once org.gwtproject snapshots are deployed there -->
-      <id>google-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/google-snapshots/</url>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
       <releases>
         <enabled>false</enabled>
       </releases>
