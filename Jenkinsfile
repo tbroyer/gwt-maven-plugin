@@ -1,4 +1,3 @@
-                                                                 JenkinsFile                                                                       Modified  
 pipeline {
 
   agent any
