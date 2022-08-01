@@ -1,4 +1,4 @@
-  GNU nano 4.8                                                                      JenkinsFile                                                                       Modified  
+                                                                 JenkinsFile                                                                       Modified  
 pipeline {
 
   agent any
