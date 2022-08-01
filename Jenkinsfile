@@ -19,7 +19,12 @@ pipeline {
 
           '''
 }
-}
+    }
+    stage('deploy') {
+      steps {
+        echo'deploy the application'
+      }
+    }
 stage('cat README') {
  when {
 branch "branch1"
