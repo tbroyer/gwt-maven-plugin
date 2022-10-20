@@ -168,6 +168,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
+          server-id: 'ossrh'
+          server-username: OSSRH_USERNAME
+          server-password: OSSRH_TOKEN
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -181,7 +184,7 @@ jobs:
 
       - name: Deploy with Maven
         id: maven-build
-        run: mvn -B -U -ntp -s .github/workflows/settings.xml source:jar deploy -Dmaven.test.skip=true -Dinvoker.skip=true
+        run: mvn -B -U -ntp source:jar deploy -Dmaven.test.skip=true -Dinvoker.skip=true
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
