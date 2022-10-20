@@ -16,8 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup environment
-        run: echo "JAVA_HOME=${JAVA_HOME_8_X64}" | tee -a $GITHUB_ENV
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -45,8 +47,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup environment
-        run: echo "JAVA_HOME=${Env:JAVA_HOME_11_X64}" | Tee-Object -FilePath $env:GITHUB_ENV -Append
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -79,14 +83,12 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Setup JDK ${{ matrix.java }}
-        id: setup-test-java
         uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.java }}
           distribution: temurin
-
-      - name: Setup environment
-        run: echo "JAVA_HOME=${JAVA_HOME_8_X64}" | tee -a $GITHUB_ENV
+          java-version: |
+            ${{ matrix.java }}
+            8
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -100,7 +102,7 @@ jobs:
 
       - name: Build with Maven
         id: maven-build
-        run: mvn -B -U -ntp verify --fail-at-end "-Dinvoker.javaHome=${{ steps.setup-test-java.outputs.path }}"
+        run: mvn -B -U -ntp verify --fail-at-end "-Dinvoker.javaHome=$JAVA_HOME_${{ matrix.java }}_X64"
 
       - name: Store reports
         if: steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure'
@@ -123,8 +125,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup environment
-        run: echo "JAVA_HOME=${JAVA_HOME_8_X64}" | tee -a $GITHUB_ENV
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -160,8 +164,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup environment
-        run: echo "JAVA_HOME=${JAVA_HOME_11_X64}" | tee -a $GITHUB_ENV
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
