@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"net.ltgt.gwt.maven"}]
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"net.ltgt.gwt.maven"}];updateSearchResults();
