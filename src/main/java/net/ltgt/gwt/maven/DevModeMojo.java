@@ -12,7 +12,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.shared.utils.io.FileUtils;
+import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Runs GWT's DevMode.

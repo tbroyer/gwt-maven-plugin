@@ -22,9 +22,9 @@ import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.shared.utils.StringUtils;
-import org.apache.maven.shared.utils.io.FileUtils;
 import org.apache.maven.toolchain.ToolchainManager;
+import org.codehaus.plexus.util.StringUtils;
+import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 public abstract class AbstractDevModeMojo extends AbstractMojo {
