@@ -48,7 +48,7 @@ public class JarMojo extends AbstractMojo {
   private JarArchiver jarArchiver;
 
   /**
-   * The {@link {MavenProject}.
+   * The {@link MavenProject}.
    */
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
