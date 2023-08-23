@@ -22,7 +22,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.surefire.suite.RunResult;
+import org.apache.maven.surefire.api.suite.RunResult;
+import org.apache.maven.surefire.extensions.ForkNodeFactory;
 
 /**
  * Runs the project's tests with the specific setup needed for {@code GWTTestCase} tests.
@@ -288,8 +289,8 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    * Set this to "true" to cause a failure if the none of the tests specified in -Dtest=... are run. Defaults to
    * "true".
    */
-  @Parameter(property = "surefire.failIfNoSpecifiedTests")
-  private Boolean failIfNoSpecifiedTests;
+  @Parameter(property = "surefire.failIfNoSpecifiedTests", defaultValue = "true")
+  private boolean failIfNoSpecifiedTests;
 
   /**
    * Attach a debugger to the forked JVM. If set to "true", the process will suspend and wait for a debugger to attach
@@ -367,6 +368,33 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private List<String> includes;
 
   /**
+   * A list of {@literal <exclude>} elements specifying the tests (by pattern) that should be excluded in testing.
+   * When not specified and when the {@code test} parameter is not specified, the default excludes will be <br>
+   * <pre><code>
+   * {@literal <excludes>}
+   *     {@literal <exclude>}**{@literal /}*$*{@literal </exclude>}
+   * {@literal </excludes>}
+   * </code></pre>
+   * (which excludes all inner classes).
+   * <br>
+   * This parameter is ignored if the TestNG {@code suiteXmlFiles} parameter is specified.
+   * <br>
+   * Each exclude item may also contain a comma-separated sub-list of items, which will be treated as multiple
+   * {@literal <exclude>} entries.<br>
+   * Since 2.19 a complex syntax is supported in one parameter (JUnit 4, JUnit 4.7+, TestNG):
+   * <pre><code>
+   * {@literal <exclude>}%regex[pkg.*Slow.*.class], Unstable*{@literal </exclude>}
+   * </code></pre>
+   * <br>
+   * <b>Notice that</b> these values are relative to the directory containing generated test classes of the project
+   * being tested. This directory is declared by the parameter {@code testClassesDirectory} which defaults
+   * to the POM property <code>${project.build.testOutputDirectory}</code>, typically
+   * <code>{@literal src/test/java}</code> unless overridden.
+   */
+  @Parameter(property = "surefire.excludes")
+  private List<String> excludes;
+
+  /**
    * (JUnit 4+ providers)
    * The number of times each failing test will be rerun. If set larger than 0, rerun failing tests immediately after
    * they fail. If a failing test passes in any of those reruns, it will be marked as pass and reported as a "flake".
@@ -374,6 +402,13 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    */
   @Parameter(property = "surefire.rerunFailingTestsCount", defaultValue = "0")
   private int rerunFailingTestsCount;
+
+  /**
+   * Set this to a value greater than 0 to fail the whole test set if the cumulative number of flakes reaches
+   * this threshold. Set to 0 to allow an unlimited number of flakes.
+   */
+  @Parameter(property = "surefire.failOnFlakeCount", defaultValue = "0")
+  private int failOnFlakeCount;
 
   /**
    * (TestNG) List of &lt;suiteXmlFile> elements specifying TestNG suite xml file locations. Note that
@@ -409,6 +444,20 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    */
   @Parameter(property = "surefire.runOrder", defaultValue = "filesystem")
   private String runOrder;
+
+  /**
+   * Sets the random seed that will be used to order the tests if {@code surefire.runOrder} is set to {@code random}.
+   * <br>
+   * <br>
+   * If no seeds are set and {@code surefire.runOrder} is set to {@code random}, then the seed used will be
+   * outputted (search for "To reproduce ordering use flag -Dsurefire.runOrder.random.seed").
+   * <br>
+   * <br>
+   * To deterministically reproduce any random test order that was run before, simply set the seed to
+   * be the same value.
+   */
+  @Parameter(property = "surefire.runOrder.random.seed")
+  private Long runOrderRandomSeed;
 
   /**
    * A file containing include patterns. Blank lines, or lines starting with # are ignored. If {@code includes} are
@@ -454,6 +503,85 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private String shutdown;
 
   /**
+   * This parameter configures the forked node. Currently, you can select the communication protocol, i.e. process
+   * pipes or TCP/IP sockets.
+   * <br>
+   * See the documentation for more details:<br>
+   * <a href="https://maven.apache.org/plugins/maven-surefire-plugin/examples/process-communication.html">
+   *     https://maven.apache.org/plugins/maven-surefire-plugin/examples/process-communication.html</a>
+   */
+  @Parameter(property = "surefire.forkNode")
+  private ForkNodeFactory forkNode;
+
+  /**
+   * You can selectively exclude individual environment variables by enumerating their keys.
+   * <br>
+   * The environment is a system-dependent mapping from keys to values which is inherited from the Maven process
+   * to the forked Surefire processes. The keys must literally (case sensitive) match in order to exclude
+   * their environment variable.
+   * <br>
+   * Example to exclude three environment variables:
+   * <br>
+   * <i>mvn test -Dsurefire.excludedEnvironmentVariables=ACME1,ACME2,ACME3</i>
+   */
+  @Parameter(property = "surefire.excludedEnvironmentVariables")
+  private String[] excludedEnvironmentVariables;
+
+  /**
+   * The process checkers are disabled by default.
+   * You can enable them namely by setting {@code ping} and {@code native} or {@code all} in this parameter.
+   * <br>
+   * The checker is useful in situations when you kill the build on a CI system and you want the Surefire forked JVM
+   * to kill the tests asap and free all handlers on the file system been previously used by the JVM and by the tests.
+   *
+   * <br>
+   *
+   * The {@code ping} should be safely used together with ZGC or Shenandoah Garbage Collector.
+   * Due to the {@code ping} relies on timing of the PING (triggered every 30 seconds), slow GCs may pause
+   * the timers and pretend that the parent process of the forked JVM does not exist.
+   *
+   * <br>
+   *
+   * The {@code native} is very fast checker.
+   * It is useful mechanism on Unix based systems, Linux distributions and Alpine/BusyBox Linux.
+   * See the JIRA <a href="https://issues.apache.org/jira/browse/SUREFIRE-1631">SUREFIRE-1631</a> for Windows issues.
+   *
+   * <br>
+   *
+   * Another useful configuration parameter is {@code forkedProcessTimeoutInSeconds}.
+   * <br>
+   * See the Frequently Asked Questions page with more details:<br>
+   * <a href="http://maven.apache.org/surefire/maven-surefire-plugin/faq.html#kill-jvm">
+   *     http://maven.apache.org/surefire/maven-surefire-plugin/faq.html#kill-jvm</a>
+   * <br>
+   * <a href="http://maven.apache.org/surefire/maven-failsafe-plugin/faq.html#kill-jvm">
+   *     http://maven.apache.org/surefire/maven-failsafe-plugin/faq.html#kill-jvm</a>
+   *
+   * <br>
+   *
+   * Example of use:
+   * <br>
+   * <i>mvn test -Dsurefire.enableProcessChecker=all</i>
+   */
+  @Parameter(property = "surefire.enableProcessChecker")
+  private String enableProcessChecker;
+
+  @Parameter(property = "surefire.systemPropertiesFile")
+  private File systemPropertiesFile;
+
+  /**
+   * Provide the ID/s of an JUnit engine to be included in the test run.
+   */
+  @Parameter(property = "surefire.includeJUnit5Engines")
+  private String[] includeJUnit5Engines;
+
+  /**
+   * Provide the ID/s of an JUnit engine to be excluded in the test run.
+   */
+  @Parameter(property = "surefire.excludeJUnit5Engines")
+  private String[] excludeJUnit5Engines;
+
+  /**
    * The character encoding scheme to be applied while generating test report
    * files (see target/surefire-reports/yourTestName.txt).
    * The report output files (*-out.txt) are still encoded with JVM's encoding used in standard out/err pipes.
@@ -466,6 +594,16 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   public int getRerunFailingTestsCount() {
     return rerunFailingTestsCount;
+  }
+
+  @Override
+  public int getFailOnFlakeCount() {
+    return failOnFlakeCount;
+  }
+
+  @Override
+  public void setFailOnFlakeCount(int failOnFlakeCount) {
+    this.failOnFlakeCount = failOnFlakeCount;
   }
 
   @Override
@@ -507,6 +645,16 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   public void setIncludes(List<String> includes) {
     this.includes = includes;
+  }
+
+  @Override
+  public List<String> getExcludes() {
+    return excludes;
+  }
+
+  @Override
+  public void setExcludes(List<String> excludes) {
+    this.excludes = excludes;
   }
 
   @Override
@@ -575,12 +723,12 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   }
 
   @Override
-  public File getClassesDirectory() {
+  public File getMainBuildPath() {
     return classesDirectory;
   }
 
   @Override
-  public void setClassesDirectory(File classesDirectory) {
+  public void setMainBuildPath(File classesDirectory) {
     this.classesDirectory = classesDirectory;
   }
 
@@ -612,6 +760,53 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   public String getShutdown() {
     return shutdown;
+  }
+
+  @Override
+  public String[] getExcludedEnvironmentVariables() {
+    return excludedEnvironmentVariables;
+  }
+
+  @Override
+  protected String getEnableProcessChecker() {
+    return enableProcessChecker;
+  }
+
+  @Override
+  protected ForkNodeFactory getForkNode() {
+    return forkNode;
+  }
+
+  @Override
+  public File getSystemPropertiesFile() {
+    return systemPropertiesFile;
+  }
+
+  @Override
+  public void setSystemPropertiesFile(File systemPropertiesFile) {
+    this.systemPropertiesFile = systemPropertiesFile;
+  }
+
+  @Override
+  public String[] getIncludeJUnit5Engines() {
+    return includeJUnit5Engines;
+  }
+
+  @Override
+  public void setIncludeJUnit5Engines(String[] includeJUnit5Engines) {
+    this.includeJUnit5Engines = includeJUnit5Engines;
+  }
+
+
+  @Override
+  public String[] getExcludeJUnit5Engines() {
+    return excludeJUnit5Engines;
+  }
+
+
+  @Override
+  public void setExcludeJUnit5Engines(String[] excludeJUnit5Engines) {
+    this.excludeJUnit5Engines = excludeJUnit5Engines;
   }
 
   @Override
@@ -697,7 +892,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   }
 
   @Override
-  public Boolean getFailIfNoSpecifiedTests() {
+  public boolean getFailIfNoSpecifiedTests() {
     return failIfNoSpecifiedTests;
   }
 
@@ -757,6 +952,16 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   }
 
   @Override
+  public Long getRunOrderRandomSeed() {
+    return runOrderRandomSeed;
+  }
+
+  @Override
+  public void setRunOrderRandomSeed(Long runOrderRandomSeed) {
+    this.runOrderRandomSeed = runOrderRandomSeed;
+  }
+
+  @Override
   public File getIncludesFile() {
     return includesFile;
   }
@@ -764,6 +969,17 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   public File getExcludesFile() {
     return excludesFile;
+  }
+
+  @Override
+  protected boolean useModulePath() {
+    // GWTTestCase must not use the module path
+    return false;
+  }
+
+  @Override
+  protected void setUseModulePath(boolean useModulePath) {
+    throw new UnsupportedOperationException("useModulePath is read-only");
   }
 
   @Override
