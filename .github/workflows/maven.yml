@@ -78,8 +78,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '11', '17', '21-ea' ]
-    continue-on-error: ${{ matrix.java == '21-ea' }}
+        java: [ '11', '17', '20' ]
+    continue-on-error: ${{ matrix.java == '20' }}
     steps:
       - uses: actions/checkout@v3
 
