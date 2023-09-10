@@ -79,6 +79,7 @@ jobs:
     strategy:
       matrix:
         java: [ '11', '17', '21-ea' ]
+    continue-on-error: ${{ matrix.java == '21-ea' }}
     steps:
       - uses: actions/checkout@v3
 
@@ -122,6 +123,7 @@ jobs:
             groupId: "com.google.gwt"
           - gwt: "HEAD-SNAPSHOT"
             groupId: "org.gwtproject"
+    continue-on-error: ${{ matrix.gwt == 'HEAD-SNAPSHOT' }}
     steps:
       - uses: actions/checkout@v3
 
