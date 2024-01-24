@@ -14,7 +14,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>@gwtGroupId@</groupId>
+        <groupId>org.gwtproject</groupId>
         <artifactId>gwt</artifactId>
         <version>@gwtVersion@</version>
         <type>pom</type>

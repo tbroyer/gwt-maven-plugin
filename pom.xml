@@ -71,8 +71,7 @@
     <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <gwtGroupId>org.gwtproject</gwtGroupId>
-    <gwtVersion>2.10.0</gwtVersion>
+    <gwtVersion>2.11.0</gwtVersion>
   </properties>
 
   <dependencies>
@@ -182,19 +181,19 @@
     <!-- Some artifacts used by invoker tests, declared here so they're resolved early -->
     <!-- Actually because invoker plugin cannot install snapshots through extraArtifacts -->
     <dependency>
-      <groupId>${gwtGroupId}</groupId>
+      <groupId>org.gwtproject</groupId>
       <artifactId>gwt-user</artifactId>
       <version>${gwtVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>${gwtGroupId}</groupId>
+      <groupId>org.gwtproject</groupId>
       <artifactId>gwt-dev</artifactId>
       <version>${gwtVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>${gwtGroupId}</groupId>
+      <groupId>org.gwtproject</groupId>
       <artifactId>gwt-servlet</artifactId>
       <version>${gwtVersion}</version>
       <scope>test</scope>
@@ -260,7 +259,6 @@
           <localRepositoryPath>${project.build.directory}/it-repo</localRepositoryPath>
           <settingsFile>src/it/settings.xml</settingsFile>
           <filterProperties>
-            <gwtGroupId>${gwtGroupId}</gwtGroupId>
             <gwtVersion>${gwtVersion}</gwtVersion>
           </filterProperties>
           <extraArtifacts>

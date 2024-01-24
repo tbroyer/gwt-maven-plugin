@@ -20,11 +20,11 @@
       <type>gwt-lib</type>
     </dependency>
     <dependency>
-      <groupId>@gwtGroupId@</groupId>
+      <groupId>org.gwtproject</groupId>
       <artifactId>gwt-user</artifactId>
     </dependency>
     <dependency>
-      <groupId>@gwtGroupId@</groupId>
+      <groupId>org.gwtproject</groupId>
       <artifactId>gwt-dev</artifactId>
     </dependency>
     <dependency>
