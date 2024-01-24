@@ -14,15 +14,15 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '8'
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.m2/repository/
@@ -37,7 +37,7 @@ jobs:
 
       - name: Store reports
         if: always() && (steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux-reports
           path: target/it-tests/*/build.log
@@ -45,15 +45,15 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.m2/repository/
@@ -68,7 +68,7 @@ jobs:
 
       - name: Store reports
         if: always() && (steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-reports
           path: target/it-tests/*/build.log
@@ -81,10 +81,10 @@ jobs:
         java: [ '11', '17', '20' ]
     continue-on-error: ${{ matrix.java == '20' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup JDK ${{ matrix.java }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: |
@@ -92,7 +92,7 @@ jobs:
             8
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.m2/repository/
@@ -107,7 +107,7 @@ jobs:
 
       - name: Store reports
         if: always() && (steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jdk-${{ matrix.java }}-reports
           path: target/it-tests/*/build.log
@@ -125,15 +125,15 @@ jobs:
             groupId: "org.gwtproject"
     continue-on-error: ${{ matrix.gwt == 'HEAD-SNAPSHOT' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '8'
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.m2/repository/
@@ -150,7 +150,7 @@ jobs:
 
       - name: Store reports
         if: always() && (steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gwt-${{ matrix.gwt }}-reports
           path: target/it-tests/*/build.log
@@ -164,9 +164,9 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
@@ -175,7 +175,7 @@ jobs:
           server-password: OSSRH_TOKEN
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.m2/repository/
