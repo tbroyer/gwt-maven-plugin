@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -31,7 +32,6 @@ import org.jspecify.annotations.Nullable;
  * Invokes the GWT Compiler on the project's sources and resources.
  */
 @Mojo(name = "compile", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
-@SuppressWarnings("serial")
 public class CompileMojo extends AbstractMojo implements GwtOptions {
 
   /**
@@ -177,7 +177,7 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
   @Parameter(defaultValue = "${session}", readonly = true, required = true)
   protected MavenSession session;
 
-  @Component
+  @Inject
   protected ToolchainManager toolchainManager;
 
   public void execute() throws MojoExecutionException {

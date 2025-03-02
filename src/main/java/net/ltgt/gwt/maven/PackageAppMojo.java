@@ -6,15 +6,15 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.war.WarArchiver;
 
 import java.io.File;
+
+import javax.inject.Inject;
 
 /**
  * Package the compiled GWT application into a WAR-like archive.
@@ -61,7 +61,7 @@ public class PackageAppMojo extends AbstractMojo {
   @Parameter(defaultValue = "${session}", required = true, readonly = true)
   private MavenSession session;
 
-  @Component(role = Archiver.class, hint = "war")
+  @Inject
   private WarArchiver warArchiver;
 
   @Override

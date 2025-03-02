@@ -3,19 +3,19 @@ package net.ltgt.gwt.maven;
 import java.io.File;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 
 /**
@@ -44,7 +44,7 @@ public class JarMojo extends AbstractMojo {
   /**
    * The Jar archiver.
    */
-  @Component(role = Archiver.class, hint = "jar" )
+  @Inject
   private JarArchiver jarArchiver;
 
   /**
@@ -66,7 +66,7 @@ public class JarMojo extends AbstractMojo {
   @Parameter
   private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
 
-  @Component
+  @Inject
   private MavenProjectHelper projectHelper;
 
   /**
