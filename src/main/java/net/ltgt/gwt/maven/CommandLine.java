@@ -4,8 +4,6 @@ import java.io.File;
 import java.nio.file.Paths;import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -17,6 +15,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
+import org.jspecify.annotations.Nullable;
 
 class CommandLine {
   private final Log log;
@@ -91,8 +90,7 @@ class CommandLine {
     return Paths.get(System.getProperty("java.home"), "bin", "java").toString();
   }
 
-  @Nullable
-  private Toolchain getToolchain() {
+  private @Nullable Toolchain getToolchain() {
     Toolchain tc = null;
     if (toolchainRequirements != null && !toolchainRequirements.isEmpty()) {
       List<Toolchain> tcs = toolchainManager.getToolchains(session, "jdk", toolchainRequirements);

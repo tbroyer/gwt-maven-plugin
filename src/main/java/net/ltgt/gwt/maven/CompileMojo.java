@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
@@ -27,6 +25,7 @@ import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SourceMapping;
 import org.codehaus.plexus.util.StringUtils;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Invokes the GWT Compiler on the project's sources and resources.
@@ -320,21 +319,18 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     return moduleShortName;
   }
 
-  @Nullable
   @Override
-  public String getLogLevel() {
+  public @Nullable String getLogLevel() {
     return logLevel;
   }
 
-  @Nullable
   @Override
-  public String getStyle() {
+  public @Nullable String getStyle() {
     return style;
   }
 
-  @Nullable
   @Override
-  public Integer getOptimize() {
+  public @Nullable Integer getOptimize() {
     return optimize;
   }
 
@@ -353,9 +349,8 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     return deploy;
   }
 
-  @Nullable
   @Override
-  public File getExtraDir() {
+  public @Nullable File getExtraDir() {
     return extra;
   }
 
@@ -364,15 +359,13 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     return draftCompile;
   }
 
-  @Nullable
   @Override
-  public String getLocalWorkers() {
+  public @Nullable String getLocalWorkers() {
     return localWorkers;
   }
 
-  @Nullable
   @Override
-  public String getSourceLevel() {
+  public @Nullable String getSourceLevel() {
     return sourceLevel;
   }
 }
