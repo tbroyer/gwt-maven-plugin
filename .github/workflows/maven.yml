@@ -202,9 +202,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-          server-id: 'ossrh'
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_TOKEN
+          server-id: 'central'
+          server-username: SONATYPE_CENTRAL_USERNAME
+          server-password: SONATYPE_CENTRAL_TOKEN
 
       - name: Cache Maven dependencies
         uses: actions/cache@v4
@@ -220,5 +220,5 @@ jobs:
         id: maven-build
         run: mvn -B -U -ntp source:jar deploy -Dmaven.test.skip=true -Dinvoker.skip=true
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          SONATYPE_CENTRAL_USERNAME: ${{ secrets.SONATYPE_CENTRAL_USERNAME }}
+          SONATYPE_CENTRAL_TOKEN: ${{ secrets.SONATYPE_CENTRAL_TOKEN }}
