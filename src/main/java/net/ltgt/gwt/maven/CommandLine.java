@@ -1,9 +1,17 @@
 package net.ltgt.gwt.maven;
 
 import java.io.File;
-import java.nio.file.Paths;import java.util.List;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -11,10 +19,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.cli.CommandLineException;
-import org.codehaus.plexus.util.cli.CommandLineUtils;
-import org.codehaus.plexus.util.cli.Commandline;
-import org.codehaus.plexus.util.cli.StreamConsumer;
 import org.jspecify.annotations.Nullable;
 
 class CommandLine {
@@ -39,33 +43,39 @@ class CommandLine {
     final String cp = StringUtils.join(classpath.iterator(), File.pathSeparator);
     final String[] args = arguments.toArray(new String[arguments.size()]);
 
-    Commandline commandline = new Commandline();
-    commandline.setWorkingDirectory(project.getBuild().getDirectory());
-    commandline.setExecutable(getExecutable());
-    commandline.addEnvironment("CLASSPATH", cp);
+    org.apache.commons.exec.CommandLine commandline = new org.apache.commons.exec.CommandLine(getExecutable());
     commandline.addArguments(args);
+
+    Executor executor = DefaultExecutor.builder().get();
+    executor.setWorkingDirectory(new File(project.getBuild().getDirectory()));
+    executor.setStreamHandler(
+        new PumpStreamHandler(
+            new LogOutputStream() {
+              @Override
+              protected void processLine(String line, int logLevel) {
+                log.info(line);
+              }
+            },
+            new LogOutputStream() {
+              @Override
+              protected void processLine(String line, int logLevel) {
+                log.warn(line);
+              }
+            }));
+    executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
+
+    Map<String, String> env = new LinkedHashMap<>(System.getenv());
+    env.put("CLASSPATH", cp);
 
     if (log.isDebugEnabled()) {
       log.debug("Classpath: " + cp);
-      log.debug("Arguments: " + CommandLineUtils.toString(args));
+      log.debug("Arguments: " + String.join(" ", commandline.getArguments()));
     }
 
     int result;
     try {
-      result = CommandLineUtils.executeCommandLine(commandline,
-          new StreamConsumer() {
-            @Override
-            public void consumeLine(String s) {
-              log.info(s);
-            }
-          },
-          new StreamConsumer() {
-            @Override
-            public void consumeLine(String s) {
-              log.warn(s);
-            }
-          });
-    } catch (CommandLineException e) {
+      result = executor.execute(commandline, env);
+    } catch (IOException e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
     if (result != 0) {
