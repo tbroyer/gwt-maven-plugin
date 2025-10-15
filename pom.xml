@@ -423,6 +423,21 @@
           <skip>true</skip>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-report-plugin</artifactId>
+        <version>3.15.1</version>
+        <configuration>
+          <hasExtensionsToLoad>true</hasExtensionsToLoad>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>report-no-fork</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
     </plugins>
   </reporting>
 
