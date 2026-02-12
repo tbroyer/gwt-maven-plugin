@@ -73,7 +73,6 @@ jobs:
           name: windows-reports
           path: target/it-tests/*/build.log
 
-  # Note: GWT 2.12 requires JDK 11, so JDK 8 compatibility will be tested independently
   test-jdks:
     needs: linux
     runs-on: ubuntu-latest
@@ -117,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gwt: ["2.11.0", "HEAD-SNAPSHOT"]
+        gwt: ["2.12.2", "HEAD-SNAPSHOT"]
     continue-on-error: ${{ matrix.gwt == 'HEAD-SNAPSHOT' }}
     steps:
       - uses: actions/checkout@v4
@@ -150,49 +149,12 @@ jobs:
           name: gwt-${{ matrix.gwt }}-reports
           path: target/it-tests/*/build.log
 
-  # GWT 2.12 requires JDK 11, so test JDK 8 with 2.11
-  test-jdk8-gwt211:
-    needs: linux
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup JDK 8
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: |
-            8
-            21
-
-      - name: Cache Maven dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.m2/repository/
-            !~/.m2/repository/**/*-SNAPSHOT/
-            target/it-repo/
-            !target/it-repo/**/*-SNAPSHOT/
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-
-      - name: Build with Maven
-        id: maven-build
-        run: mvn -B -U -ntp verify --fail-at-end "-Dinvoker.javaHome=$JAVA_HOME_8_X64" -DgwtVersion=2.11.0
-
-      - name: Store reports
-        if: always() && (steps.maven-build.outcome == 'success' || steps.maven-build.outcome == 'failure')
-        uses: actions/upload-artifact@v4
-        with:
-          name: jdk-8-reports
-          path: target/it-tests/*/build.log
-
   deploy_snapshot:
     needs:
       - linux
       - windows
       - test-jdks
       - test-gwt
-      - test-jdk8-gwt211
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
