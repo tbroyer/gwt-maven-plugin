@@ -165,6 +165,12 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
   private String jvm;
 
   /**
+   * Additional classpath entries that will be prepended to the Maven project's classpath during execution.
+   */
+  @Parameter
+  private List<String> classpath;
+
+  /**
    * Requirements for this jdk toolchain, if {@link #jvm} is not set.
    * <p>This overrides the toolchain selected by the maven-toolchains-plugin.
    */
@@ -213,8 +219,10 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
     }
     args.add(moduleName);
 
-    Set<String> cp = new LinkedHashSet<>();
-    cp.addAll(sourceRoots);
+    Set<String> cp = new LinkedHashSet<>(sourceRoots);
+    if(classpath != null) {
+      cp.addAll(classpath);
+    }
     try {
       cp.addAll(project.getCompileClasspathElements());
     } catch (DependencyResolutionRequiredException e) {
