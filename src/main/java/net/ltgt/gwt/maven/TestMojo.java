@@ -509,14 +509,21 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private int skipAfterFailureCount;
 
   /**
-   * After the plugin process is shutdown by sending SIGTERM signal (CTRL+C), SHUTDOWN command is received by every
-   * forked JVM. By default (shutdown=testset) forked JVM would not continue with new test which means that
-   * the current test may still continue to run.<br/>
-   * The parameter can be configured with other two values "exit" and "kill".<br/>
-   * Using "exit" forked JVM executes System.exit(1) after the plugin process has received SIGTERM signal.<br/>
-   * Using "kill" the JVM executes Runtime.halt(1) and kills itself.
+   * After the plugin process is shutdown by sending <i>SIGTERM signal (CTRL+C)</i>, <i>SHUTDOWN command</i> is
+   * received by every forked JVM.
+   * <br>
+   * The value is set to ({@code shutdown=exit}) by default (changed in version 1.3.0).
+   * <br>
+   * The parameter can be configured with other two values {@code testset} and {@code kill}.
+   * <br>
+   * With({@code shutdown=testset}) the test set may still continue to run in forked JVM.
+   * <br>
+   * Using {@code exit} forked JVM executes {@code System.exit(1)} after the plugin process has received
+   * <i>SIGTERM signal</i>.
+   * <br>
+   * Using {@code kill} the JVM executes {@code Runtime.halt(1)} and kills itself.
    */
-  @Parameter(property = "surefire.shutdown", defaultValue = "testset")
+  @Parameter(property = "surefire.shutdown", defaultValue = "kill")
   private String shutdown;
 
   /**
