@@ -1,5 +1,7 @@
 package net.ltgt.gwt.maven;
 
+import static org.codehaus.plexus.archiver.util.DefaultFileSet.fileSet;
+
 import java.io.File;
 import java.util.List;
 
@@ -98,12 +100,12 @@ public class JarMojo extends AbstractMojo {
       for (String sourceRoot : sourceRoots) {
         File f = new File(sourceRoot);
         if (f.exists()) {
-          jarArchiver.addDirectory(f);
+          jarArchiver.addFileSet(fileSet(f).includeEmptyDirs(jarArchiver.getIncludeEmptyDirs()));
         }
       }
 
       if (classesDirectory.exists()) {
-        jarArchiver.addDirectory(classesDirectory);
+        jarArchiver.addFileSet(fileSet(classesDirectory).includeEmptyDirs(jarArchiver.getIncludeEmptyDirs()));
       }
 
       archiver.createArchive(session, project, archive);

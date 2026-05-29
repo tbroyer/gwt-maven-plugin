@@ -243,24 +243,25 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private File reportsDirectory;
 
   /**
-   * Specify this parameter to run individual tests by file name, overriding the <code>includes/excludes</code>
-   * parameters. Each pattern you specify here will be used to create an include pattern formatted like
-   * <code>**&#47;${test}.java</code>, so you can just type "-Dtest=MyTest" to run a single test called
-   * "foo/MyTest.java". The test patterns prefixed with a <code>!</code> will be excluded.<br/>
-   * This parameter overrides the <code>includes/excludes</code> parameters, and the TestNG <code>suiteXmlFiles</code>
-   * parameter.
-   * <p/>
-   * You can execute a limited number of methods in the test by adding #myMethod or #my*ethod. For
-   * example, "-Dtest=MyTest#myMethod". This is supported for junit 4.x and testNg.<br/>
-   * <br/>
-   * A complex syntax is supported in one parameter (JUnit 4, JUnit 4.7+, TestNG):<br/>
-   * "-Dtest=???Test, !Unstable*, pkg&#47;**&#47;Ci*leTest.java, *Test#test*One+testTwo?????, #fast*+slowTest"<br/>
-   * "-Dtest=Basic*, !%regex[.*.Unstable.*], !%regex[.*.MyTest.class#one.*|two.*], %regex[#fast.*|slow.*]"<br/>
-   * <br/>
-   * The Parameterized JUnit runner <em>describes</em> test methods using an index in brackets, so the non-regex
-   * method pattern would become: <em>#testMethod[*]</em>. If using <em>@Parameters(name="{index}: fib({0})={1}")</em>
-   * and selecting the index e.g. 5 in pattern, the non-regex method pattern would become <em>#testMethod[5:*]</em>.
-   * <br/>
+   * Specify this parameter to run individual tests by file name, overriding the parameter {@code includes} and
+   * {@code excludes}. Each pattern you specify here will be used to create an include pattern formatted like
+   * <code>**{@literal /}${test}.java</code>, so you can just type {@code -Dtest=MyTest} to run a single test called
+   * "foo/MyTest.java". The test patterns prefixed with a <em>!</em> will be excluded.
+   * <br>
+   * This parameter overrides the parameter {@code includes}, {@code excludes}.
+   * <br>
+   * Since 2.7.3, you can execute a limited number of methods in the test by adding <i>#myMethod</i> or
+   * <i>#my*ethod</i>. For example, {@code -Dtest=MyTest#myMethod}. This is supported for junit 4.x and TestNg.<br>
+   * <br>
+   * Since 2.19 a complex syntax is supported in one parameter:
+   * <pre><code>"-Dtest=???Test, !Unstable*, pkg{@literal /}**{@literal /}Ci*leTest.java, *Test#test*One+testTwo?????, #fast*+slowTest"</code></pre>
+   * or e.g.
+   * <pre><code>"-Dtest=Basic*, !%regex[.*.Unstable.*], !%regex[.*.MyTest.class#one.*|two.*], %regex[#fast.*|slow.*]"</code></pre>
+   * <br>
+   * The Parameterized JUnit runner {@code describes} test methods using an index in brackets, so the non-regex
+   * method pattern would become: {@code #testMethod[*]}.
+   * If using <code>@Parameters(name="{index}: fib({0})={1}")</code> and selecting the index e.g. 5 in pattern, the
+   * non-regex method pattern would become {@code #testMethod[5:*]}.
    */
   @Parameter(property = "test")
   private String test;
@@ -285,7 +286,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private boolean useFile;
 
   /**
-   * Set this to "true" to cause a failure if the none of the tests specified in -Dtest=... are run. Defaults to
+   * Set this to "true" to cause a failure if none of the tests specified in -Dtest=... are run. Defaults to
    * "true".
    */
   @Parameter(property = "surefire.failIfNoSpecifiedTests", defaultValue = "true")
@@ -294,7 +295,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * Attach a debugger to the forked JVM. If set to "true", the process will suspend and wait for a debugger to attach
    * on port 5005. If set to some other string, that string will be appended to the argLine, allowing you to configure
-   * arbitrary debuggability options (without overwriting the other options specified through the <code>argLine</code>
+   * arbitrary debuggability options (without overwriting the other options specified through the {@code argLine}
    * parameter).
    */
   @Parameter(property = "maven.surefire.debug")
@@ -310,7 +311,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * Forked process is normally terminated without any significant delay after given tests have completed.
    * If the particular tests started non-daemon Thread(s), the process hangs instead of been properly terminated
-   * by <em>System.exit()</em>. Use this parameter in order to determine the timeout of terminating the process.
+   * by {@code System.exit()}. Use this parameter in order to determine the timeout of terminating the process.
    * <a href="http://maven.apache.org/surefire/maven-surefire-plugin/examples/shutdown.html">see the documentation:
    * http://maven.apache.org/surefire/maven-surefire-plugin/examples/shutdown.html</a>
    * Turns to default fallback value of 30 seconds if negative integer.
@@ -320,48 +321,51 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
 
   /**
    * Stop executing queued parallel JUnit tests after a certain number of seconds.
-   * <br/>
-   * Example values: "3.5", "4"<br/>
-   * <br/>
+   * <br>
+   * Example values: "3.5", "4"<br>
+   * <br>
    * If set to 0, wait forever, never timing out.
-   * Makes sense with specified <code>parallel</code> different from "none".
+   * Makes sense with specified {@code parallel} different from "none".
    */
   @Parameter(property = "surefire.parallel.timeout")
   private double parallelTestsTimeoutInSeconds;
 
   /**
    * Stop executing queued parallel JUnit tests
-   * and <em>interrupt</em> currently running tests after a certain number of seconds.
-   * <br/>
-   * Example values: "3.5", "4"<br/>
-   * <br/>
+   * and {@code interrupt} currently running tests after a certain number of seconds.
+   * <br>
+   * Example values: "3.5", "4"<br>
+   * <br>
    * If set to 0, wait forever, never timing out.
-   * Makes sense with specified <code>parallel</code> different from "none".
+   * Makes sense with specified {@code parallel} different from "none".
    */
   @Parameter(property = "surefire.parallel.forcedTimeout")
   private double parallelTestsTimeoutForcedInSeconds;
 
   /**
-   * A list of &lt;include> elements specifying the tests (by pattern) that should be included in testing. When not
-   * specified and when the <code>test</code> parameter is not specified, the default includes will be <code><br/>
-   * &lt;includes><br/>
-   * &nbsp;&lt;include>**&#47;*Suite.java&lt;/include><br/>
-   * &nbsp;&lt;include>**&#47;*SuiteNoBrowser.java&lt;/include><br/>
-   * &lt;/includes><br/>
-   * </code>
-   * <p/>
-   * Each include item may also contain a comma-separated sublist of items, which will be treated as multiple
-   * &nbsp;&lt;include> entries.<br/>
-   * A complex syntax is supported in one parameter (JUnit 4, JUnit 4.7+, TestNG):<br/>
-   * &nbsp;&lt;include>%regex[.*[Cat|Dog].*], Basic????, !Unstable*&lt;/include><br/>
-   * &nbsp;&lt;include>%regex[.*[Cat|Dog].*], !%regex[pkg.*Slow.*.class], pkg&#47;**&#47;*Fast*.java&lt;/include><br/>
-   * <p/>
-   * This parameter is ignored if the TestNG <code>suiteXmlFiles</code> parameter is specified.<br/>
-   * <br/>
-   * <em>Notice that</em> these values are relative to the directory containing generated test classes of the project
-   * being tested. This directory is declared by the parameter <code>testClassesDirectory</code> which defaults
-   * to the POM property <code>${project.build.testOutputDirectory}</code>, typically <em>src/test/java</em>
-   * unless overridden.
+   * A list of {@literal <include>} elements specifying the tests (by pattern) that should be included in testing.
+   * When not specified and when the {@code test} parameter is not specified, the default includes will be
+   * <pre><code>
+   * {@literal <includes>}
+   *     {@literal <include>}**{@literal /}Test*.java{@literal </include>}
+   *     {@literal <include>}**{@literal /}*Test.java{@literal </include>}
+   *     {@literal <include>}**{@literal /}*Tests.java{@literal </include>}
+   *     {@literal <include>}**{@literal /}*TestCase.java{@literal </include>}
+   * {@literal </includes>}
+   * </code></pre>
+   * Each include item may also contain a comma-separated sub-list of items, which will be treated as multiple
+   * {@literal <include>} entries.<br>
+   * Since 2.19 a complex syntax is supported in one parameter (JUnit 4, JUnit 4.7+, TestNG):
+   * <pre><code>
+   * {@literal <include>}%regex[.*[Cat|Dog].*], Basic????, !Unstable*{@literal </include>}
+   * {@literal <include>}%regex[.*[Cat|Dog].*], !%regex[pkg.*Slow.*.class], pkg{@literal /}**{@literal /}*Fast*.java{@literal </include>}
+   * </code></pre>
+   * <br>
+   * <br>
+   * <b>Notice that</b> these values are relative to the directory containing generated test classes of the project
+   * being tested. This directory is declared by the parameter {@code testClassesDirectory} which defaults
+   * to the POM property {@code ${project.build.testOutputDirectory}}, typically
+   * <code>{@literal src/test/java}</code> unless overridden.
    */
   @Parameter
   private List<String> includes;
@@ -375,8 +379,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    * {@literal </excludes>}
    * </code></pre>
    * (which excludes all inner classes).
-   * <br>
-   * This parameter is ignored if the TestNG {@code suiteXmlFiles} parameter is specified.
    * <br>
    * Each exclude item may also contain a comma-separated sub-list of items, which will be treated as multiple
    * {@literal <exclude>} entries.<br>
@@ -394,7 +396,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private List<String> excludes;
 
   /**
-   * (JUnit 4+ providers)
+   * (JUnit 4+ and 5+ providers)
    * The number of times each failing test will be rerun. If set larger than 0, rerun failing tests immediately after
    * they fail. If a failing test passes in any of those reruns, it will be marked as pass and reported as a "flake".
    * However, all the failing attempts will be recorded.
@@ -410,36 +412,31 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private int failOnFlakeCount;
 
   /**
-   * (TestNG) List of &lt;suiteXmlFile> elements specifying TestNG suite xml file locations. Note that
-   * <code>suiteXmlFiles</code> is incompatible with several other parameters of this plugin, like
-   * <code>includes/excludes</code>.<br/>
-   * This parameter is ignored if the <code>test</code> parameter is specified (allowing you to run a single test
+   * (TestNG) List of &lt;suiteXmlFile&gt; elements specifying TestNG suite xml file locations. Note that
+   * {@code suiteXmlFiles} is incompatible with several other parameters of this plugin, like
+   * {@code includes} and {@code excludes}.<br>
+   * This parameter is ignored if the {@code test} parameter is specified (allowing you to run a single test
    * instead of an entire suite).
    */
   @Parameter(property = "surefire.suiteXmlFiles")
   private File[] suiteXmlFiles;
 
   /**
-   * Defines the order the tests will be run in. Supported values are "alphabetical", "reversealphabetical", "random",
-   * "hourly" (alphabetical on even hours, reverse alphabetical on odd hours), "failedfirst", "balanced" and
-   * "filesystem".
-   * <br/>
-   * <br/>
-   * Odd/Even for hourly is determined at the time the of scanning the classpath, meaning it could change during a
-   * multi-module build.
-   * <br/>
-   * <br/>
+   * Defines the order the tests will be run in. Supported values are {@code alphabetical},
+   * {@code reversealphabetical}, {@code random}, {@code failedfirst}, {@code balanced} and {@code filesystem}.
+   * <br>
+   * <br>
    * Failed first will run tests that failed on previous run first, as well as new tests for this run.
-   * <br/>
-   * <br/>
+   * <br>
+   * <br>
    * Balanced is only relevant with parallel=classes, and will try to optimize the run-order of the tests reducing the
    * overall execution time. Initially a statistics file is created and every next test run will reorder classes.
-   * <br/>
-   * <br/>
-   * Note that the statistics are stored in a file named .surefire-XXXXXXXXX beside pom.xml, and should not be checked
-   * into version control. The "XXXXX" is the SHA1 checksum of the entire surefire configuration, so different
-   * configurations will have different statistics files, meaning if you change any config settings you will re-run
-   * once before new statistics data can be established.
+   * <br>
+   * <br>
+   * Note that the statistics are stored in a file named <b>.surefire-XXXXXXXXX</b> beside <i>pom.xml</i> and
+   * should not be checked into version control. The "XXXXX" is the SHA1 checksum of the entire surefire
+   * configuration, so different configurations will have different statistics files, meaning if you change any
+   * configuration settings you will re-run once before new statistics data can be established.
    */
   @Parameter(property = "surefire.runOrder", defaultValue = "filesystem")
   private String runOrder;
@@ -459,31 +456,52 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   private Long runOrderRandomSeed;
 
   /**
+   * Used to override the checksum in the name of the statistics file
+   * when {@code surefire.runOrder} is set to "balanced".
+   */
+  @Parameter(property = "surefire.runOrder.statisticsFile.checksum")
+  private String runOrderStatisticsFileChecksum;
+
+  /**
    * A file containing include patterns. Blank lines, or lines starting with # are ignored. If {@code includes} are
-   * also specified, these patterns are appended. Example with path, simple and regex includes:<br/>
-   * &#042;&#047;test/*<br/>
-   * &#042;&#042;&#047;NotIncludedByDefault.java<br/>
-   * %regex[.*Test.*|.*Not.*]<br/>
+   * also specified, these patterns are appended. Example with path, simple and regex includes:
+   * <pre><code>
+   * *{@literal /}test{@literal /}*
+   * **{@literal /}NotIncludedByDefault.java
+   * %regex[.*Test.*|.*Not.*]
+   * </code></pre>
+   * <br>
+   * Method filtering support is provided in the inclusions file as well, example:
+   * <pre><code>
+   * pkg.SomeTest#testMethod
+   * </code></pre>
    */
   @Parameter(property = "surefire.includesFile")
   private File includesFile;
 
   /**
    * A file containing exclude patterns. Blank lines, or lines starting with # are ignored. If {@code excludes} are
-   * also specified, these patterns are appended. Example with path, simple and regex excludes:<br/>
-   * &#042;&#047;test/*<br/>
-   * &#042;&#042;&#047;DontRunTest.*<br/>
-   * %regex[.*Test.*|.*Not.*]<br/>
+   * also specified, these patterns are appended. Example with path, simple and regex excludes:<br>
+   * <pre><code>
+   * *{@literal /}test{@literal /}*
+   * **{@literal /}DontRunTest.*
+   * %regex[.*Test.*|.*Not.*]
+   * </code></pre>
+   *
+   * Method filtering support is provided in the exclusions file as well, example:
+   * <pre><code>
+   * pkg.SomeTest#testMethod
+   * </code></pre>
    */
   @Parameter(property = "surefire.excludesFile")
   private File excludesFile;
 
   /**
    * Set to error/failure count in order to skip remaining tests.
-   * Due to race conditions in parallel/forked execution this may not be fully guaranteed.<br/>
-   * Enable with system property -Dsurefire.skipAfterFailureCount=1 or any number greater than zero.
-   * Defaults to "0".<br/>
-   * See the prerequisites and limitations in documentation:<br/>
+   * Due to race conditions in parallel/forked execution this may not be fully guaranteed.<br>
+   * Enable with system property {@code -Dsurefire.skipAfterFailureCount=1} or any number greater than zero.
+   * Defaults to "0".<br>
+   * See the prerequisites and limitations in documentation:<br>
    * <a href="http://maven.apache.org/plugins/maven-surefire-plugin/examples/skip-after-failure.html">
    *     http://maven.apache.org/plugins/maven-surefire-plugin/examples/skip-after-failure.html</a>
    */
@@ -504,6 +522,8 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * This parameter configures the forked node. Currently, you can select the communication protocol, i.e. process
    * pipes or TCP/IP sockets.
+   * The plugin uses process pipes by default.
+   * Alternatively, you can implement your own factory and SPI.
    * <br>
    * See the documentation for more details:<br>
    * <a href="https://maven.apache.org/plugins/maven-surefire-plugin/examples/process-communication.html">
@@ -565,6 +585,9 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Parameter(property = "surefire.enableProcessChecker")
   private String enableProcessChecker;
 
+  /**
+   * Provide the ID/s of an JUnit engine to be included in the test run.
+   */
   @Parameter(property = "surefire.systemPropertiesFile")
   private File systemPropertiesFile;
 
@@ -583,9 +606,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   /**
    * The character encoding scheme to be applied while generating test report
    * files (see target/surefire-reports/yourTestName.txt).
-   * The report output files (*-out.txt) are still encoded with JVM's encoding used in standard out/err pipes.
-   *
-   *
+   * The report output files (*-out.txt) are encoded in UTF-8 if not set otherwise.
    */
   @Parameter(property = "encoding", defaultValue = "${project.reporting.outputEncoding}")
   private String encoding;
@@ -958,6 +979,16 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   public void setRunOrderRandomSeed(Long runOrderRandomSeed) {
     this.runOrderRandomSeed = runOrderRandomSeed;
+  }
+
+  @Override
+  public String getRunOrderStatisticsFileChecksum() {
+    return this.runOrderStatisticsFileChecksum;
+  }
+
+  @Override
+  public void setRunOrderStatisticsFileChecksum(String runOrderStatisticsFileChecksum) {
+    this.runOrderStatisticsFileChecksum = runOrderStatisticsFileChecksum;
   }
 
   @Override

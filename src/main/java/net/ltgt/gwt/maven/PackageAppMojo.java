@@ -1,5 +1,7 @@
 package net.ltgt.gwt.maven;
 
+import static org.codehaus.plexus.archiver.util.DefaultFileSet.fileSet;
+
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.execution.MavenSession;
@@ -79,7 +81,7 @@ public class PackageAppMojo extends AbstractMojo {
     try {
       File prepackagedApp = new File(outputDirectory, warName);
       if (prepackagedApp.exists()) {
-        warArchiver.addDirectory(prepackagedApp);
+        warArchiver.addFileSet(fileSet(prepackagedApp).includeEmptyDirs(warArchiver.getIncludeEmptyDirs()));
       }
 
       archiver.createArchive(session, project, archive);
