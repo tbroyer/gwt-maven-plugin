@@ -61,7 +61,7 @@
   </repositories>
 
   <properties>
-    <mavenVersion>3.3.1</mavenVersion>
+    <mavenVersion>3.6.3</mavenVersion>
     <targetJdk>8</targetJdk>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -292,7 +292,9 @@ public abstract class AbstractDevModeMojo extends AbstractMojo {
     }
     sources.addAll(p.getCompileSourceRoots());
     ScopeArtifactFilter artifactFilter = new ScopeArtifactFilter(classpathScope);
-    for (Artifact artifact : p.getDependencyArtifacts()) {
+    @SuppressWarnings("deprecation") // For some reason, the getter was deprecated, with no real replacement
+    Set<Artifact> dependencyArtifacts = p.getDependencyArtifacts();
+    for (Artifact artifact : dependencyArtifacts) {
       if (!artifact.getArtifactHandler().isAddedToClasspath()) {
         continue;
       }
