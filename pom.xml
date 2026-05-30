@@ -298,15 +298,17 @@
           <filterProperties>
             <gwtVersion>${gwtVersion}</gwtVersion>
           </filterProperties>
+          <!-- lists all plugins and dependencies used by IT projects that are not used by the main project -->
           <extraArtifacts>
-            <artifact>org.apache.maven.plugins:maven-compiler-plugin:3.10.1:maven-plugin</artifact>
-            <artifact>org.apache.maven.plugins:maven-source-plugin:3.2.1:maven-plugin</artifact>
-            <artifact>org.apache.maven.plugins:maven-antrun-plugin:3.1.0:maven-plugin</artifact>
+            <artifact>org.apache.maven.plugins:maven-source-plugin:3.4.0:maven-plugin</artifact>
+            <artifact>org.apache.maven.plugins:maven-war-plugin:3.5.1:maven-plugin</artifact>
+            <artifact>org.apache.maven.plugins:maven-antrun-plugin:3.2.0:maven-plugin</artifact>
+            <artifact>org.apache.maven.surefire:surefire-junit4:3.5.6</artifact>
             <artifact>com.google.guava:guava-bom:31.1-jre:pom</artifact>
             <artifact>com.google.guava:guava:31.1-jre</artifact>
             <artifact>com.google.guava:guava-gwt:31.1-jre</artifact>
-            <artifact>com.google.auto.value:auto-value:1.9</artifact>
-            <artifact>com.google.auto.value:auto-value-annotations:1.9</artifact>
+            <artifact>com.google.auto.value:auto-value:1.11.1</artifact>
+            <artifact>com.google.auto.value:auto-value-annotations:1.11.1</artifact>
             <artifact>javax.servlet:servlet-api:2.5</artifact>
             <artifact>junit:junit:4.13.2</artifact>
           </extraArtifacts>
