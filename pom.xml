@@ -404,6 +404,7 @@
         <configuration>
           <releaseProfiles>release</releaseProfiles>
           <pushChanges>false</pushChanges>
+	  <localCheckout>true</localCheckout>
           <goals>deploy site-deploy</goals>
         </configuration>
       </plugin>
