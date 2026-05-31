@@ -1,5 +1,23 @@
 version: 2
 updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+    ignore:
+      # plexus-xml 4 requires Maven 4
+      - dependency-name: "org.codehaus.plexus:plexus-xml"
+        update-types:
+          - "version-update:semver-major"
+      # Keep these dependent on the target mavenVersion
+      - dependency-name: "org.apache.maven:maven-core"
+      - dependency-name: "org.apache.maven:maven-plugin-api"
+    groups:
+      all-minor:
+        update-types:
+          - "minor"
+          - "patch"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
