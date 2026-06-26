@@ -22,7 +22,7 @@ jobs:
           java-version: '21'
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.m2/repository/
@@ -53,7 +53,7 @@ jobs:
           java-version: '21'
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.m2/repository/
@@ -91,7 +91,7 @@ jobs:
             21
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.m2/repository/
@@ -127,7 +127,7 @@ jobs:
           java-version: '21'
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.m2/repository/
@@ -169,7 +169,7 @@ jobs:
           server-password: SONATYPE_CENTRAL_TOKEN
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.m2/repository/
