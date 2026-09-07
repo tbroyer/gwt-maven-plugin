@@ -41,7 +41,7 @@ class CommandLine {
 
   void execute(Iterable<String> classpath, List<String> arguments) throws MojoExecutionException {
     final String cp = StringUtils.join(classpath.iterator(), File.pathSeparator);
-    final String[] args = arguments.toArray(new String[arguments.size()]);
+    final String[] args = arguments.toArray(new String[0]);
 
     org.apache.commons.exec.CommandLine commandline = new org.apache.commons.exec.CommandLine(getExecutable());
     commandline.addArguments(args);

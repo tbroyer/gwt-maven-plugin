@@ -233,10 +233,7 @@ public class GenerateModuleMojo extends AbstractMojo {
       return false;
     }
 
-    ClassWorld world = new ClassWorld();
-    ClassRealm  realm;
-    try {
-      realm = world.newRealm("gwt", null);
+    try (ClassRealm realm = new ClassWorld().newRealm("gwt", null)) {
       for (Artifact artifact : dependencyArtifacts) {
         if (!artifactFilter.include(artifact)) {
           continue;
@@ -250,45 +247,45 @@ public class GenerateModuleMojo extends AbstractMojo {
         }
         realm.addURL(artifact.getFile().toURI().toURL());
       }
-    } catch (DuplicateRealmException | MalformedURLException e) {
-      throw new MojoExecutionException(e.getMessage(), e);
-    }
 
-    boolean hasInherits = false;
+      boolean hasInherits = false;
 
-    Enumeration<URL> resources = realm.getResources("META-INF/gwt/mainModule");
-    while (resources.hasMoreElements()) {
-      final URL resource = resources.nextElement();
-      String moduleName = null;
-      try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
-        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-          line = removeCommentAndTrim(line);
-          if (line.isEmpty()) {
-            continue;
+      Enumeration<URL> resources = realm.getResources("META-INF/gwt/mainModule");
+      while (resources.hasMoreElements()) {
+        final URL resource = resources.nextElement();
+        String moduleName = null;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8))) {
+          for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+            line = removeCommentAndTrim(line);
+            if (line.isEmpty()) {
+              continue;
+            }
+            if (moduleName != null) {
+              getLog().warn("Configuration file contains more than one module name, picking first: " + resource);
+              break;
+            }
+//          if (!ModuleDef.isValidModuleName(moduleName)) {
+//            getLog().warn("Illegal configuration-file syntax, skipping " + resource);
+//            break;
+//          }
+            moduleName = line;
+            // Continue processing lines to warn of illegal syntax
           }
-          if (moduleName != null) {
-            getLog().warn("Configuration file contains more than one module name, picking first: " + resource);
-            break;
-          }
-//        if (!ModuleDef.isValidModuleName(moduleName)) {
-//          getLog().warn("Illegal configuration-file syntax, skipping " + resource);
-//          break;
-//        }
-          moduleName = line;
-          // Continue processing lines to warn of illegal syntax
+        }
+
+        if (moduleName != null) {
+          hasInherits = true;
+
+          xmlWriter.startElement("inherits");
+          xmlWriter.addAttribute("name", moduleName);
+          xmlWriter.endElement();
         }
       }
 
-      if (moduleName != null) {
-        hasInherits = true;
-
-        xmlWriter.startElement("inherits");
-        xmlWriter.addAttribute("name", moduleName);
-        xmlWriter.endElement();
-      }
+      return hasInherits;
+    } catch (DuplicateRealmException | MalformedURLException e) {
+      throw new MojoExecutionException(e.getMessage(), e);
     }
-
-    return hasInherits;
   }
 
   private String removeCommentAndTrim(String line) {

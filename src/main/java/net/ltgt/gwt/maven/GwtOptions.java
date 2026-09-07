@@ -51,10 +51,10 @@ public interface GwtOptions {
       final int workers;
       // Use the same algorithm as org.apache.maven.cli.MavenCli
       if (localWorkers.contains("C")) {
-        workers = (int) (Float.valueOf(localWorkers.replace("C", ""))
+        workers = (int) (Float.parseFloat(localWorkers.replace("C", ""))
             * Runtime.getRuntime().availableProcessors());
       } else {
-        workers = Integer.valueOf(localWorkers);
+        workers = Integer.parseInt(localWorkers);
       }
       return String.valueOf(workers);
     }

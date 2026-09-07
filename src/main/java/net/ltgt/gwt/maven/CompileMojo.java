@@ -303,11 +303,11 @@ public class CompileMojo extends AbstractMojo implements GwtOptions {
         for (File source : sourceFiles) {
           sb.append("\n - ").append(source.getAbsolutePath());
         }
-        getLog().debug("Source files are newer than nocache.js, recompiling: " + sb.toString());
+        getLog().debug("Source files are newer than nocache.js, recompiling: " + sb);
       }
       return stale;
     } catch (InclusionScanException e) {
-      throw new MojoExecutionException("Error scanning source root: \'" + sourceFile.getPath() + "\' for stale files to recompile.", e);
+      throw new MojoExecutionException("Error scanning source root: '" + sourceFile.getPath() + "' for stale files to recompile.", e);
     }
   }
 
