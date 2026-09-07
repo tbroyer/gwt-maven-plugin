@@ -3,7 +3,6 @@ package net.ltgt.gwt.maven;
 import java.io.File;
 import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -215,7 +214,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
 
       filteredSourceRoots.addAll(Arrays.asList(super.getAdditionalClasspathElements()));
 
-      computedAdditionalClasspathElements = sourceRoots.toArray(new String[filteredSourceRoots.size()]);
+      computedAdditionalClasspathElements = filteredSourceRoots.toArray(new String[0]);
     }
     return computedAdditionalClasspathElements;
   }
@@ -418,6 +417,7 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
    * This parameter is ignored if the {@code test} parameter is specified (allowing you to run a single test
    * instead of an entire suite).
    */
+  @Deprecated
   @Parameter(property = "surefire.suiteXmlFiles")
   private File[] suiteXmlFiles;
 
@@ -959,16 +959,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   }
 
   @Override
-  public File[] getSuiteXmlFiles() {
-    return suiteXmlFiles.clone();
-  }
-
-  @Override
-  public void setSuiteXmlFiles(File[] suiteXmlFiles) {
-    this.suiteXmlFiles = suiteXmlFiles.clone();
-  }
-
-  @Override
   public String getRunOrder() {
     return runOrder;
   }
@@ -1017,16 +1007,6 @@ public class TestMojo extends AbstractSurefireMojo implements SurefireReportPara
   @Override
   protected void setUseModulePath(boolean useModulePath) {
     throw new UnsupportedOperationException("useModulePath is read-only");
-  }
-
-  @Override
-  protected List<File> suiteXmlFiles() {
-    return hasSuiteXmlFiles() ? Arrays.asList( suiteXmlFiles ) : Collections.<File>emptyList();
-  }
-
-  @Override
-  protected boolean hasSuiteXmlFiles() {
-    return suiteXmlFiles != null && suiteXmlFiles.length != 0;
   }
 
   @Override
